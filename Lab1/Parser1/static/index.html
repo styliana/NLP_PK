@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 TechStore Pink Edition &bull; Nowoczesny Katalog Elektroniki</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <h1>🌸 TechStore &bull; R&oacute;&zdot;owy Butik Elektroniki</h1>
+      <p>&sparkles; Serwis demonstracyjny do laboratorium NLP &ndash; Poziom 5.0 (Autor: Serwis z dynamicznym wstrzykiwaniem danych)</p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Panel filtrowania i sortowania bez przeładowania strony (Utrudnienie 5.0) -->
+    <section class="narzedzia-paska">
+      <div class="grupa-kontrolna">
+        <label for="filtr-kategoria">Kategoria:</label>
+        <select id="filtr-kategoria">
+          <option value="all">Wszystkie kategorie 🎀</option>
+          <option value="Laptopy">Laptopy</option>
+          <option value="Smartfony">Smartfony</option>
+          <option value="Monitory">Monitory</option>
+          <option value="Klawiatury i Myszy">Klawiatury i Myszy</option>
+          <option value="Dyski SSD">Dyski SSD</option>
+          <option value="Tablety">Tablety</option>
+          <option value="Audio i Słuchawki">Audio i Słuchawki</option>
+          <option value="Akcesoria sieciowe">Akcesoria sieciowe</option>
+        </select>
+      </div>
+
+      <div class="grupa-kontrolna">
+        <label for="sortowanie-cena">Sortuj:</label>
+        <select id="sortowanie-cena">
+          <option value="domyslne">Domyślna kolejność</option>
+          <option value="price_asc">Cena: rosnąco</option>
+          <option value="price_desc">Cena: malejąco</option>
+          <option value="name_asc">Nazwa: alfabetycznie</option>
+        </select>
+      </div>
+
+      <div class="grupa-kontrolna">
+        <label for="tryb-wyswietlania">Widok katalogu:</label>
+        <select id="tryb-wyswietlania">
+          <option value="obydwa">Obie struktury (Karty + Tabela)</option>
+          <option value="karty">Tylko Karty</option>
+          <option value="tabela">Tylko Tabela</option>
+        </select>
+      </div>
+
+      <div class="grupa-kontrolna">
+        <span id="licznik-produktow" class="badge">Wczytywanie bazy danych...</span>
+      </div>
+    </section>
+
+    <!-- Wskaźnik ładowania asynchronicznego (sztuczne opóźnienie 300-2000 ms) -->
+    <div id="ladowanie-box" class="ladowanie-box aktywny">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: var(--text-muted); font-weight: 600;">Pobieranie danych asynchronicznie (fetch)...</p>
+    </div>
+
+    <!-- STRUKTURA 1: Karty powtarzalne (article) -->
+    <section id="kontener-sekcji-kart">
+      <div class="struktura-naglowek">
+        <h2>✨ Struktura A: Karty Produkt&oacute;w (article)</h2>
+        <span class="badge" id="licznik-karty">0 pozycji</span>
+      </div>
+      <!-- dynamicznie uzupełniane przez JavaScript z pliku JSON -->
+      <div id="siatka-kart" class="siatka-kart"></div>
+    </section>
+
+    <!-- STRUKTURA 2: Tabela danych (tabela z celowym brakiem znacznika tbody wg utrudnienia 4.0) -->
+    <section id="kontener-sekcji-tabeli">
+      <div class="struktura-naglowek">
+        <h2>💖 Struktura B: Tabela Danych Produkt&oacute;w (table)</h2>
+        <span class="badge" id="licznik-tabela">0 pozycji</span>
+      </div>
+      <div class="tabela-kontener">
+        <!-- Tabela bez znacznika tbody zgodnie z utrudnieniem poziomu 4.0 -->
+        <table id="tabela-produktow" class="tabela-produktow">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nazwa produktu</th>
+              <th>Cena</th>
+              <th>Kategoria</th>
+              <th>Producent</th>
+              <th>Dost&eogon;pno&sacute;&cacute;</th>
+              <th>Ocena</th>
+              <th>Gwarancja</th>
+              <th>Data dodania</th>
+              <th>Akcja</th>
+            </tr>
+          </thead>
+          <!-- Wiersze wstrzykiwane bezpośrednio przez JS -->
+        </table>
+      </div>
+    </section>
+
+    <!-- Paginacja oraz Doładowywanie porcjami (Przycisk "Wczytaj więcej" dla poziomu 5.0) -->
+    <div class="sekcja-akcji-katalogu">
+      <button id="btn-wczytaj-wiecej" class="btn btn-wczytaj-wiecej">Wczytaj wi&eogon;cej produkt&oacute;w (&darr;)</button>
+      
+      <div style="text-align: center;">
+        <span style="font-size: 0.88rem; color: var(--text-muted); display: block; margin-bottom: 0.6rem; font-weight: 600;">Szybka nawigacja po podstronach (wymóg minimum 5 podstron):</span>
+        <div id="paginacja" class="paginacja-kontener"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

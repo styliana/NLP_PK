@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 Szczegóły Produktu &bull; TechStore Pink Edition</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <h1>🌸 TechStore &bull; Karta Szczeg&oacute;&lstrok;&oacute;w Produktu</h1>
+      <p>&sparkles; Karta produktowa z dynamicznym doładowaniem atrybut&oacute;w i elementami interaktywnymi (Poziom 5.0)</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <a href="index.html" class="powrot-link">&larr; Wr&oacute;&cacute; do r&oacute;&zdot;owego katalogu</a>
+
+    <!-- Wskaźnik ładowania asynchronicznego -->
+    <div id="ladowanie-box" class="ladowanie-box aktywny">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: var(--text-muted); font-weight: 600;">Pobieranie szczeg&oacute;&lstrok;owych atrybut&oacute;w z API...</p>
+    </div>
+
+    <!-- Kontener szczegółów (w źródle HTML pusty, wypełniany dynamicznie przez detail.js) -->
+    <div id="kontener-szczegoly" style="display: none;">
+      <!-- Wstrzykiwane przez JS -->
+    </div>
+  </main>
+
+  <script src="detail.js"></script>
+</body>
+</html>
