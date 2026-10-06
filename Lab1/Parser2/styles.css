@@ -1,0 +1,142 @@
+:root { color-scheme: dark;
+        --tlo: #0f1217; --karta: #181c24; --tekst: #e6e9ef; --przygaszony: #9aa3b2; --akcent: #6ea8ff; --ramka: #2a303c;
+        --naglowek-tabeli: #1f2430; --wiersz-parzysty: #1b1f28; --przycisk-tlo: #2f6fde; --przycisk-tekst: #fff;
+        --promo-tlo: #c2342b; --gwiazdki: #f5b82e; --ok: #4cc67a; --uwaga: #f0a840; --zle: #ff6b62; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--tlo); color: var(--tekst); line-height: 1.45; }
+.naglowek-strony, main, .stopka-strony, .dolna-paginacja { max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+.naglowek-strony { padding-top: 32px; }
+.naglowek-strony h1 { margin: 0 0 4px; font-size: 1.9rem; }
+.podsumowanie-katalogu { margin: 0; color: var(--przygaszony); }
+a { color: var(--akcent); }
+section { margin: 32px 0; }
+section h2 { font-size: 1.35rem; margin: 0 0 12px; }
+
+.paginacja { margin: 16px 0; }
+.lista-stron { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; }
+.lista-stron a, .lista-stron span { display: inline-block; min-width: 36px; padding: 6px 10px; border: 1px solid var(--ramka);
+  border-radius: 6px; background: var(--karta); text-align: center; text-decoration: none; }
+.lista-stron .aktualna-strona { background: var(--przycisk-tlo); border-color: var(--przycisk-tlo); color: var(--przycisk-tekst); font-weight: 600; }
+.lista-stron .nieaktywna { color: var(--przygaszony); opacity: .6; }
+
+.kontener-tabeli { overflow-x: auto; background: var(--karta); border: 1px solid var(--ramka); border-radius: 8px; }
+.tabela-produktow { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 1100px; }
+.tabela-produktow th, .tabela-produktow td { padding: 8px 10px; border-bottom: 1px solid var(--ramka); text-align: left; vertical-align: top; }
+.tabela-produktow thead th { background: var(--naglowek-tabeli); font-weight: 600; white-space: nowrap; }
+.tabela-produktow tbody tr:nth-child(even) { background: var(--wiersz-parzysty); }
+.tabela-produktow td.cena, .tabela-produktow td.liczba-opinii, .tabela-produktow td.waga { white-space: nowrap; text-align: right; }
+
+.cena-aktualna { font-weight: 700; }
+.cena-poprzednia { color: var(--przygaszony); font-size: .85em; margin-left: 6px; }
+.gwiazdki { color: var(--gwiazdki); letter-spacing: 1px; }
+.brak-danych { color: var(--przygaszony); font-style: italic; }
+.dostepny { color: var(--ok); } .ostatnie-sztuki { color: var(--uwaga); }
+.na-zamowienie { color: var(--przygaszony); } .niedostepny { color: var(--zle); }
+
+.siatka-kart { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.karta-produktu { position: relative; background: var(--karta); border: 1px solid var(--ramka); border-radius: 10px; padding: 16px;
+  display: flex; flex-direction: column; }
+.kategoria { margin: 0; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--przygaszony); }
+.naglowek-karty .nazwa { margin: 4px 0; font-size: 1.05rem; }
+.naglowek-karty .nazwa a { color: inherit; text-decoration: none; }
+.producent { margin: 0; font-size: .85rem; color: var(--przygaszony); }
+.karta-produktu .cena { margin: 12px 0; font-size: 1.25rem; }
+.parametry { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 16px; font-size: .9rem; }
+.parametry dt { color: var(--przygaszony); } .parametry dd { margin: 0; }
+.stopka-karty { margin-top: auto; }
+.przycisk { display: inline-block; padding: 8px 14px; background: var(--przycisk-tlo); color: var(--przycisk-tekst); border-radius: 6px; text-decoration: none; font-size: .9rem; }
+.etykieta-promocja { position: absolute; top: 12px; right: 12px; background: var(--promo-tlo); color: #fff; font-size: .7rem; padding: 2px 8px;
+  border-radius: 4px; text-transform: uppercase; }
+
+.okruszki { font-size: .9rem; color: var(--przygaszony); }
+.szczegoly-produktu { position: relative; background: var(--karta); border: 1px solid var(--ramka); border-radius: 10px; padding: 24px; margin: 16px 0 32px; }
+.naglowek-szczegolow h1 { margin: 4px 0; font-size: 1.7rem; }
+.naglowek-szczegolow .cena { margin-top: 12px; font-size: 1.6rem; }
+.kolumny-szczegolow { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 32px; }
+.specyfikacja { border-collapse: collapse; width: 100%; max-width: 640px; font-size: .9rem; }
+.specyfikacja th, .specyfikacja td { padding: 8px 10px; border-bottom: 1px solid var(--ramka); text-align: left; }
+.specyfikacja th { color: var(--przygaszony); font-weight: 500; width: 40%; }
+.opis { max-width: 70ch; margin: 0; }
+
+.stopka-strony { padding-bottom: 32px; color: var(--przygaszony); font-size: .85rem; }
+
+/* Katalog dynamiczny */
+.filtry { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; margin: 16px 0; padding: 16px;
+  background: var(--karta); border: 1px solid var(--ramka); border-radius: 10px; }
+.filtry label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--przygaszony); }
+.filtry select, .filtry input[type="search"] { font: inherit; color: var(--tekst); padding: 6px 8px; border: 1px solid var(--ramka);
+  border-radius: 6px; background: var(--karta); min-width: 170px; }
+.filtry .pole-wyboru { flex-direction: row; align-items: center; gap: 6px; padding-bottom: 8px; }
+.status-wczytywania { color: var(--przygaszony); margin: 0 0 16px; }
+.szczegoly-techniczne { margin: 0 0 16px; font-size: .85rem; border-top: 1px solid var(--ramka); padding-top: 8px; }
+.szczegoly-techniczne summary { cursor: pointer; color: var(--akcent); }
+.szczegoly-techniczne .parametry { margin-top: 8px; }
+.szczegoly-techniczne .opis { margin-top: 8px; color: var(--przygaszony); }
+.wczytywanie-wiecej { text-align: center; margin: 24px 0 40px; }
+.przycisk:hover { filter: brightness(1.15); }
+.przycisk[disabled] { opacity: .6; cursor: progress; }
+button.przycisk { border: 0; cursor: pointer; font: inherit; }
+.wskaznik-ladowania { display: inline-block; margin-left: 10px; color: var(--przygaszony); }
+.wskaznik-ladowania[hidden] { display: none; }
+.komunikat-brak-wynikow { padding: 24px; text-align: center; color: var(--przygaszony); }
+
+/* ===== Animacje ===== */
+@keyframes pojawienie { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes pojawienie-wiersza { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+@keyframes przenikanie { from { opacity: .25; } to { opacity: 1; } }
+@keyframes migotanie { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes obrot { to { transform: rotate(360deg); } }
+@keyframes rozwiniecie { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes puls { 0% { color: var(--akcent); } 100% { color: var(--przygaszony); } }
+
+/* nowe karty i wiersze wjeżdżają kolejno (opóźnienie ustawiane w JS) */
+.karta-produktu.animacja-wejscia { animation: pojawienie .45s cubic-bezier(.2, .7, .2, 1) both; animation-delay: var(--opoznienie, 0ms); }
+tr.animacja-wejscia { animation: pojawienie-wiersza .35s ease-out both; animation-delay: var(--opoznienie, 0ms); }
+.odswiezenie { animation: przenikanie .3s ease-out; }
+.status-wczytywania.zmiana { animation: puls 1.2s ease-out; }
+
+/* karty: uniesienie po najechaniu */
+.karta-produktu { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.karta-produktu:hover { transform: translateY(-4px); border-color: var(--akcent);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .45), 0 0 0 1px rgba(110, 168, 255, .15); }
+.tabela-produktow tbody tr { transition: background-color .15s ease; }
+.tabela-produktow tbody tr:hover { background: var(--naglowek-tabeli); }
+.przycisk, .lista-stron a { transition: filter .15s ease, transform .15s ease, background-color .15s ease, border-color .15s ease; }
+.przycisk:active { transform: scale(.97); }
+.lista-stron a:hover { border-color: var(--akcent); transform: translateY(-2px); }
+
+/* szkielety wyświetlane w trakcie wczytywania porcji */
+.szkielet-karty, .szkielet-wiersz td span { background: linear-gradient(90deg, var(--karta) 25%, #232937 50%, var(--karta) 75%);
+  background-size: 400% 100%; animation: migotanie 1.4s ease-in-out infinite; }
+.szkielet-karty { min-height: 330px; border: 1px solid var(--ramka); border-radius: 10px; }
+.szkielet-wiersz td span { display: block; height: 12px; border-radius: 4px; }
+.szkielet-wiersz td { border-bottom: 1px solid var(--ramka); padding: 14px 10px; }
+
+/* przycisk w trakcie ładowania: obracający się wskaźnik */
+.przycisk.laduje { position: relative; padding-left: 36px; }
+.przycisk.laduje::before { content: ""; position: absolute; left: 12px; top: 50%; width: 14px; height: 14px; margin-top: -7px;
+  border: 2px solid rgba(255, 255, 255, .35); border-top-color: #fff; border-radius: 50%; animation: obrot .7s linear infinite; }
+
+/* płynne rozwinięcie <details> */
+.szczegoly-techniczne summary { list-style: none; display: inline-flex; align-items: center; gap: 6px; }
+.szczegoly-techniczne summary::-webkit-details-marker { display: none; }
+.szczegoly-techniczne summary::before { content: "▸"; display: inline-block; transition: transform .2s ease; }
+.szczegoly-techniczne[open] summary::before { transform: rotate(90deg); }
+.szczegoly-techniczne[open] .zawartosc-szczegolow { animation: rozwiniecie .3s ease-out; }
+
+/* podstrona szczegółów: sekcje pojawiają się po kolei */
+.szczegoly-produktu > * { animation: pojawienie .5s cubic-bezier(.2, .7, .2, 1) both; }
+.szczegoly-produktu > :nth-child(2) { animation-delay: 80ms; }
+.szczegoly-produktu > :nth-child(3) { animation-delay: 160ms; }
+.szczegoly-produktu > :nth-child(4) { animation-delay: 240ms; }
+.szczegoly-produktu > :nth-child(5) { animation-delay: 320ms; }
+.szczegoly-produktu > :nth-child(n+6) { animation-delay: 400ms; }
+.szkielet-szczegolow { height: 420px; margin: 16px 0 32px; border-radius: 10px; border: 1px solid var(--ramka);
+  background: linear-gradient(90deg, var(--karta) 25%, #232937 50%, var(--karta) 75%); background-size: 400% 100%;
+  animation: migotanie 1.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+  .karta-produktu:hover, .lista-stron a:hover { transform: none; }
+}

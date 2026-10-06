@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Katalog produktów TechStore wczytywany dynamicznie z plików JSON.">
+  <title>Katalog produktów TechStore</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script src="wspolne.js" defer></script>
+  <script src="katalog.js" defer></script>
+</head>
+<body>
+  <header class="naglowek-strony" id="naglowek">
+    <h1>Katalog produktów TechStore</h1>
+    <p class="podsumowanie-katalogu">Strona <span id="numer-strony">–</span> z <span id="liczba-stron">–</span></p>
+    <nav id="paginacja" class="paginacja" aria-label="Paginacja katalogu"></nav>
+  </header>
+
+  <main id="katalog">
+    <noscript><p class="komunikat-brak-wynikow">Ten katalog wymaga włączonego JavaScriptu.</p></noscript>
+
+    <form id="filtry" class="filtry" aria-label="Filtrowanie i sortowanie produktów">
+      <label for="filtr-szukaj">Szukaj w nazwie
+        <input type="search" id="filtr-szukaj" name="szukaj" placeholder="wpisz fragment nazwy">
+      </label>
+      <label for="filtr-kategoria">Kategoria
+        <select id="filtr-kategoria" name="kategoria">
+          <option value="">Wszystkie</option>
+          <option>Laptopy</option>
+          <option>Smartfony</option>
+          <option>Słuchawki</option>
+          <option>Monitory</option>
+          <option>Drukarki</option>
+          <option>Akcesoria</option>
+        </select>
+      </label>
+      <label for="filtr-dostepnosc">Dostępność
+        <select id="filtr-dostepnosc" name="dostepnosc">
+          <option value="">Dowolna</option>
+          <option>Dostępny</option>
+          <option>Ostatnie sztuki</option>
+          <option>Na zamówienie</option>
+          <option>Niedostępny</option>
+        </select>
+      </label>
+      <label for="sortowanie">Sortuj
+        <select id="sortowanie" name="sortowanie">
+          <option value="domyslnie">Domyślnie</option>
+          <option value="cena-rosnaco">Cena: od najniższej</option>
+          <option value="cena-malejaco">Cena: od najwyższej</option>
+          <option value="ocena-malejaco">Najlepiej oceniane</option>
+          <option value="najnowsze">Najnowsze</option>
+          <option value="nazwa">Nazwa A–Z</option>
+        </select>
+      </label>
+      <label class="pole-wyboru" for="filtr-promocje">
+        <input type="checkbox" id="filtr-promocje" name="promocje"> Tylko promocje
+      </label>
+    </form>
+
+    <p id="status-wczytywania" class="status-wczytywania" aria-live="polite">Wczytywanie produktów…</p>
+
+    <section id="sekcja-tabela" class="sekcja-produktow sekcja-tabela" aria-labelledby="tytul-tabela">
+      <h2 id="tytul-tabela">Zestawienie produktów</h2>
+      <div class="kontener-tabeli">
+        <table id="tabela-produktow" class="tabela-produktow">
+          <thead>
+            <tr>
+              <th scope="col" class="kolumna-kod-sku">SKU</th>
+              <th scope="col" class="kolumna-nazwa">Nazwa</th>
+              <th scope="col" class="kolumna-kategoria">Kategoria</th>
+              <th scope="col" class="kolumna-producent">Producent</th>
+              <th scope="col" class="kolumna-cena">Cena</th>
+              <th scope="col" class="kolumna-dostepnosc">Dostępność</th>
+              <th scope="col" class="kolumna-ocena">Ocena</th>
+              <th scope="col" class="kolumna-liczba-opinii">Liczba opinii</th>
+              <th scope="col" class="kolumna-data-dodania">Data dodania</th>
+              <th scope="col" class="kolumna-gwarancja">Gwarancja</th>
+              <th scope="col" class="kolumna-kolor">Kolor</th>
+              <th scope="col" class="kolumna-waga">Waga</th>
+            </tr>
+          </thead>
+          <tbody id="wiersze-produktow"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sekcja-karty" class="sekcja-produktow sekcja-karty" aria-labelledby="tytul-karty">
+      <h2 id="tytul-karty">Polecane produkty</h2>
+      <div id="lista-kart" class="siatka-kart"></div>
+    </section>
+
+    <div class="wczytywanie-wiecej">
+      <button type="button" id="wczytaj-wiecej" class="przycisk" disabled>Wczytaj więcej</button>
+      <span id="wskaznik-ladowania" class="wskaznik-ladowania" hidden>Ładowanie…</span>
+    </div>
+  </main>
+
+  <footer class="stopka-strony" id="stopka">
+    <p>TechStore – katalog demonstracyjny na potrzeby laboratorium PJN. Ceny brutto; część ofert partnerów podana w EUR lub USD.</p>
+  </footer>
+</body>
+</html>

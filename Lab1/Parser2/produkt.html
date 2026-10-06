@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Szczegóły produktu w katalogu TechStore.">
+  <title>Produkt – TechStore</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script src="wspolne.js" defer></script>
+  <script src="produkt.js" defer></script>
+</head>
+<body>
+  <header class="naglowek-strony" id="naglowek">
+    <nav class="okruszki" aria-label="Ścieżka nawigacji">
+      <a href="index.html">Katalog</a> › <span id="okruszek-kategoria" class="okruszek-kategoria">…</span>
+    </nav>
+  </header>
+
+  <main id="szczegoly">
+    <noscript><p class="komunikat-brak-wynikow">Ta strona wymaga włączonego JavaScriptu.</p></noscript>
+    <p id="status-wczytywania" class="status-wczytywania" aria-live="polite">Wczytywanie produktu…</p>
+    <div id="kontener-produktu"></div>
+  </main>
+
+  <footer class="stopka-strony" id="stopka">
+    <p>TechStore – katalog demonstracyjny na potrzeby laboratorium PJN. Ceny brutto; część ofert partnerów podana w EUR lub USD.</p>
+  </footer>
+</body>
+</html>
