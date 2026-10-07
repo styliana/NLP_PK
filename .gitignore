@@ -5,3 +5,5 @@ __pycache__/
 /Lab1/Parser2/.idea
 ~$*
 *.tmp
+/Lab1/Parser1/.idea
+/.idea
