@@ -3,3 +3,5 @@ __pycache__/
 *$py.class
 .venv/
 /Lab1/Parser2/.idea
+~$*
+*.tmp
