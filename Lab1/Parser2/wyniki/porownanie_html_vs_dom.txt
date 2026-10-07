@@ -1,0 +1,26 @@
+
+========================================================================================
+            ZESTAWIENIE PORÓWNAWCZE DO SPRAWOZDANIA (POZIOM 5.0)
+========================================================================================
+Parametr                           | Surowy HTML (bez JS)       | Drzewo DOM / Po wykonaniu JS
+----------------------------------------------------------------------------------------
+Czas odpowiedzi / pobrania        | 58.94 ms                    | 32.65 ms
+Rozmiar pobranej treści           | 4690 B (~4.7 KB)            | 493237 B (~330 KB)
+Produkty w tabeli (<tr>)          | 0                          | 216
+Produkty w kartach (<article>)    | 0                          | 216
+ŁĄCZNA LICZBA PRODUKTÓW           | 0 (0.0%)                    | 432 (100.0%)
+========================================================================================
+
+WNIOSEK DO SPRAWOZDANIA:
+1. Surowy kod HTML (kod źródłowy strony pod Ctrl+U pobrany przez bibliotekę requests)
+   nie zawiera ani jednego rekordu produktu (dokładnie 0 rekordów).
+   W kodzie znajdują się jedynie puste znaczniki szkieletu (<tbody id="wiersze-produktow">
+   oraz <div id="lista-kart">).
+2. Próba parsowania strony tradycyjnymi narzędziami (BeautifulSoup na surowym HTML)
+   kończy się całkowitym niepowodzeniem.
+3. Wszystkie rekordy (432 rekordy = 420 unikalnych + 12 duplikatów) są wstrzykiwane do drzewa
+   DOM dynamicznie po stronie klienta za pomocą JavaScriptu (funkcja fetch() pobierająca
+   plik dane/produkty.json).
+4. Wykrycie i wykorzystanie bezpośredniego endpointu JSON pozwoliło pozyskać komplet danych
+   w czasie poniżej 50 ms, eliminując konieczność ciężkiego renderowania w przeglądarce.
+========================================================================================

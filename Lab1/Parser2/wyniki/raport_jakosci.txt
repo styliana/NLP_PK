@@ -1,0 +1,22 @@
+============================================================
+             RAPORT KONTROLI JAKOŚCI DANYCH
+============================================================
+Liczba pobranych rekordów ogółem : 432
+Liczba unikalnych rekordów        : 420
+Liczba odrzuconych duplikatów     : 12
+------------------------------------------------------------
+Braki w polu 'ocena'              : 77 (18.33%)
+Braki w polu 'gwarancja'          : 73 (17.38%)
+------------------------------------------------------------
+Rozkład walut:
+  - PLN: 379 ofert
+  - EUR: 19 ofert
+  - USD: 22 ofert
+------------------------------------------------------------
+Statystyki cenowe (w PLN):
+  - Minimalna cena : 79.99 zł
+  - Maksymalna cena: 7949.99 zł
+  - Średnia cena   : 1993.86 zł
+  - Mediana cen    : 1504.99 zł
+  - Średnia ocen   : 4.05 / 5.0
+============================================================
