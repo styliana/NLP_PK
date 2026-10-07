@@ -4,7 +4,7 @@
 ========================================================================================
 Parametr                           | Surowy HTML (bez JS)       | Drzewo DOM / Po wykonaniu JS
 ----------------------------------------------------------------------------------------
-Czas odpowiedzi / pobrania        | 58.94 ms                    | 32.65 ms
+Czas odpowiedzi / pobrania        | 82.5 ms                    | 26.16 ms
 Rozmiar pobranej treści           | 4690 B (~4.7 KB)            | 493237 B (~330 KB)
 Produkty w tabeli (<tr>)          | 0                          | 216
 Produkty w kartach (<article>)    | 0                          | 216

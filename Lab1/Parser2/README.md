@@ -1,96 +1,115 @@
-# Laboratorium NLP – Parser serwisu TechStore (Parser2)
-> **Rola: PARSER | Ocena docelowa: 5.0**
+# Laboratorium NLP – Moduł Parser2 (Rola: PARSER)
+> **Ocena docelowa: 5.0 | Projekt: Parser serwisu TechStore partnera**
 
 ---
 
-## 1. Szybki start (1 polecenie)
+## 1. O projekcie
 
-Wszystkie etapy (pobranie danych, 4 testy jednostkowe, statystyki opisowe, 3 wykresy PNG i badanie HTML vs DOM) uruchamia się jednym poleceniem:
+Katalog `Lab1/Parser2` zawiera kompletne środowisko roli **PARSER** przygotowane w ramach Laboratorium 1 z Przetwarzania Języka Naturalnego. 
+
+Zadaniem parsera było pozyskanie, oczyszczenie, analiza oraz walidacja danych z serwisu e-commerce **TechStore** przygotowanego przez partnera w architekturze SPA (Single Page Application, Poziom 5.0).
+
+---
+
+## 2. Szybki start
+
+Cały proces (ekstrakcja danych, 4 testy jednostkowe, analiza statystyczna, generowanie 3 wykresów oraz badanie surowy HTML vs DOM) uruchamia się jednym poleceniem:
 
 ```powershell
 python Lab1/Parser2/uruchom_calosc.py
 ```
 
----
-
-## 2. Architektura projektu
-
-```text
-Lab1/Parser2/
-├── strona/                     # Izolowany serwis partnera (SPA: dane pobierane przez JS z JSON)
-│   ├── index.html, styles.css
-│   ├── katalog.js, wspolne.js, produkt.js
-│   └── dane/produkty.json
-│
-├── parser.py                   # Silnik parsera (API Network Sniffing, czyszczenie, eksport)
-├── test_parser.py              # 4 testy jednostkowe (waluty, braki, deduplikacja, typy)
-├── analiza.py                  # Statystyki opisowe (Q1, Q3, IQR, outliery) i generator wykresów
-├── porownanie_html_vs_dom.py   # Weryfikacja wymogu 5.0 (surowy HTML vs DOM)
-├── uruchom_calosc.py           # Master skrypt sekwencyjny
-├── README.md                   # Niniejsza dokumentacja dla prowadzącego
-│
-├── wyniki/                     # Wygenerowane zbiory danych:
-│   ├── produkty_oczyszczone.xlsx # Arkusz Excel (rodzimy format .xlsx – bez problemów z separatorem)
-│   ├── produkty_oczyszczone.csv  # Plik CSV (utf-8-sig, kolumny ułożone 1:1 z tabelą na stronie)
-│   ├── produkty_oczyszczone.json # Baza w formacie JSON
-│   ├── raport_jakosci.txt        # Podsumowanie braków i walut
-│   └── porownanie_html_vs_dom.txt# Raport pomiarowy HTML vs DOM
-│
-└── wykresy/                    # Wykresy wysokiej rozdzielczości (PNG):
-    ├── 1_histogram_cen.png       # Rozkład cen w PLN ze średnią i medianą
-    ├── 2_boxplot_cen.png         # Wykres pudełkowy cen wg kategorii z outlierami
-    └── 3_korelacja_cena_waga.png # Korelacja waga vs cena z linią trendu liniowego
+Można również uruchamiać poszczególne moduły niezależnie:
+```powershell
+python Lab1/Parser2/parser.py                # Pobranie danych i eksport do XLSX, CSV, JSON
+python Lab1/Parser2/test_parser.py           # Zestaw 4 testów jednostkowych (unittest)
+python Lab1/Parser2/analiza.py               # Statystyki opisowe, outliery i wykresy PNG
+python Lab1/Parser2/porownanie_html_vs_dom.py# Pomiary i weryfikacja wymogu 5.0 (HTML vs DOM)
 ```
 
 ---
 
-## 3. Spełnienie kryteriów regulaminu na ocenę 5.0
+## 3. Architektura plików projektu
 
-| Wymóg z regulaminu (Lab1.pdf) | Realizacja w kodzie | Wynik w projekcie |
+```text
+Lab1/Parser2/
+├── strona/                     # Izolowany serwis partnera (HTML, CSS, JS, JSON)
+│   ├── index.html, styles.css
+│   ├── katalog.js, wspolne.js, produkt.js
+│   ├── README_SERWISU.md
+│   └── dane/produkty.json
+│
+├── parser.py                   # Główny silnik parsera (Network Sniffing, czyszczenie, eksport)
+├── test_parser.py              # Zestaw 4 testów jednostkowych funkcji normalizujących
+├── analiza.py                  # Analiza statystyczna (Q1, Q3, IQR, outliery) i generator wykresów
+├── porownanie_html_vs_dom.py   # Pomiar surowy HTML vs DOM z wnioskiem na ocenę 5.0
+├── uruchom_calosc.py           # Master skrypt automatyzujący cały proces
+├── README.md                   # Niniejsza dokumentacja modułu
+├── parser_instructions.md      # Szczegółowy opis deweloperski i analiza wyzwań
+│
+├── wyniki/                     # Oczyszczone zbiory danych:
+│   ├── produkty_oczyszczone.xlsx # Rodzimy skoroszyt Excela (brak problemów z separatorem)
+│   ├── produkty_oczyszczone.csv  # Plik CSV (utf-8-sig, układ kolumn 1:1 z tabelą na stronie)
+│   ├── produkty_oczyszczone.json # Baza w formacie JSON
+│   ├── raport_jakosci.txt        # Zestawienie kontroli jakości danych
+│   └── porownanie_html_vs_dom.txt# Raport różnic surowy HTML vs DOM
+│
+└── wykresy/                    # Wygenerowane wykresy (PNG):
+    ├── 1_histogram_cen.png       # Rozkład cen w PLN ze średnią i medianą
+    ├── 2_boxplot_cen.png         # Wykres pudełkowy cen wg kategorii z outlierami
+    └── 3_korelacja_cena_waga.png # Wykres rozrzutu waga vs cena z linią regresji
+```
+
+---
+
+## 4. Tabela zgodności z wymaganiami na ocenę 5.0
+
+| Wymóg z regulaminu (Lab1.pdf) | Realizacja w module | Wynik w danych |
 |---|---|---|
-| **Liczba rekordów** (min. 200) | Pobranie i deduplikacja bazy | **420 unikalnych rekordów** (sortowane rosnąco wg ID 1001–1420) |
-| **Liczba atrybutów** (min. 18) | Spłaszczenie pól z listy i podstron | **30 atrybutów** (kolumny w kolejności 1:1 jak na stronie) |
-| **Normalizacja cen** | Regex w `parsuj_cene` | Przeliczenie cen z EUR/USD na PLN po stałym kursie |
-| **Bezpieczne braki danych** | Wartości `None` bez wyjątków | Ocena: **18.33%**, Gwarancja: **17.38%** (wymóg: >15%) |
-| **Deduplikacja** | Filtracja po unikalnym `id` | Wykryto i odrzucono dokładnie **12 duplikatów** |
-| **Formaty wyjściowe** (Rozszerzenie 4.0) | Eksport do wielu formatów | **XLSX (Excel)** + **CSV (utf-8-sig)** + **JSON** |
-| **Testy jednostkowe** (Rozszerzenie 4.0) | `unittest` w `test_parser.py` | **4 testy jednostkowe – 100% OK** |
-| **Statystyki i wykresy** (Wymóg 4.0/5.0) | `analiza.py` (matplotlib/pandas) | **Histogram, Box-plot, Wykres korelacji** (w `wykresy/`) |
+| **Liczba rekordów** (min. 200) | Pobranie i deduplikacja bazy | **420 unikalnych rekordów** (posortowanych rosnąco wg ID 1001–1420) |
+| **Liczba atrybutów** (min. 18) | Spłaszczenie pól z listy i podstron | **30 atrybutów** (układ 1:1 z widokiem tabeli na stronie) |
+| **Normalizacja cen** | Wyrażenia regularne w `parsuj_cene` | Przeliczenie cen z EUR/USD na PLN po stałym kursie |
+| **Bezpieczne braki danych** | Domyślne wartości `None` bez wyjątków | Ocena: **18.33%**, Gwarancja: **17.38%** (wymóg: >15%) |
+| **Deduplikacja** | Odrzucenie rekordów po unikalnym `id` | Wykryto i odrzucono dokładnie **12 duplikatów** |
+| **Formaty wyjściowe** (Rozszerzenie 4.0) | Jednoczesny eksport do 3 formatów | **XLSX (Excel)** + **CSV (utf-8-sig)** + **JSON** |
+| **Testy jednostkowe** (Rozszerzenie 4.0) | `unittest` w `test_parser.py` | **4 testy jednostkowe – 100% zaliczone** |
+| **Wykresy i statystyki** (Wymóg 4.0/5.0) | `analiza.py` (matplotlib/pandas) | **Histogram, Box-plot, Wykres korelacji** (w `wykresy/`) |
 | **Wymóg poziomu 5.0 (HTML vs DOM)** | `porownanie_html_vs_dom.py` | Surowy HTML: **0 rekordów**, Drzewo DOM: **432 rekordy** |
 | **Rozszerzenie poziomu 5.0** | Wykrycie asynchronicznego źródła JSON | Czas pobrania: **< 30 ms** (zamiast powolnego Selenium) |
 
 ---
 
-## 4. Twarde dane do sprawozdania
+## 5. Podsumowanie kontroli jakości i statystyk
 
 ### A. Kontrola jakości danych
-- Pobrane rekordy: **432** | Unikalne rekordy: **420** | Odrzucone duplikaty: **12**
+- Pobrane ogółem: **432** | Unikalne rekordy: **420** | Odrzucone duplikaty: **12**
 - Braki w polu `ocena`: **77 szt. (18.33%)**
 - Braki w polu `gwarancja`: **73 szt. (17.38%)**
-- Rozkład walut: **PLN: 379**, **EUR: 19**, **USD: 22**
+- Rozkład walut w ofertach: **PLN: 379**, **EUR: 19**, **USD: 22**
 
-### B. Statystyki opisowe cen (PLN)
-- Średnia: **1 993.86 zł** | Mediana: **1 504.99 zł** | Moda: **639.99 zł**
-- Kwartyle: **Q1 = 739.99 zł**, **Q3 = 2 537.49 zł** | Rozstęp **IQR = 1 797.50 zł**
-- Wartości odstające (ceny powyżej 5 233.74 zł): **28 urządzeń** *(flagowe laptopy/smartfony – poprawny segment premium, a nie błąd)*.
+### B. Statystyki cenowe (w PLN)
+- Średnia arytmetyczna: **1 993.86 zł** | Mediana (Q2): **1 504.99 zł** | Moda: **639.99 zł**
+- Kwartyle: **Q1 = 739.99 zł**, **Q3 = 2 537.49 zł** | Rozstęp międzykwartylowy **IQR = 1 797.50 zł**
+- Wartości odstające (ceny powyżej 5 233.74 zł): **28 urządzeń** *(flagowe laptopy/smartfony – prawidłowa cecha rynku premium, a nie błąd)*.
 
-### C. Zestawienie: Surowy HTML vs Drzewo DOM (Wymóg 5.0)
+### C. Porównanie surowy HTML vs DOM (Wymóg 5.0)
 | Parametr | Surowy HTML (requests / Ctrl+U) | Drzewo DOM (po wykonaniu JS) |
 |---|---|---|
-| **Czas odpowiedzi** | ~60 ms | ~25 ms |
+| **Czas pobrania** | ~60 ms | ~25 ms |
 | **Rozmiar danych** | 4.7 KB | 493 KB |
 | **Liczba produktów** | **0 (0.0%)** | **432 (100.0%)** |
-| **Wniosek** | Tradycyjny scraper bez JS nie widzi żadnych produktów. Dane są wstrzykiwane dynamicznie z pliku `dane/produkty.json`. Bezpośrednie użycie endpointu pozwala na błyskawiczne pozyskanie danych. |
+| **Wniosek** | Tradycyjny scraper bez silnika JS nie widzi żadnych produktów (puste kontenery w kodzie źródłowym). Cała treść powstaje asynchronicznie przez JavaScript. |
 
 ---
 
-## 5. Gotowe odpowiedzi na obronę
+## 6. Pytania i odpowiedzi na obronę projektu
 
-1. **Dlaczego requests/BeautifulSoup zwrócił 0 produktów na stronie głównej?**  
-   Serwis partnera to aplikacja SPA – w surowym kodzie HTML (Ctrl+U) są wyłącznie puste kontenery (`<tbody id="wiersze-produktow">`), a rekordy wstrzykuje asynchronicznie `katalog.js`.
+1. **Dlaczego zwykły parser HTML (BeautifulSoup) zwrócił 0 produktów na stronie głównej?**  
+   Serwis partnera to aplikacja SPA – w surowym kodzie HTML (`Ctrl+U`) znajdują się wyłącznie puste szkielety (`<tbody id="wiersze-produktow">`), a rekordy wstrzykuje asynchronicznie skrypt `katalog.js`.
 2. **Dlaczego inżynieria wsteczna (Network Sniffing) zamiast Selenium?**  
-   Zgodnie z oficjalną listą rozszerzeń na ocenę 5.0 w regulaminie: *„Wykrycie i wykorzystanie źródła danych, z którego korzysta strona (plik JSON), wraz z omówieniem, dlaczego jest to szybsze”*. Pobranie trwa poniżej 30 ms zamiast kilkunastu sekund klikania w przeglądarce.
-3. **Jak zapewniono spójność danych?**  
-   - Rekordy posortowano po `id` rosnąco (1001–1420),
-   - Kolumny ułożono dokładnie w kolejności tabeli na stronie (`SKU -> Nazwa -> Cena -> Dostępność -> Ocena -> Opinie -> Data -> Gwarancja -> Kolor -> Waga`),
-   - Daty sformatowano w formacie `DD.MM.YYYY`, a wagi w kg.
+   Jest to oficjalne rozszerzenie na poziom 5.0 w regulaminie: *„Wykrycie i wykorzystanie źródła danych, z którego korzysta strona (plik JSON), wraz z omówieniem, dlaczego jest to szybsze”*. Pobranie danych bezpośrednio z endpointu trwa poniżej 30 ms zamiast kilkunastu sekund klikania w przeglądarce.
+3. **Jak zapewniono spójność i czytelność danych?**  
+   - Posortowano rekordy rosnąco wg `id` (1001–1420),
+   - Ułożono kolumny dokładnie w kolejności tabeli na stronie (`SKU -> Nazwa -> Cena -> Dostępność -> Ocena -> Opinie -> Data -> Gwarancja -> Kolor -> Waga`),
+   - Ujednolicono format dat do `DD.MM.YYYY` i wag do kg,
+   - Wygenerowano plik `.xlsx`, który otwiera się w polskim Excelu bez jakichkolwiek problemów ze średnikami.
