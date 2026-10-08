@@ -1,0 +1,32 @@
+<html lang="pl"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌸 Szczegóły Produktu • TechStore Pink Edition</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <h1>🌸 TechStore • Karta Szczegółów Produktu</h1>
+      <p>&amp;sparkles; Karta produktowa z dynamicznym doładowaniem atrybutów i elementami interaktywnymi (Poziom 5.0)</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <a href="index.html" class="powrot-link">← Wróć do różowego katalogu</a>
+
+    <!-- Wskaźnik ładowania asynchronicznego -->
+    <div id="ladowanie-box" class="ladowanie-box">
+      <div class="spinner"></div>
+      <p style="margin-top: 10px; color: var(--text-muted); font-weight: 600;">Pobieranie szczegółowych atrybutów z API...</p>
+    </div>
+
+    <!-- Kontener szczegółów (w źródle HTML pusty, wypełniany dynamicznie przez detail.js) -->
+    <div id="kontener-szczegoly" style="display: block;"><div class="badge" style="background: #ffe4e6; color: #be123c; font-size: 1.1rem; padding: 1rem 1.5rem; display: block; text-align: center;">Wystąpił błąd podczas ładowania danych: Nie można pobrać bazy produktów</div></div>
+  </main>
+
+  <script src="detail.js"></script>
+
+
+</body></html>

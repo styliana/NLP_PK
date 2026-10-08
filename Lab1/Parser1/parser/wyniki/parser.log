@@ -1,0 +1,162 @@
+19:50:29 INFO    Start: http://localhost:8000, tryb headless, opóźnienie 2.0 s
+19:50:37 INFO    Surowy HTML katalogu: 0 rekordów (kontrolnie nagłówków tabeli: 10)
+19:50:40 INFO    Wczytaj więcej #1: elementów w DOM 150, unikalnych 100
+19:50:42 INFO    Wczytaj więcej #2: elementów w DOM 300, unikalnych 150
+19:50:44 INFO    Wczytaj więcej #3: elementów w DOM 500, unikalnych 200
+19:50:47 INFO    Wczytaj więcej #4: elementów w DOM 750, unikalnych 250
+19:50:50 INFO    Wczytaj więcej #5: elementów w DOM 1050, unikalnych 300
+19:50:55 INFO    Wczytaj więcej #6: elementów w DOM 1400, unikalnych 350
+19:51:00 INFO    Wczytaj więcej #7: elementów w DOM 1800, unikalnych 400
+19:51:07 INFO    Wczytaj więcej #8: elementów w DOM 2230, unikalnych 420
+19:51:15 INFO    Wczytaj więcej #9: elementów w DOM 2660, unikalnych 420
+19:51:21 INFO    Strona 1/9: 50 rekordów (karty 25, tabela 25)
+19:51:26 INFO    Strona 2/9: 50 rekordów (karty 25, tabela 25)
+19:51:32 INFO    Strona 3/9: 50 rekordów (karty 25, tabela 25)
+19:51:38 INFO    Strona 4/9: 50 rekordów (karty 25, tabela 25)
+19:51:44 INFO    Strona 5/9: 50 rekordów (karty 25, tabela 25)
+19:51:49 INFO    Strona 6/9: 50 rekordów (karty 25, tabela 25)
+19:51:55 INFO    Strona 7/9: 50 rekordów (karty 25, tabela 25)
+19:52:01 INFO    Strona 8/9: 50 rekordów (karty 25, tabela 25)
+19:52:05 INFO    Strona 9/9: 30 rekordów (karty 15, tabela 15)
+19:52:09 WARNING szczegoly_3: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:52:27 WARNING szczegoly_11: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:52:45 WARNING szczegoly_19: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /api/product?id=19 (Retry-After: 2 s)) – ponawiam za 2 s
+19:52:53 WARNING szczegoly_22: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:52:58 WARNING szczegoly_23: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:53:04 WARNING szczegoly_25: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:53:07 INFO    Szczegóły: 25/420 (łącznie zebrane 25)
+19:53:10 WARNING szczegoly_27: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:53:26 WARNING szczegoly_34: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:53:42 WARNING szczegoly_41: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:53:50 WARNING szczegoly_44: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css (Retry-After: 2 s)) – ponawiam za 2 s
+19:54:06 INFO    Szczegóły: 50/420 (łącznie zebrane 50)
+19:54:11 WARNING szczegoly_53: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:54:17 WARNING szczegoly_55: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:54:31 WARNING szczegoly_61: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:54:35 WARNING szczegoly_62: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:54:45 WARNING szczegoly_66: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:54:56 WARNING szczegoly_70: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:06 WARNING szczegoly_74: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:11 INFO    Szczegóły: 75/420 (łącznie zebrane 75)
+19:55:12 WARNING szczegoly_76: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js, /favicon.ico (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:20 WARNING szczegoly_79: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js, /favicon.ico (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:26 WARNING szczegoly_81: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:36 WARNING szczegoly_85: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:43 WARNING szczegoly_87: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:47 WARNING szczegoly_88: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:51 WARNING szczegoly_89: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:55:55 WARNING szczegoly_90: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:56:01 WARNING szczegoly_92: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:56:07 WARNING szczegoly_94: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:56:12 WARNING szczegoly_95: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:56:20 WARNING szczegoly_98: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:56:27 INFO    Szczegóły: 100/420 (łącznie zebrane 100)
+19:56:28 WARNING szczegoly_101: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:56:42 WARNING szczegoly_107: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:56:54 WARNING szczegoly_112: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:57:08 WARNING szczegoly_118: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:57:23 WARNING szczegoly_124: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:57:27 WARNING szczegoly_125: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:57:30 INFO    Szczegóły: 125/420 (łącznie zebrane 125)
+19:57:37 WARNING szczegoly_129: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:57:43 WARNING szczegoly_131: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:57:47 WARNING szczegoly_132: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:57:56 WARNING szczegoly_135: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:58:04 WARNING szczegoly_138: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:58:10 WARNING szczegoly_140: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:58:16 WARNING szczegoly_142: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:58:35 INFO    Szczegóły: 150/420 (łącznie zebrane 150)
+19:58:38 WARNING szczegoly_152: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:58:44 WARNING szczegoly_154: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:58:55 WARNING szczegoly_158: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:59:09 WARNING szczegoly_164: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:59:13 WARNING szczegoly_165: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:59:19 WARNING szczegoly_167: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:59:37 WARNING szczegoly_175: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:59:41 INFO    Szczegóły: 175/420 (łącznie zebrane 175)
+19:59:44 WARNING szczegoly_177: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+19:59:58 WARNING szczegoly_183: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:02 WARNING szczegoly_184: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:10 WARNING szczegoly_187: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:20 WARNING szczegoly_191: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:26 WARNING szczegoly_193: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:38 WARNING szczegoly_198: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:43 WARNING szczegoly_199: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:47 WARNING szczegoly_200: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:00:50 INFO    Szczegóły: 200/420 (łącznie zebrane 200)
+20:00:55 WARNING szczegoly_203: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:01:07 WARNING szczegoly_208: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:01:13 WARNING szczegoly_210: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:01:22 WARNING szczegoly_213: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:01:26 WARNING szczegoly_214: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:01:34 WARNING szczegoly_217: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:01:40 WARNING szczegoly_219: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:01:55 INFO    Szczegóły: 225/420 (łącznie zebrane 225)
+20:01:58 WARNING szczegoly_227: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:02:14 WARNING szczegoly_234: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:02:23 WARNING szczegoly_237: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:02:29 WARNING szczegoly_239: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:02:39 WARNING szczegoly_243: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:02:43 WARNING szczegoly_244: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:02:49 WARNING szczegoly_246: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:02:59 WARNING szczegoly_250: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:02 INFO    Szczegóły: 250/420 (łącznie zebrane 250)
+20:03:06 WARNING szczegoly_252: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:14 WARNING szczegoly_255: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:22 WARNING szczegoly_258: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:26 WARNING szczegoly_259: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:30 WARNING szczegoly_260: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:38 WARNING szczegoly_263: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:45 WARNING szczegoly_265: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /api/product?id=265, /data/products.json (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:55 WARNING szczegoly_269: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:03:59 WARNING szczegoly_270: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:04:05 WARNING szczegoly_272: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:04:13 WARNING szczegoly_275: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:04:16 INFO    Szczegóły: 275/420 (łącznie zebrane 275)
+20:04:17 WARNING szczegoly_276: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:04:24 WARNING szczegoly_278: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:04:28 WARNING szczegoly_279: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:04:44 WARNING szczegoly_286: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:04:58 WARNING szczegoly_292: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:05:06 WARNING szczegoly_295: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:05:20 INFO    Szczegóły: 300/420 (łącznie zebrane 300)
+20:05:27 WARNING szczegoly_304: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:05:35 WARNING szczegoly_307: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:05:39 WARNING szczegoly_308: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:05:47 WARNING szczegoly_311: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:05:57 WARNING szczegoly_315: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:06:05 WARNING szczegoly_318: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:06:14 WARNING szczegoly_321: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:06:24 WARNING szczegoly_325: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:06:27 INFO    Szczegóły: 325/420 (łącznie zebrane 325)
+20:06:38 WARNING szczegoly_331: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:06:52 WARNING szczegoly_337: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:00 WARNING szczegoly_340: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:09 WARNING szczegoly_343: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:21 WARNING szczegoly_348: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:28 INFO    Szczegóły: 350/420 (łącznie zebrane 350)
+20:07:29 WARNING szczegoly_351: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:37 WARNING szczegoly_354: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:45 WARNING szczegoly_357: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:50 WARNING szczegoly_358: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:07:58 WARNING szczegoly_361: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:08:08 WARNING szczegoly_365: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:08:14 WARNING szczegoly_367: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:08:22 WARNING szczegoly_370: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:08:35 WARNING szczegoly_375: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:08:38 INFO    Szczegóły: 375/420 (łącznie zebrane 375)
+20:08:41 WARNING szczegoly_377: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:08:55 WARNING szczegoly_383: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:08:59 WARNING szczegoly_384: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:09:11 WARNING szczegoly_389: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:09:25 WARNING szczegoly_395: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:09:38 WARNING szczegoly_400: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:09:41 INFO    Szczegóły: 400/420 (łącznie zebrane 400)
+20:09:44 WARNING szczegoly_402: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:09:50 WARNING szczegoly_404: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:09:56 WARNING szczegoly_406: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:10:04 WARNING szczegoly_409: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:10:15 WARNING szczegoly_413: próba 1 nieudana (Blad429: HTTP 429 dla: /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:10:31 WARNING szczegoly_420: próba 1 nieudana (Blad429: HTTP 429 dla: /styles.css, /detail.js (Retry-After: 2 s)) – ponawiam za 2 s
+20:10:34 INFO    Szczegóły: 420/420 (łącznie zebrane 420)
+20:10:36 INFO    KONIEC: 420 rekordów, 29 atrybutów, stron listy 9, wejść na strony 554, błędów 124, ponowień 124, odpowiedzi 429: 144, czas 1208 s

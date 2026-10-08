@@ -1,0 +1,14 @@
+{
+ "rekordy_w_pliku": 430,
+ "rekordy_unikalne": 420,
+ "rozmiar_pliku_kb": 593.7,
+ "czas_json_s": 3.02,
+ "pamiec_szczyt_python_mb": 3.7,
+ "porownanie_z_selenium": {
+  "wspolne_id": 420,
+  "kolumny": 23,
+  "rozbieznosci": {}
+ },
+ "czas_selenium_s": 1207.7,
+ "przyspieszenie_x": 400
+}

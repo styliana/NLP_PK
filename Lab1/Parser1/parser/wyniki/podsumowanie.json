@@ -1,0 +1,97 @@
+{
+ "data_parsowania": "2026-10-07",
+ "tryb": "headless",
+ "czas_s": 1207.7,
+ "surowy_html": {
+  "katalog": {
+   "status": 200,
+   "znakow": 4849,
+   "rekordy_data_id": 0,
+   "karty": 0,
+   "wiersze_tabeli": 0,
+   "naglowki_tabeli_kontrolnie": 10,
+   "skrypty": [
+    "app.js"
+   ]
+  },
+  "szczegoly": {
+   "status": 200,
+   "znakow": 1279,
+   "rekordy_data_id": 0,
+   "karty": 0,
+   "wiersze_tabeli": 0,
+   "naglowki_tabeli_kontrolnie": 0,
+   "skrypty": [
+    "detail.js"
+   ]
+  }
+ },
+ "dom_wczytaj_wiecej": [
+  {
+   "klikniecie": 0,
+   "elementy": 50,
+   "unikalne": 50
+  },
+  {
+   "klikniecie": 1,
+   "elementy": 150,
+   "unikalne": 100
+  },
+  {
+   "klikniecie": 2,
+   "elementy": 300,
+   "unikalne": 150
+  },
+  {
+   "klikniecie": 3,
+   "elementy": 500,
+   "unikalne": 200
+  },
+  {
+   "klikniecie": 4,
+   "elementy": 750,
+   "unikalne": 250
+  },
+  {
+   "klikniecie": 5,
+   "elementy": 1050,
+   "unikalne": 300
+  },
+  {
+   "klikniecie": 6,
+   "elementy": 1400,
+   "unikalne": 350
+  },
+  {
+   "klikniecie": 7,
+   "elementy": 1800,
+   "unikalne": 400
+  },
+  {
+   "klikniecie": 8,
+   "elementy": 2230,
+   "unikalne": 420
+  },
+  {
+   "klikniecie": 9,
+   "elementy": 2660,
+   "unikalne": 420
+  }
+ ],
+ "lista": {
+  "strony": 9,
+  "rekordy_z_duplikatami": 430,
+  "rekordy_unikalne": 420,
+  "duplikaty_usuniete": 10,
+  "z_kart": 215,
+  "z_tabeli": 215
+ },
+ "szczegoly_pobrane": 420,
+ "rekordy_wynikowe": 420,
+ "atrybuty": 29,
+ "wejscia_na_strony": 554,
+ "bledy": 124,
+ "ponowienia": 124,
+ "odpowiedzi_429": 144,
+ "szczegoly_nieudane": 0
+}
