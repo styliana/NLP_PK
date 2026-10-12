@@ -7,8 +7,8 @@ Repozytorium projektów laboratoryjnych z przedmiotu **Przetwarzanie Języka Nat
 ## Repo list
 
 - **Lab1** – **Pozyskiwanie i parsowanie danych webowych (Web Scraping & Data Cleaning)**
-  - **Parser1 (Rola: AUTOR):** Serwis demonstracyjny e-commerce TechStore przygotowany pod parsowanie (architektura SPA, dane wstrzykiwane asynchronicznie z JSON, paginacja, opóźnienia sieciowe oraz celowe utrudnienia w danych).
-  - **Parser2 (Rola: PARSER):** Kompletny silnik parsera dla serwisu partnera realizujący poziom oceny 5.0 (inżynieria wsteczna endpointu JSON, normalizacja cen i walut, obsługa braków, deduplikacja, testy jednostkowe, analiza statystyczna z wykresami oraz badanie surowy HTML vs DOM).
+  - **Parser1:** Serwis demonstracyjny TechStore w architekturze SPA (rola AUTOR) oraz scraper oparty o Selenium 4.50, requests/BeautifulSoup, pandas, matplotlib i pytest (rola PARSER).
+  - **Parser2:** Silnik parsera dla serwisu partnera na ocenę 5.0 (inżynieria wsteczna endpointu JSON, normalizacja pandas/openpyxl, wykresy matplotlib, testy unittest).
 - **Lab2** – `[tbd]`
 
 ---
@@ -19,8 +19,12 @@ Repozytorium projektów laboratoryjnych z przedmiotu **Przetwarzanie Języka Nat
 .
 ├── Lab1/
 │   ├── Lab1.pdf          # Wymagania i instrukcja do laboratorium
-│   ├── Parser1/          # Implementacja serwisu (rola AUTOR – Poziom 5.0)
-│   └── Parser2/          # Silnik parsera i analiza (rola PARSER – Poziom 5.0)
+│   ├── Parser1/          # Serwis (AUTOR) + Parser Selenium
+│   │   ├── server.py     # Serwer z Rate Limiterem (429) i opóźnieniem
+│   │   ├── static/       # Frontend SPA (index.html, app.js, styles.css)
+│   │   ├── data/         # Baza JSON produktów
+│   │   └── parser/       # Parser Selenium (scraper.py, test_czyszczenie.py, analiza.py)
+│   └── Parser2/          # Serwis partnera + Silnik Parser2 (5.0)
 │       ├── strona/       # Izolowany serwis partnera
 │       ├── parser.py     # Główny silnik ekstrakcji i czyszczenia danych
 │       ├── test_parser.py# Testy jednostkowe funkcji normalizujących
@@ -36,8 +40,15 @@ Repozytorium projektów laboratoryjnych z przedmiotu **Przetwarzanie Języka Nat
 
 ## Szybkie uruchomienie
 
-### Lab 1 – Parser i analiza (rola PARSER):
+### Moduł Parser2 (Rola PARSER – Ocena 5.0):
 ```powershell
 python Lab1/Parser2/uruchom_calosc.py
 ```
-Pełna dokumentacja modułu znajduje się w pliku `Lab1/Parser2/README.md`.
+
+### Moduł Parser1 (Serwis + Parser Selenium):
+```powershell
+python Lab1/Parser1/server.py
+python Lab1/Parser1/parser/scraper.py --headless
+```
+
+Pełna dokumentacja: [Lab1/Parser1/README.md](file:///C:/Users/DELL/Documents/nlp/Lab1/Parser1/README.md) oraz [Lab1/Parser2/README.md](file:///C:/Users/DELL/Documents/nlp/Lab1/Parser2/README.md).
