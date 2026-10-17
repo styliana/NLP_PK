@@ -1,0 +1,110 @@
+Polszczyzna wymaga innych narzędzi: spaCy pl_core_news_sm vs SnowballStemmer
+=============================================================================
+Kod: zad4_e.py, pełne wyniki: wyniki4_e.txt (zgodnie z example_08.py i example_09.py)
+
+
+1. Tokenizacja, stemming i lematyzacja tekstu polskiego
+-------------------------------------------------------
+Do analizy tekstu polskiego wykorzystano model `pl_core_news_sm` z biblioteki spaCy
+oraz teksty z "Pana Tadeusza" i zdania testowe z bogatą fleksją.
+
+Model spaCy realizuje równolegle:
+- Tokenizację (uwzględniającą specyfikę interpunkcji i skrótów),
+- Znakowanie części mowy (POS tagging, np. NOUN, VERB, ADJ, PRON),
+- Morfosyntaktyczną lematyzację (sprowadzenie wyrazu do formy bazowej / hasłowej).
+
+Przykłady działania lematyzatora spaCy:
+  * "łące"       -> "łąka"        (wymiana głoskowa / oboczność k : c w temacie)
+  * "psami"      -> "pies"        (oboczność samogłoski ruchomej e : ∅)
+  * "najlepszy"  -> "dobry"       (supletywizm - forma stopnia najwyższego sprowadzona do formy równej)
+  * "dowie"      -> "dowiedzieć"  (czasownik nieregularny)
+  * "jesteś"     -> "być"         (koniugacja supletywna czasownika posiłkowego)
+  * "biegały"    -> "biegać"      (usunięcie końcówki czasu przeszłego i rodzaju)
+
+Dlaczego dedykowane narzędzia (spaCy, Morfeusz2, Stanza) NIE stosują stemmingu?
+- Język polski jest językiem silnie fleksyjnym, syntetycznym i fuzyjnym.
+- W polszczyźnie odmiana słów rzadko polega na prostym doklejeniu stałego przyrostka.
+  Powszechne są:
+  1) Oboczności wewnątrzrdzeniowe i morfonologiczne (np. wiózł / wieźć / wozić,
+     ręka / ręce / rąk, ząb / zęba). Proste ucięcie końcówki pozostawia różne
+     rdzenie ("wióz", "wieź", "woz"), które nie połączą się w jeden indeks.
+  2) Supletywizm (człowiek / ludzie, rok / lata, dobry / lepszy / najlepszy).
+  3) Homonimia końcówek fleksyjnych (np. "-a" to dopełniacz l.poj. r. męskiego,
+     mianownik l.poj. r. żeńskiego, mianownik l.mn. r. nijakiego).
+- Algorytmiczny stemming regułowy (jak Porter czy Lancaster) w języku polskim
+  powoduje ogromny błąd nadmiernego obcinania (overstemming) lub niedostatecznego
+  obcinania (understemming). Dlatego w inżynierii NLP dla polszczyzny stemming
+  się pomija, stosując od razu lematyzację słownikowo-kontekstową.
+
+
+2. Zastosowanie angielskiego stemmera (SnowballStemmer("english")) do polskich słów
+-----------------------------------------------------------------------------------
+Wyniki działania angielskiego stemmera na polskich słowach:
+
+  Słowo polskie   Lemat (spaCy)   Snowball EN   Komentarz i mechanizm błędu
+  --------------  --------------  ------------  ----------------------------------------------
+  koty            kot             koti          Reguła y -> i (jak city -> citi). Zniekształca
+                                                polską literę, nie usuwa końcówki lm.
+  kotka           kotek           kotka         Brak zmian. W angielskim "-a" nie jest końcówką
+                                                fleksyjną, więc stemmer jej nie rusza.
+  kotami          kot             kotami        Brak zmian. Angielski nie zna końcówki "-ami"
+                                                (narzędnik l.mn.).
+  psami           pies            psami         Brak zmian. Stemmer nie zna "-ami", ani nie wie
+                                                o wymianie pies/ps-.
+  uczniowie       uczeń           uczniowi      Błędna reguła: końcówka "-e" uznana za nieme e
+                                                i usunięta, pozostawiając "uczniowi".
+  warszawie       warszawa        warszawi      jw. usunięte "-e", dając formę "warszawi".
+  nauczyciele     nauczyciel      nauczyciel    Przypadkowo ucięte angielskie "-e", co dało
+                                                poprawny rdzeń, ale z zupełnie obcych powodów.
+  książkami       książka         książkami     Brak zmian.
+  najlepszy       dobry           najlepszi     Reguła y -> i. Przedrostek "naj-" i przyrostek
+                                                "-szy" nietknięte.
+  biegać          biegać          biegać        Brak zmian. Angielski nie zna końcówek "-ać".
+
+Kluczowy wniosek — rozbicie rodziny wyrazu:
+Dla słów z tej samej rodziny: "koty", "kotka", "kotami":
+- Lematyzator spaCy sprowadza "koty" i "kotami" do wspólnego hasła "kot" (a "kotka" do "kotek").
+- Angielski stemmer produkuje 3 zupełnie rozbieżne jednostki: "koti", "kotka", "kotami".
+Żadna z form nie schodzi się ze sobą. Angielski stemmer jest dla polszczyzny całkowicie
+bezużyteczny, a co gorsza wprowadza obce zniekształcenia ortograficzne (np. "koti", "najlepszi").
+
+
+3. Lista języków obsługiwanych przez SnowballStemmer i brak języka polskiego
+----------------------------------------------------------------------------
+Liczba języków obsługiwanych przez Snowball w NLTK: 16
+Pełna lista (alfabetycznie):
+  1. arabic
+  2. danish
+  3. dutch
+  4. english
+  5. finnish
+  6. french
+  7. german
+  8. hungarian
+  9. italian
+  10. norwegian
+  11. porter
+  12. portuguese
+  13. romanian
+  14. russian
+  15. spanish
+  16. swedish
+
+Czy język polski jest na liście?
+  NIE ('polish' in SnowballStemmer.languages == False).
+
+Komentarz lingwistyczny i praktyczny:
+- Biblioteka Snowball (stworzona przez Martina Portera, twórcę Porter Stemmera)
+  skupia się przede wszystkim na językach romańskich i germańskich o stosunkowo
+  prostej fleksji końcówkowej (gdzie rdzeń słowa rzadko podlega mutacjom).
+- Wyjątkiem w zestawie są język rosyjski, fiński i węgierski, dla których
+  opracowano bardzo rozbudowane, specyficzne zestawy reguł Snowballa.
+- Brak języka polskiego wynika ze skrajnej złożoności polskiej morfologii:
+  ponad 30 paradygmatów deklinacyjnych, alternacje fonetyczne wewnątrz tematu,
+  ruchome samogłoski oraz supletywizm powodują, że regułowy stemmer bez bazy
+  słownikowej i reguł wymian morfonologicznych osiąga bardzo niską dokładność.
+- Choć w przeszłości powstały eksperymentalne algorytmy stemmingu dla polszczyzny
+  (np. algorytm Stempela / pystempel oparty na tablicy par form i reguł odcinania),
+  w nowoczesnych bibliotekach NLP (spaCy, Stanza, Morfeusz2, transformers)
+  standardem dla języka polskiego stała się wyłącznie pełna lematyzacja
+  wspierana modelami statystycznymi i sieciami neuronowymi.

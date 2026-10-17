@@ -1,0 +1,85 @@
+=================================================================================
+Część E: Polszczyzna wymaga innych narzędzi (spaCy vs SnowballStemmer)
+=================================================================================
+
+--- 1. Analiza tekstu polskiego modelem spaCy (pl_core_news_sm) ---
+Uwaga: Narzędzia dedykowane dla języka polskiego (spaCy, Stanza, Morfeusz) nie
+stosują regułowego stemmingu, lecz pełną lematyzację opartą na analizie morfologicznej.
+
+Fragment 1: "Litwo! Ojczyzno moja! ty jesteś jak zdrowie."
+Token            POS      Lemat (spaCy)      Rdzeń (Snowball EN) Komentarz
+--------------------------------------------------------------------------------
+Litwo            NOUN     litwo              litwo              
+Ojczyzno         ADV      ojczyzno           ojczyzno           
+moja             DET      mój                moja               lemat zmienił formę, stemmer EN bez zmian
+ty               PRON     ty                 ty                 
+jesteś           AUX      być                jesteś             lemat zmienił formę, stemmer EN bez zmian
+jak              SCONJ    jak                jak                
+zdrowie          NOUN     zdrowie            zdrowi             stemmer EN uciął obcą regułą (zdrowi)
+
+Fragment 2: "Ile cię trzeba cenić, ten tylko się dowie, kto cię stracił."
+Token            POS      Lemat (spaCy)      Rdzeń (Snowball EN) Komentarz
+--------------------------------------------------------------------------------
+Ile              DET      ile                ile                
+cię              PRON     ty                 cię                lemat zmienił formę, stemmer EN bez zmian
+trzeba           VERB     trzeba             trzeba             
+cenić            VERB     cenić              cenić              
+ten              DET      ten                ten                
+tylko            PART     tylko              tylko              
+się              PRON     się                się                
+dowie            VERB     dowiedzieć         dowi               stemmer EN uciął obcą regułą (dowi)
+kto              PRON     kto                kto                
+cię              PRON     ty                 cię                lemat zmienił formę, stemmer EN bez zmian
+stracił          VERB     stracić            stracił            lemat zmienił formę, stemmer EN bez zmian
+
+Fragment 3: "Koty biegały po zielonej łące, a psami opiekował się najlepszy weterynarz."
+Token            POS      Lemat (spaCy)      Rdzeń (Snowball EN) Komentarz
+--------------------------------------------------------------------------------
+Koty             NOUN     Kot                koti               stemmer EN uciął obcą regułą (koti)
+biegały          VERB     biegać             biegałi            stemmer EN uciął obcą regułą (biegałi)
+po               ADP      po                 po                 
+zielonej         ADJ      zielony            zielonej           lemat zmienił formę, stemmer EN bez zmian
+łące             NOUN     łąka               łące               lemat zmienił formę, stemmer EN bez zmian
+a                CCONJ    a                  a                  
+psami            NOUN     ps                 psami              lemat zmienił formę, stemmer EN bez zmian
+opiekował        VERB     opiekować          opiekował          lemat zmienił formę, stemmer EN bez zmian
+się              PRON     się                się                
+najlepszy        ADJ      dobry              najlepszi          stemmer EN uciął obcą regułą (najlepszi)
+weterynarz       NOUN     weterynarz         weterynarz         
+
+--- 2. Angielski stemmer (SnowballStemmer("english")) a polskie słowa ---
+Porównanie działania lematyzatora spaCy i angielskiego stemmera na wybranych wyrazach:
+Polskie słowo    Lemat (spaCy)    Snowball EN      Ocena działania stemmera EN
+------------------------------------------------------------------------------
+koty             kot              koti             Błędna reguła angielska (koti)
+kotka            kotek            kotka            Brak redukcji (nie zna polskiej końcówki)
+kotami           kot              kotami           Brak redukcji (nie zna polskiej końcówki)
+psami            pies             psami            Brak redukcji (nie zna polskiej końcówki)
+biegać           biegać           biegać           Przypadkowo zgodny
+uczniowie        uczeń            uczniowi         Błędna reguła angielska (uczniowi)
+nauczyciele      nauczyciel       nauczyciel       Przypadkowo zgodny
+książkami        książka          książkami        Brak redukcji (nie zna polskiej końcówki)
+warszawie        warszawa         warszawi         Błędna reguła angielska (warszawi)
+drzewo           drzewo           drzewo           Przypadkowo zgodny
+myślałem         myśleć być       myślałem         Brak redukcji (nie zna polskiej końcówki)
+najlepszy        dobry            najlepszi        Błędna reguła angielska (najlepszi)
+
+Demonstracja problemu paradygmatu ("koty", "kotka", "kotami"):
+  koty       -> lemat spaCy: kot      | stemmer EN: koti
+  kotka      -> lemat spaCy: kotek    | stemmer EN: kotka
+  kotami     -> lemat spaCy: kot      | stemmer EN: kotami
+Wniosek: spaCy sprowadza "koty" i "kotami" do lematu "kot", natomiast
+angielski stemmer daje 3 różne formy: "koti", "kotka", "kotami".
+
+--- 3. Języki obsługiwane przez SnowballStemmer ---
+Liczba obsługiwanych języków: 16
+Lista: arabic, danish, dutch, english, finnish, french, german, hungarian, italian, norwegian, porter, portuguese, romanian, russian, spanish, swedish
+Czy język polski ("polish") jest na liście? NIE (False)
+
+Komentarz:
+- Snowball powstał w środowisku anglosaskim (autorstwa Martina Portera) i wspiera
+  głównie języki germańskie i romańskie o prostej strukturze fleksyjnej.
+- Brak języka polskiego w Snowballu wynika z jego struktury: w języku wysoce fleksyjnym
+  i fuzyjnym z powszechnymi obocznościami tematu proste obcinanie afiksów nie zdaje egzaminu.
+- Dla języka polskiego standardem branżowym jest lematyzacja (spaCy, Stanza, Morfeusz).
+
