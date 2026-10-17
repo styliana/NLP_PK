@@ -1,0 +1,95 @@
+Więcej miar podobieństwa: Levenshtein, Damerau-Levenshtein, Jaro-Winkler, Jaccard
+================================================================================
+Kod: zad4_f.py, pełne wyniki: wyniki4_f.txt (zgodnie z example_18.py)
+
+
+1. Wybrane trzy miary z biblioteki textdistance (poza Levenshteinem)
+-------------------------------------------------------------------
+Do analizy wybrano trzy miary reprezentujące odmienne paradygmaty wyznaczania
+podobieństwa tekstu:
+  1. Damerau-Levenshtein (odległość edycyjna ze wsparciem transpozycji)
+  2. Jaro-Winkler (metryka dopasowania znaków w oknie z premiowaniem prefiksu)
+  3. Jaccard (metryka zbiorowa operująca na wielościach elementów)
+
+
+2. Zasada działania każdej z wybranych miar
+-------------------------------------------
+a) Odległość Levenshteina (metryka bazowa):
+   - Liczy minimalną liczbę elementarnych operacji: wstawienia (insertion),
+     usunięcia (deletion) lub zamiany (substitution) pojedynczego znaku,
+     które przekształcają napis s1 w s2.
+   - Koszt każdej operacji wynosi 1.
+   - Złożoność obliczeniowa: O(|s1| * |s2|) za pomocą programowania dynamicznego.
+
+b) Odległość Damerau-Levenshteina:
+   - Rozszerza klasyczny algorytm Levenshteina o czwartą operację edycyjną:
+     transpozycję (przestawienie dwóch sąsiadujących znaków, np. "ab" -> "ba").
+   - W klasycznym Levenshteinie taka zamiana kosztuje 2 operacje (dwie zamiany
+     lub usunięcie + wstawienie). W Damerau-Levenshteinie koszt wynosi 1.
+   - Bardzo dobrze modeluje literówki popełniane przez ludzi na klawiaturze,
+     ponieważ przestawienie sąsiednich liter stanowi ok. 80% wszystkich błędów.
+
+c) Miara Jaro-Winklera:
+   - Miara podobieństwa w przedziale [0, 1] (0 = zupełnie różne, 1 = identyczne).
+   - Krok 1 (Jaro): zlicza liczbę wspólnych znaków m leżących w odległości nie
+     większej niż: floor(max(|s1|, |s2|) / 2) - 1 oraz liczbę transpozycji t.
+     Wzór Jaro: Sim_j = 1/3 * (m/|s1| + m/|s2| + (m - t/2)/m).
+   - Krok 2 (Winkler): jeśli napisy mają wspólny prefiks (do 4 znaków o długości L),
+     podobieństwo jest zwiększane o wagę prefiksu:
+     Sim_jw = Sim_j + L * p * (1 - Sim_j), gdzie p = 0.1.
+   - Doskonale sprawdza się przy porównywaniu nazwisk, imion i krótkich nazw własnych.
+
+d) Podobieństwo Jaccarda:
+   - Miara teoriomnogościowa (iloraz mocy przecięcia i mocy sumy zbiorów):
+     J(A, B) = |A ∩ B| / |A ∪ B|.
+   - W bibliotece textdistance napisy traktowane są jako zbiory (lub multizbiory)
+     tworzących je znaków.
+   - Całkowicie ignoruje kolejność i pozycję znaków w tekście. Zwraca wartość w [0, 1].
+
+
+3. Porównanie wyników dla badanych par
+--------------------------------------
+Znormalizowane podobieństwo (w przedziale [0.0, 1.0], gdzie 1.0 = identyczność):
+
+  Para napisów                       Levenshtein  Damerau-Lev  Jaro-Winkler  Jaccard   Rozstęp (max-min)
+  --------------------------------------------------------------------------------------------------
+  "Ala ma kota" / "Ala posiada kota"      0.6250       0.6250        0.8468   0.5882              0.2586
+  "kot" / "kto"                           0.3333       0.6667        0.5556   1.0000              0.6667
+  "Kraków" / "Krakow"                     0.8333       0.8333        0.9333   0.7143              0.2190
+  "profesor" / "proffesor"                0.8889       0.8889        0.9778   0.8889              0.0889
+  "kot w butach" / "butach w kot"         0.1667       0.1667        0.6111   1.0000              0.8333
+
+
+4. Para o największej rozbieżności miar i wyjaśnienie dlaczego
+--------------------------------------------------------------
+NAJWIĘKSZA rozbieżność występuje dla pary:
+  "kot w butach"  vs  "butach w kot"   (rozstęp = 0.8333)
+
+Wyniki:
+  - Jaccard:              1.0000  (100% podobieństwa)
+  - Jaro-Winkler:         0.6111
+  - Levenshtein:          0.1667  (zaledwie 16.7% podobieństwa; odległość = 10 operacji)
+  - Damerau-Levenshtein:  0.1667
+
+Dlaczego wyniki są tak skrajnie różne?
+1. Podobieństwo Jaccarda ignoruje szyk i sekwencję — zlicza jedynie obecność znaków.
+   Ponieważ oba ciągi składają się z dokładnie tych samych liter i spacji, ich
+   zbiory znaków są identyczne (|A ∩ B| == |A ∪ B|), co daje maksymalny wynik 1.0.
+2. Odległość Levenshteina jest metryką pozycyjno-sekwencyjną. Przesunięcie całego
+   słowa "butach" na początek wymusza aż 10 operacji edycyjnych (usunięć i wstawień),
+   przez co algorytm uznaje napisy za niemal całkowicie obce.
+3. Damerau-Levenshtein nie pomaga w tym przypadku, ponieważ transpozycja obsługuje
+   jedynie sąsiadujące litery, a nie permutację całych słów w zdaniu.
+
+Drugi wyrazisty przykład kontrastu to para "kot" vs "kto" (rozstęp = 0.6667):
+- Levenshtein daje zaledwie 0.3333 (odległość = 2 operacje na 3-literowym słowie),
+- Damerau-Levenshtein daje 0.6667 (odległość = 1 operacja, bo rozpoznaje transpozycję 'ot' -> 'to'),
+- Jaccard daje 1.0000 (identyczny zbiór liter {k, o, t}).
+
+Wnioski ogólne:
+- Nie istnieje jedna uniwersalna miara podobieństwa — wybór zależy od charakteru danych.
+- Do wykrywania literówek i korekty pisowni najlepszy jest Damerau-Levenshtein.
+- Do łączenia rekordów bazodanowych (imiona, firmy, adresy) optymalny jest Jaro-Winkler
+  ze względu na odporność na skróty i premiowanie zgodnego początku.
+- Do porównywania treści o swobodnym szyku słów (np. tagi, worek słów) najlepiej
+  sprawdza się miara Jaccarda.

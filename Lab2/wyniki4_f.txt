@@ -1,0 +1,95 @@
+=================================================================================
+Część F: Więcej miar podobieństwa napisów (biblioteka textdistance)
+=================================================================================
+
+--- 1. Wybrane miary podobieństwa i zasada ich działania ---
+
+1. Levenshtein:
+   Opis: Odległość edycyjna: wstawienie, usunięcie, zamiana
+2. Damerau-Levenshtein:
+   Opis: Edycyjna + transpozycja sąsiednich znaków
+3. Jaro-Winkler:
+   Opis: Zgodność znaków w oknie + waga wspólnego prefiksu
+4. Jaccard:
+   Opis: Miara zbiorowa: |A & B| / |A | B| (ignoruje kolejnosc)
+
+--- 2. Surowe odległości (distance) ---
+Para napisów                                Levenshtein     Damerau-Lev    Jaro-Winkler         Jaccard
+-------------------------------------------------------------------------------------------------------
+"Ala ma kota" / "Ala posiada kota"                   6               6          0.1532          0.4118
+"kot" / "kto"                                        2               1          0.4444          0.0000
+"Kraków" / "Krakow"                                  1               1          0.0667          0.2857
+"profesor" / "proffesor"                             1               1          0.0222          0.1111
+"kot w butach" / "butach w kot"                     10              10          0.3889          0.0000
+
+--- 3. Znormalizowane podobieństwo (normalized_similarity w przedziale [0, 1]) ---
+Para napisów                                Levenshtein     Damerau-Lev    Jaro-Winkler         Jaccard   Rozstęp (max-min)
+---------------------------------------------------------------------------------------------------------------------------
+"Ala ma kota" / "Ala posiada kota"              0.6250          0.6250          0.8468          0.5882              0.2586
+"kot" / "kto"                                   0.3333          0.6667          0.5556          1.0000              0.6667
+"Kraków" / "Krakow"                             0.8333          0.8333          0.9333          0.7143              0.2190
+"profesor" / "proffesor"                        0.8889          0.8889          0.9778          0.8889              0.0889
+"kot w butach" / "butach w kot"                 0.1667          0.1667          0.6111          1.0000              0.8333
+
+--- 4. Szczegółowe zestawienie dla każdej badanej pary ---
+
+Para: "Ala ma kota"  vs  "Ala posiada kota"
+Typ testu: Para bazowa z zadania (wymiana/rozbudowa słowa)
+Miara                     Odległość   Podobieństwo    Znorm. podobieństwo
+--------------------------------------------------------------------------
+Levenshtein                       6             10                 0.6250
+Damerau-Levenshtein               6             10                 0.6250
+Jaro-Winkler                 0.1532         0.8468                 0.8468
+Jaccard                      0.4118         0.5882                 0.5882
+
+Para: "kot"  vs  "kto"
+Typ testu: Przestawione sąsiednie litery (transpozycja)
+Miara                     Odległość   Podobieństwo    Znorm. podobieństwo
+--------------------------------------------------------------------------
+Levenshtein                       2              1                 0.3333
+Damerau-Levenshtein               1              2                 0.6667
+Jaro-Winkler                 0.4444         0.5556                 0.5556
+Jaccard                      0.0000         1.0000                 1.0000
+
+Para: "Kraków"  vs  "Krakow"
+Typ testu: Różnica tylko w diakrytykach (ó vs o)
+Miara                     Odległość   Podobieństwo    Znorm. podobieństwo
+--------------------------------------------------------------------------
+Levenshtein                       1              5                 0.8333
+Damerau-Levenshtein               1              5                 0.8333
+Jaro-Winkler                 0.0667         0.9333                 0.9333
+Jaccard                      0.2857         0.7143                 0.7143
+
+Para: "profesor"  vs  "proffesor"
+Typ testu: Literówka (podwojona litera / wstawienie)
+Miara                     Odległość   Podobieństwo    Znorm. podobieństwo
+--------------------------------------------------------------------------
+Levenshtein                       1              8                 0.8889
+Damerau-Levenshtein               1              8                 0.8889
+Jaro-Winkler                 0.0222         0.9778                 0.9778
+Jaccard                      0.1111         0.8889                 0.8889
+
+Para: "kot w butach"  vs  "butach w kot"
+Typ testu: Przestawienie wyrazów (inna kolejność słów)
+Miara                     Odległość   Podobieństwo    Znorm. podobieństwo
+--------------------------------------------------------------------------
+Levenshtein                      10              2                 0.1667
+Damerau-Levenshtein              10              2                 0.1667
+Jaro-Winkler                 0.3889         0.6111                 0.6111
+Jaccard                      0.0000         1.0000                 1.0000
+
+--- 5. Analiza największych rozbieżności między miarami ---
+1. Para "kot w butach" / "butach w kot" (Przestawienie wyrazów (inna kolejność słów)): rozstęp miar = 0.8333
+2. Para "kot" / "kto" (Przestawione sąsiednie litery (transpozycja)): rozstęp miar = 0.6667
+3. Para "Ala ma kota" / "Ala posiada kota" (Para bazowa z zadania (wymiana/rozbudowa słowa)): rozstęp miar = 0.2586
+4. Para "Kraków" / "Krakow" (Różnica tylko w diakrytykach (ó vs o)): rozstęp miar = 0.2190
+5. Para "profesor" / "proffesor" (Literówka (podwojona litera / wstawienie)): rozstęp miar = 0.0889
+
+Para o NAJWIĘKSZEJ rozbieżności miar: "kot w butach" / "butach w kot" (rozstęp: 0.8333)
+Wyjaśnienie dlaczego:
+- Jaccard traktuje napisy jako zbiory znaków, całkowicie ignorując kolejność liter/słów.
+  Dla anagramów i przestawień daje podobieństwo 1.0000 (identyczne zbiory liter).
+- Klasyczny Levenshtein operuje na pozycjach i wymaga sekwencji wielu usunięć i wstawień,
+  przez co uznaje te napisy za niemal zupełnie odmienne (podobieństwo bliskie 0).
+- Podobny silny kontrast widać dla pary "kot" / "kto" (Damerau=0.6667, Jaccard=1.0000 vs Levenshtein=0.3333).
+
