@@ -1,0 +1,70 @@
+=================================================================================
+Część C: Odległość edycyjna Levenshteina (biblioteka textdistance)
+=================================================================================
+
+Zdanie 1 (s1): "Ala ma kota" (długość: 11 znaków)
+Zdanie 2 (s2): "Ala posiada kota" (długość: 16 znaków)
+
+--- 1. Wyniki biblioteki textdistance (poziom znakowy) ---
+Odległość Levenshteina:          6
+Podobieństwo (similarity):       10
+Znormalizowana odległość:        0.3750 (6/16)
+Znormalizowane podobieństwo:     0.6250 (10/16)
+
+--- 2. Rozbicie na operacje edycyjne ---
+Łączna liczba operacji edycyjnych: 6
+  - Wstawienia (insertions):       5
+  - Zamiany (substitutions):       1
+  - Usunięcia (deletions):         0
+  - Zgodne znaki (matches, k=0):   10
+
+Krok po kroku:
+Krok   Operacja     Znak s1    Znak s2    Koszt 
+----------------------------------------------
+1      Zgodność     'A'        'A'        0     
+2      Zgodność     'l'        'l'        0     
+3      Zgodność     'a'        'a'        0     
+4      Zgodność     ' '        ' '        0     
+5      Wstawienie   ' '        'p'        1     
+6      Wstawienie   ' '        'o'        1     
+7      Wstawienie   ' '        's'        1     
+8      Wstawienie   ' '        'i'        1     
+9      Wstawienie   ' '        'a'        1     
+10     Zamiana      'm'        'd'        1     
+11     Zgodność     'a'        'a'        0     
+12     Zgodność     ' '        ' '        0     
+13     Zgodność     'k'        'k'        0     
+14     Zgodność     'o'        'o'        0     
+15     Zgodność     't'        't'        0     
+16     Zgodność     'a'        'a'        0     
+
+--- 3. Wizualne wyrównanie ciągów (alignment) ---
+Ala_-----ma_kota
+||||+++++*||||||
+Ala_posiada_kota
+
+Legenda wyrównania: "|" = dopasowanie (koszt 0), "*" = zamiana (koszt 1), "+" = wstawienie (koszt 1), "_" = spacja
+
+--- 4. Macierz programowania dynamicznego (Levenshtein) ---
+        #  A  l  a     p  o  s  i  a  d  a     k  o  t  a
+   ------------------------------------------------------
+ '#'   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16
+ 'A'   1   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15
+ 'l'   2   1   0   1   2   3   4   5   6   7   8   9  10  11  12  13  14
+ 'a'   3   2   1   0   1   2   3   4   5   6   7   8   9  10  11  12  13
+ ' '   4   3   2   1   0   1   2   3   4   5   6   7   8   9  10  11  12
+ 'm'   5   4   3   2   1   1   2   3   4   5   6   7   8   9  10  11  12
+ 'a'   6   5   4   3   2   2   2   3   4   4   5   6   7   8   9  10  11
+ ' '   7   6   5   4   3   3   3   3   4   5   5   6   6   7   8   9  10
+ 'k'   8   7   6   5   4   4   4   4   4   5   6   6   7   6   7   8   9
+ 'o'   9   8   7   6   5   5   4   5   5   5   6   7   7   7   6   7   8
+ 't'  10   9   8   7   6   6   5   5   6   6   6   7   8   8   7   6   7
+ 'a'  11  10   9   8   7   7   6   6   6   6   7   6   7   8   8   7   6
+
+--- 5. Poziom wyrazów (tokenów) dla porównania ---
+Tokeny s1: ['Ala', 'ma', 'kota']
+Tokeny s2: ['Ala', 'posiada', 'kota']
+Odległość Levenshteina na poziomie słów: 1
+Podobieństwo na poziomie słów:          2
+Wyjaśnienie: na poziomie słów następuje tylko 1 operacja: zamiana słowa "ma" -> "posiada".
+

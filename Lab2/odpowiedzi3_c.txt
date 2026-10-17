@@ -1,0 +1,115 @@
+Odległość edycyjna Levenshteina: "Ala ma kota" vs "Ala posiada kota"
+=====================================================================
+Kod: zad3_c.py, pełne wyniki: wyniki3_c.txt (zgodnie z example_18.py)
+
+Badane zdania:
+  s1 = "Ala ma kota"          (długość: 11 znaków)
+  s2 = "Ala posiada kota"      (długość: 16 znaków)
+
+
+1. Wynik z biblioteki textdistance
+----------------------------------
+Wywołanie:
+  textdistance.levenshtein("Ala ma kota", "Ala posiada kota")
+
+Zwrócony wynik:
+  - Odległość Levenshteina:              6
+  - Znakowe podobieństwo (similarity):  10  (16 - 6)
+  - Znormalizowana odległość:            0,3750  (6 / 16)
+  - Znormalizowane podobieństwo:         0,6250  (10 / 16)
+
+
+2. Wyjaśnienie uzyskanego wyniku — z ilu i z jakich operacji się składa
+------------------------------------------------------------------------
+Odległość Levenshteina wynosi dokładnie 6 i składa się z 6 elementarnych
+operacji edycyjnych o jednostkowym koszcie 1:
+  - 5 operacji wstawienia (insertion)
+  - 1 operacji zamiany (substitution)
+  - 0 operacji usunięcia (deletion)
+
+Pozostałe 10 pozycji to operacje dopasowania (match) o koszcie 0.
+
+Rozbicie transformacji krok po kroku (jedna z optymalnych ścieżek):
+  1.  'A' -> 'A'   dopasowanie (koszt 0)
+  2.  'l' -> 'l'   dopasowanie (koszt 0)
+  3.  'a' -> 'a'   dopasowanie (koszt 0)
+  4.  ' ' -> ' '   dopasowanie (koszt 0)
+  5.   -  -> 'p'   wstawienie  (koszt 1)
+  6.   -  -> 'o'   wstawienie  (koszt 1)
+  7.   -  -> 's'   wstawienie  (koszt 1)
+  8.   -  -> 'i'   wstawienie  (koszt 1)
+  9.   -  -> 'a'   wstawienie  (koszt 1)
+ 10.  'm' -> 'd'   zamiana     (koszt 1)
+ 11.  'a' -> 'a'   dopasowanie (koszt 0)
+ 12.  ' ' -> ' '   dopasowanie (koszt 0)
+ 13.  'k' -> 'k'   dopasowanie (koszt 0)
+ 14.  'o' -> 'o'   dopasowanie (koszt 0)
+ 15.  't' -> 't'   dopasowanie (koszt 0)
+ 16.  'a' -> 'a'   dopasowanie (koszt 0)
+
+Suma kosztów: 0 + 0 + 0 + 0 + 1 + 1 + 1 + 1 + 1 + 1 + 0 + 0 + 0 + 0 + 0 + 0 = 6.
+
+
+3. Dlaczego wynik wynosi 6 (analiza dlaczego nie 7 ani 9)?
+----------------------------------------------------------
+Oba zdania mają identyczny prefiks ("Ala " - 4 znaki) oraz identyczny sufiks
+(" kota" - 5 znaków). Cała różnica skupia się więc w przekształceniu słowa
+"ma" w słowo "posiada":
+  - Długość "ma":      2 znaki
+  - Długość "posiada": 7 znaków
+
+Możliwe strategie przekształcenia:
+  a) Naiwne usunięcie "ma" i wstawienie "posiada":
+     2 usunięcia + 7 wstawień = 9 operacji.
+  b) Zastąpienie dwóch pierwszych liter i dopisanie reszty:
+     2 zamiany ('m'->'p', 'a'->'o') + 5 wstawień ('s','i','a','d','a') = 7 operacji.
+  c) Strategia optymalna znaleziona przez algorytm Levenshteina:
+     Algorytm zauważa, że litera 'a' występuje zarówno w "ma", jak i w "posiada"
+     (i to dwukrotnie: w "posiAda" oraz "posiadA"). Dzięki ponownemu
+     wykorzystaniu wspólnej litery 'a' jako dopasowania o koszcie 0:
+       - 1 litera jest zamieniana: 'm' -> 'd' (albo inna litera z "posiada"),
+       - 5 brakujących liter ("p", "o", "s", "i", "a") zostaje wstawionych,
+       - litera 'a' jest zachowana bezkosztowo.
+     Razem: 1 zamiana + 5 wstawień = 6 operacji.
+
+W macierzy programowania dynamicznego istnieje dokładnie 10 równoważnych
+ścieżek o minimalnym koszcie 6 (zależnie od tego, czy zachowane 'a' powiążemy
+z piątą czy siódmą literą "posiada" oraz w którym momencie wykonamy zamianę 'm').
+Każda z nich daje identyczny łączny koszt równy 6.
+
+
+4. Wizualne wyrównanie ciągów (alignment)
+-----------------------------------------
+  s1:  Ala_-----ma_kota
+  op:  ||||+++++*||||||
+  s2:  Ala_posiada_kota
+
+  Legenda:
+    "|" = dopasowanie znaku (koszt 0)
+    "*" = zamiana znaku     (koszt 1)
+    "+" = wstawienie znaku  (koszt 1)
+    "_" = spacja
+
+
+5. Odległość znakowa a odległość wyrazowa (tokenowa)
+----------------------------------------------------
+Warto porównać uzyskany wynik znakowy z odległością na poziomie tokenów:
+  tokens(s1) = ["Ala", "ma", "kota"]
+  tokens(s2) = ["Ala", "posiada", "kota"]
+
+Wywołanie:
+  textdistance.levenshtein(s1.split(), s2.split())
+
+Wynik na poziomie wyrazów wynosi 1:
+  - "Ala"   == "Ala"       -> dopasowanie (0)
+  - "ma"    -> "posiada"   -> 1 zamiana wyrazu (1)
+  - "kota"  == "kota"      -> dopasowanie (0)
+
+Wniosek:
+Na poziomie znakowym odległość wynosi 6, ponieważ algorytm operuje na pojedynczych
+literach i uwzględnia różnicę długości słów "ma" (2) i "posiada" (7).
+Z kolei na poziomie wyrazowym (tokenowym) odległość wynosi zaledwie 1, ponieważ
+zdania różnią się wyłącznie jednym elementem słownika pełniącym tę samą rolę
+składniową (czasownik "ma" zastąpiony synonimem "posiada"). Ilustruje to kluczową
+w przetwarzaniu języka naturalnego różnicę pomiędzy metrykami powierzchniowymi
+(znakowymi) a tokenowymi.
