@@ -1,0 +1,69 @@
+Korpus: books/pan-tadeusz.txt, 445708 znaków, 68905 wyrazów (podział po spacjach)
+
+BPE   1000: faktyczny rozmiar słownika   1000, zapisano tokenizer_pl_1000.json
+BPE   5000: faktyczny rozmiar słownika   5000, zapisano tokenizer_pl.json
+BPE  30000: faktyczny rozmiar słownika  14058, zapisano tokenizer_pl_30000.json
+
+--- Podział słów ---
+nieprzetłumaczalny
+  BPE   1000:  9 tok.  nie | p | rze | t | łu | ma | cza | l | ny
+  BPE   5000:  8 tok.  nie | prze | t | łu | ma | cza | l | ny
+  BPE  30000:  6 tok.  nie | prze | t | łuma | cza | lny
+hiperparametryzacja
+  BPE   1000: 12 tok.  h | i | p | er | pa | ra | me | t | ry | za | c | ja
+  BPE   5000: 10 tok.  hi | p | er | pa | ra | me | try | za | c | ja
+  BPE  30000:  9 tok.  hi | p | er | pa | ra | me | try | za | cja
+kotkowi
+  BPE   1000:  4 tok.  ko | t | ko | wi
+  BPE   5000:  2 tok.  kot | kowi
+  BPE  30000:  2 tok.  kot | kowi
+Soplicowo
+  BPE   1000:  3 tok.  Sopli | co | wo
+  BPE   5000:  2 tok.  Soplico | wo
+  BPE  30000:  1 tok.  Soplicowo
+
+Bielik: tokenizator z speakleash/Bielik-4.5B-v3.0-Instruct (rozmiar słownika 32000)
+
+--- Liczba tokenów: PL ---
+zdanie wyrazy   własny BPE 5000             gpt2          HerBERT           Bielik  własny BPE 1000 własny BPE 30000
+PL1         7                13               24               13               12               20               12
+PL2        13                28               55               22               21               39               23
+PL3         7                25               32               11               11               31               24
+PL4        11                33               40               15               15               43               28
+PL5         8                23               42               10               10               31               19
+średnio                     24.4             38.6             14.2             13.8             32.8             21.2
+
+--- Liczba tokenów: EN ---
+zdanie wyrazy   własny BPE 5000             gpt2          HerBERT           Bielik  własny BPE 1000 własny BPE 30000
+EN1        10                25               13               15               15               29               24
+EN2        16                57               21               35               31               65               53
+EN3         9                37               10               22               23               42               33
+EN4        15                45               16               27               26               49               44
+EN5        10                41               11               27               25               45               38
+średnio                     41.0             14.2             25.2             24.0             46.0             38.4
+
+Zdania PL:
+  PL1: Litwo! Ojczyzno moja! ty jesteś jak zdrowie.
+  PL2: Tymczasem przenoś moją duszę utęsknioną do tych pagórków leśnych, do tych łąk zielonych.
+  PL3: Przetwarzanie języka naturalnego to dziedzina sztucznej inteligencji.
+  PL4: Wczoraj wieczorem pojechałam tramwajem do centrum handlowego, żeby kupić nowy telefon.
+  PL5: Rząd zapowiedział podwyżkę podatków od przyszłego roku kalendarzowego.
+Zdania EN:
+  EN1: To be, or not to be, that is the question.
+  EN2: There are more things in heaven and earth, Horatio, than are dreamt of in your philosophy.
+  EN3: Natural language processing is a field of artificial intelligence.
+  EN4: Yesterday evening I took the tram to the shopping centre to buy a new phone.
+  EN5: The government announced a tax increase starting next calendar year.
+
+--- Liczba tokenów w całym korpusie a rozmiar słownika ---
+  słownik    300:  350244 tokenów  (5.08 tok./wyraz)
+  słownik    500:  237131 tokenów  (3.44 tok./wyraz)
+  słownik   1000:  187687 tokenów  (2.72 tok./wyraz)
+  słownik   2000:  157998 tokenów  (2.29 tok./wyraz)
+  słownik   3000:  144349 tokenów  (2.09 tok./wyraz)
+  słownik   5000:  129297 tokenów  (1.88 tok./wyraz)
+  słownik   7500:  118832 tokenów  (1.72 tok./wyraz)
+  słownik  10000:  112031 tokenów  (1.63 tok./wyraz)
+  słownik  15000:  103915 tokenów  (1.51 tok./wyraz)
+  słownik  20000:  103915 tokenów  (1.51 tok./wyraz)
+  słownik  30000:  103915 tokenów  (1.51 tok./wyraz)

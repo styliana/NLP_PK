@@ -1,0 +1,121 @@
+Własny tokenizator podsłowowy (BPE) - korpus: "Pan Tadeusz"
+==========================================================
+Kod: zad5_h.py, pełne wyniki: wyniki5_h.txt
+Tokenizatory: tokenizer_pl.json (5 000), tokenizer_pl_1000.json, tokenizer_pl_30000.json
+Wykresy: wykresy/5h_srednia_tokenow.png, wykresy/5h_tokeny_vs_slownik.png
+
+Konfiguracja (jak w example_14.py): biblioteka tokenizers, model BPE,
+pre-tokenizer ByteLevel (bez [UNK] - każdy znak da się zapisać bajtami),
+min_frequency = 2, uczenie na tekście bez stopki Wolnych Lektur
+(445 708 znaków, 68 905 wyrazów).
+
+Uwaga o rozmiarze 30 000: korpus jest za mały, więc trener zatrzymał się na
+14 058 tokenach. Po scaleniu wszystkich par występujących min. 2 razy nie
+było już czego łączyć. Wariant "30 000" to w praktyce słownik ok. 14 tys.
+
+Uwaga o Bieliku: repozytorium speakleash/Bielik-1.5B-v3 na Hugging Face ma
+ograniczony dostęp (gated, błąd 403 bez zaakceptowanej zgody). Użyto
+tokenizatora z otwartego modelu tej samej generacji,
+speakleash/Bielik-4.5B-v3.0-Instruct (słownik 32 000). Skrypt najpierw próbuje
+pobrać wersję 1.5B-v3, więc po uzyskaniu dostępu użyje właśnie jej.
+
+
+3. Podział słów
+---------------
+  słowo                 BPE 1 000                    BPE 5 000                  BPE 30 000 (14 058)
+  --------------------  ---------------------------  -------------------------  ------------------------
+  nieprzetłumaczalny    nie|p|rze|t|łu|ma|cza|l|ny   nie|prze|t|łu|ma|cza|l|ny  nie|prze|t|łuma|cza|lny
+                        (9)                          (8)                        (6)
+  hiperparametryzacja   h|i|p|er|pa|ra|me|t|ry|      hi|p|er|pa|ra|me|try|      hi|p|er|pa|ra|me|try|
+                        za|c|ja (12)                 za|c|ja (10)               za|cja (9)
+  kotkowi               ko|t|ko|wi (4)               kot|kowi (2)               kot|kowi (2)
+  Soplicowo (własny)    Sopli|co|wo (3)              Soplico|wo (2)             Soplicowo (1)
+
+- Większy słownik oznacza mniej i dłuższe kawałki. Pojawiają się sensowne
+  morfemy: "nie" + "prze" (przedrostki), "kot" + "kowi" (rdzeń + końcówka).
+- "Soplicowo" występuje w książce bardzo często, więc przy dużym słowniku
+  staje się jednym tokenem.
+- "hiperparametryzacja" to słowo spoza świata Pana Tadeusza. Nawet największy
+  słownik tnie je na 9 kawałków, prawie na sylaby.
+
+
+4-5. Liczba tokenów na zdanie (bez tokenów specjalnych)
+-------------------------------------------------------
+  zdanie   wyrazy   własny BPE 5000   gpt2   HerBERT   Bielik
+  PL1          7          13            24       13        12   (Pan Tadeusz)
+  PL2         13          28            55       22        21   (Pan Tadeusz)
+  PL3          7          25            32       11        11
+  PL4         11          33            40       15        15
+  PL5          8          23            42       10        10
+  średnio PL              24,4          38,6     14,2      13,8
+
+  EN1         10          25            13       15        15   (Hamlet)
+  EN2         16          57            21       35        31   (Hamlet)
+  EN3          9          37            10       22        23
+  EN4         15          45            16       27        26
+  EN5         10          41            11       27        25
+  średnio EN              41,0          14,2     25,2      24,0
+
+Zdania PL3-PL5 i EN3-EN5 to te same treści w obu językach.
+Wykres słupkowy: wykresy/5h_srednia_tokenow.png
+
+
+6. Odpowiedzi na pytania
+------------------------
+a) Który tokenizator jest najbardziej ekonomiczny dla polskiego, a który dla
+   angielskiego?
+   - Polski: Bielik (13,8 tok./zdanie), tuż za nim HerBERT (14,2). Oba mają
+     słownik ok. 32-50 tys. uczony na dużym polskim korpusie, więc całe
+     polskie wyrazy, nawet z końcówkami, są często jednym tokenem.
+     GPT-2 potrzebuje 38,6 tokenu, czyli 2,8 razy więcej.
+   - Angielski: GPT-2 (14,2 tok./zdanie). Ma słownik 50 tys. uczony na
+     angielskim internecie, prawie każde słowo to jeden token.
+     Polskie tokenizatory zużywają na angielski ok. 1,7 razy więcej tokenów,
+     a nasz BPE 5000 (znający tylko polską książkę) prawie 3 razy więcej.
+   - Każdy tokenizator jest najtańszy dla języka, na którym go uczono.
+
+b) Jak zmienia się liczba tokenów wraz ze wzrostem słownika? Czy liniowo?
+   Liczba tokenów w całym korpusie (wykres 5h_tokeny_vs_slownik.png):
+     słownik    300 -> 350 244 tok. (5,08 na wyraz)
+     słownik  1 000 -> 187 687 tok. (2,72)
+     słownik  5 000 -> 129 297 tok. (1,88)
+     słownik 10 000 -> 112 031 tok. (1,63)
+     słownik 14 058+ -> 103 915 tok. (1,51), dalej bez zmian
+   Na 10 zdaniach testowych: 1 000 -> 32,8, 5 000 -> 24,4, 30 000 -> 21,2
+   tokenów na polskie zdanie.
+   Zależność NIE jest liniowa. Liczba tokenów maleje coraz wolniej (malejące
+   zyski, krzywa jest bliższa logarytmowi). Pierwsze scalenia łączą
+   najczęstsze pary liter i oszczędzają bardzo dużo. Kolejne dotyczą coraz
+   rzadszych ciągów, więc każdy nowy token skraca tekst o coraz mniej.
+   Krzywa ma też dolną granicę: gdy każdy częsty wyraz jest jednym tokenem,
+   dalsze powiększanie słownika nic nie daje (tu od ok. 14 tys.).
+   Granica leży powyżej liczby wyrazów (68 905), bo znaki interpunkcyjne są
+   osobnymi tokenami.
+
+c) Dlaczego tokenizator wytrenowany na jednej książce wypada dobrze na tej
+   książce, a gorzej na innym tekście?
+   BPE uczy się scaleń z częstości w korpusie treningowym. Tokenami stają
+   się słowa i fragmenty częste w Panu Tadeuszu ("Soplicowo", "Ojczyzno",
+   "rzekł", archaiczne formy), a słownictwo współczesne, techniczne czy
+   angielskie w ogóle się nie pojawia. Widać to w liczbach:
+     - zdania z Pana Tadeusza: PL1 1,86 i PL2 2,15 tokenu na wyraz,
+       prawie tyle co HerBERT i Bielik (13 vs 12-13 dla PL1),
+     - zdania współczesne: PL3 3,6, PL4 3,0, PL5 2,9 tokenu na wyraz,
+       2-2,3 razy więcej niż HerBERT/Bielik ("inteligencji",
+       "kalendarzowego", "telefon" są cięte na sylaby),
+     - angielski: 41 tokenów na zdanie, gorzej niż nawet GPT-2 na polskim.
+   To przeuczenie (overfitting) słownika do jednej domeny. Tokenizator
+   ogólnego przeznaczenia potrzebuje dużego i różnorodnego korpusu.
+
+d) Związek z "podatkiem językowym" z wykładu
+   Podatek językowy oznacza, że ten sam tekst w języku słabo reprezentowanym
+   w danych treningowych tokenizatora kosztuje więcej tokenów. Tutaj:
+     - GPT-2: polski 38,6 vs angielski 14,2 tokenu, czyli 2,7 razy więcej
+       za tę samą treść (PL3-5 vs EN3-5: 38,0 vs 12,3, czyli 3,1 razy),
+     - nasz BPE i polskie tokenizatory: podatek działa odwrotnie, płaci
+       angielski (41,0 vs 24,4 i 25,2 vs 14,2).
+   Więcej tokenów to wyższy koszt API (płaci się za token), mniej tekstu
+   w oknie kontekstu, wolniejsze generowanie i zwykle gorsza jakość, bo
+   model widzi słowa pocięte na sylaby zamiast morfemów. Dlatego powstają
+   modele z tokenizatorem uczonym na polszczyźnie (HerBERT, Bielik). Dla
+   nich polski jest "w cenie" angielskiego w GPT-2.
