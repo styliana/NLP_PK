@@ -1,0 +1,114 @@
+Stop words i nazwy własne: Adam Mickiewicz, "Pan Tadeusz"
+==========================================================
+Kod: zad5_g.py
+Wykresy (katalog wykresy/):
+  5g_top10_unigram_bez_stop_words.png, 5g_top10_bigram_bez_stop_words.png,
+  5g_top10_trigram_bez_stop_words.png, 5g_top10_nazwy_wlasne.png
+Wariant ze stop words to wykresy z części A (3a_top10_*.png).
+
+
+1. Usunięcie stop words
+-----------------------
+Lista z biblioteki stop-words (get_stop_words('polish')): 335 słów.
+  wyrazów przed usunięciem:  68 185
+  wyrazów po usunięciu:      43 614   (usunięto 36,0% tekstu)
+Ponad jedna trzecia wszystkich wyrazów to słowa funkcyjne, ale stanowią one
+tylko ok. 1,5% słownika (18 763 -> 18 489 unikalnych wyrazów).
+
+
+2. N-gramy po usunięciu stop words
+----------------------------------
+  top 10 unigramów:  rzekł (155), hrabia (129), sędzia (127), tadeusz (107),
+                     wojski (89), potem (86), oczy (78), domu (76),
+                     szlachta (64), cóż (62)
+  top 10 bigramów:   rzekł sędzia (14), jaśnie wielmożny (9),
+                     jenerał dąbrowski (8), ksiądz robak (8),
+                     rzekł hrabia (8), drugiej strony (6), hejże soplicę (6),
+                     kusego sokoła (5), idąc kłaniał (5), kapitan ryków (5)
+  top 10 trigramów:  pro publico bono (5), wieku urzędu zaszczyt (4),
+                     urzędu zaszczyt należy (4), ..., ostatniego horeszków
+                     chociaż (4), goście weszli porządku (3), ...
+
+Uwaga: w części A bigramy "bez stop words" powstały przez odfiltrowanie
+bigramów zawierających słowo funkcyjne. Tutaj najpierw usuwamy stop words
+z tekstu, a dopiero potem tworzymy n-gramy, więc pojawiają się pary słów,
+które w oryginale nie stały obok siebie: "hejże soplicę" (z "hejże na
+soplicę"), "kusego sokoła" (z "Kusego i Sokoła").
+
+
+3. Porównanie wariantów: ze stop words i bez
+--------------------------------------------
+                       ze stop words          bez stop words
+  unigramy  max        2128 ("i")             155 ("rzekł")
+            top10      16,44% tekstu          2,23% tekstu
+  bigramy   max        76 ("się w")           14 ("rzekł sędzia")
+            unikalne   58 790                 42 714
+            1 raz      92,7%                  98,4%
+  trigramy  max        8 ("się z nim")        5 ("pro publico bono")
+            1 raz      99,1%                  99,8%
+
+Czy różnice są istotne? Tak, i to bardzo:
+- Ze stop words wszystkie top 10 unigramów i bigramów to spójniki, przyimki
+  i "się" ("i", "w", "się w", "i z"). Takie same listy wyszłyby dla
+  niemal każdego polskiego tekstu, więc nic nie mówią o tej książce.
+- Bez stop words w czołówce są bohaterowie (Hrabia, Sędzia, Tadeusz, Wojski,
+  ksiądz Robak), realia (szlachta, dom, jenerał Dąbrowski) i formuła
+  dialogowa "rzekł X". Z samej listy da się odgadnąć, o czym jest utwór.
+- Rozkład się spłaszcza: najczęstsze słowo występuje 14 razy rzadziej, a
+  top 10 pokrywa ok. 7 razy mniejszą część tekstu.
+- Dla trigramów różnica jest mniejsza: część z nich już w wariancie
+  pełnym była treściowa ("pro publico bono", "ostatniego z horeszków").
+  Po usunięciu słów funkcyjnych trigramy stają się jeszcze rzadsze (99,8%
+  występuje raz), a powtarzające się zwroty gubią swój kształt
+  ("hejże na soplicę" -> "hejże soplicę").
+
+Który wariant lepiej pokazuje treść, a który styl?
+- TREŚĆ lepiej pokazuje wariant BEZ stop words: zostają słowa niosące
+  znaczenie, czyli postacie, miejsca i wydarzenia.
+- STYL lepiej pokazuje wariant ZE stop words: sposób łączenia słów,
+  częstość "się", zwroty "a na to", "raz po raz", "za mych czasów",
+  powtarzane formuły epickie ("idąc kłaniał się"). Słowa funkcyjne są
+  też podstawą stylometrii (rozpoznawania autora), bo autor używa ich
+  nieświadomie i trudno je podrobić.
+
+
+4. Nazwy własne: wyrażenie regularne
+------------------------------------
+  (?<=[\w,;:] )[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+
+  (stosowane osobno do każdej linii tekstu)
+
+- [A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+  - wyraz z wielkiej litery, dalej tylko
+  małe litery, z polskimi znakami (odpadają skróty pisane wersalikami);
+- (?<=[\w,;:] )  - lookbehind: tuż przed wyrazem musi stać spacja, a przed
+  nią litera/cyfra albo przecinek, średnik lub dwukropek. Wyraz stoi
+  więc W ŚRODKU zdania. Odpadają wyrazy po kropce, wykrzykniku, pytajniku
+  i myślniku (początek zdania lub wypowiedzi w dialogu);
+- przetwarzanie linia po linii: "Pan Tadeusz" to poemat, w którym KAŻDY
+  wers zaczyna się wielką literą, nawet w środku zdania. Początek linii
+  (wcięcie ze spacji) nie spełnia lookbehinda, więc pierwsze słowa wersów
+  są pomijane.
+
+Wynik: 2863 wystąpienia, 946 różnych wyrazów.
+
+
+5. Dziesięć najczęstszych nazw własnych
+---------------------------------------
+   1. Sędzia      89          6. Gerwazy     44
+   2. Hrabia      83          7. Sędziego    38
+   3. Wojski      59          8. Robak       37
+   4. Tadeusza    50          9. Litwie      36
+   5. Tadeusz     49         10. Klucznik    36
+
+Komentarz:
+- Wyniki są bardzo czyste: w pierwszej 60 jest praktycznie jeden fałszywy
+  kandydat, "Pan" (11 razy z wielkiej litery, 128 razy z małej).
+- "Sędzia", "Hrabia", "Wojski", "Klucznik" to tytuły i urzędy, ale w
+  Panu Tadeuszu pełnią funkcję imion bohaterów i wydanie Wolnych Lektur
+  pisze je wielką literą. Regex nie odróżni tego od nazwy własnej w
+  ścisłym sensie i tutaj to nawet zaleta.
+- Wada: polszczyzna jest fleksyjna, więc ta sama postać rozpada się na
+  kilka form: Tadeusz/Tadeusza (razem 99 - więcej niż Sędzia),
+  Sędzia/Sędziego/Sędziemu/Sędzio, Zosi/Zosię/Zosia. Żeby policzyć
+  postacie, trzeba by sprowadzić formy do lematu (np. spaCy).
+- Metoda pomija nazwy własne stojące na początku zdania lub wersu, więc
+  liczby są zaniżone, ale za to precyzja jest wysoka.
