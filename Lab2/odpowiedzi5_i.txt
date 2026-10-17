@@ -1,0 +1,110 @@
+Porównanie wszystkich metod przetwarzania tekstu polskiego
+============================================================
+Kod: zad5_i.py, pełne wyniki: wyniki5_i.txt
+
+Badany tekst: Adam Mickiewicz, "Pan Tadeusz" (Inwokacja oraz próbka 2 000 wyrazów)
+Porównywane metody:
+  1. Same wyrazy (tokenizacja słowna, małe litery, bez interpunkcji)
+  2. Wyrazy po lematyzacji (spaCy pl_core_news_sm)
+  3. Wyrazy bez stop words (biblioteka stop-words)
+  4. Tokeny podsłowowe (własny model BPE 5 000 wytrenowany w części H)
+
+
+1. Zestawienie jednostka po jednostce dla fragmentu tekstu
+---------------------------------------------------------
+Fragment pierwszych 15 wyrazów Inwokacji:
+
+  Lp.  Oryginalny wyraz     Lemat (spaCy)        Bez stop words       Tokeny BPE
+  --------------------------------------------------------------------------------------
+  1    litwo                litwo                litwo                Lit | wo
+  2    ojczyzno             ojczyzno             ojczyzno             Oj | czyz | no
+  3    moja                 mój                  [USUNIĘTE]           moja
+  4    ty                   ty                   [USUNIĘTE]           ty
+  5    jesteś               być                  jesteś               jesteś
+  6    jak                  jak                  [USUNIĘTE]           jak
+  7    zdrowie              zdrowie              zdrowie              zdrowie
+  8    ile                  ile                  [USUNIĘTE]           Ile
+  9    cię                  ty                   [USUNIĘTE]           cię
+  10   trzeba               trzeba               [USUNIĘTE]           trzeba
+  11   cenić                cenić                cenić                ce | nić
+  12   ten                  ten                  [USUNIĘTE]           ten
+  13   tylko                tylko                [USUNIĘTE]           tylko
+  14   się                  się                  [USUNIĘTE]           się
+  15   dowie                dowiedzieć           dowie                dowie
+
+
+2. Tabela statystyk: liczba jednostek i rozmiar słownika
+--------------------------------------------------------
+
+a) Fragment Inwokacji (22 wersy):
+  Wariant przetwarzania       Liczba jednostek  Rozmiar słownika    TTR   Jedn./wyraz  Zmiana słownika
+  ------------------------------------------------------------------------------------------------
+  Same wyrazy (baza)                       145               127  0.876          1.00       0.0% (baza)
+  Wyrazy po lematyzacji                    145               120  0.828          1.00            -5.5%
+  Wyrazy bez stop words                     93                92  0.989          0.64           -27.6%
+  Tokeny podsłowowe (BPE 5k)               264               196  0.742          1.82           +54.3%
+
+b) W większej skali (próbka 2 000 wyrazów z "Pana Tadeusza"):
+  Wariant przetwarzania       Liczba jednostek  Rozmiar słownika    TTR   Jedn./wyraz  Zmiana słownika
+  ------------------------------------------------------------------------------------------------
+  Same wyrazy (baza)                      1990              1230  0.618          1.00       0.0% (baza)
+  Wyrazy po lematyzacji                   1990              1020  0.513          1.00           -17.1%
+  Wyrazy bez stop words                   1271              1090  0.858          0.64           -11.4%
+  Tokeny podsłowowe (BPE 5k)              3290              1258  0.382          1.65            +2.3%
+
+c) W skali całego dzieła (68 185 wyrazów, dane z części G i H):
+  - Same wyrazy: 68 185 jednostek, 18 763 unikalnych słów
+  - Po usunięciu stop words: 43 614 jednostek (-36.0%), 18 489 unikalnych słów (-1.5%)
+  - Tokenizator BPE: sztywno ograniczony do 5 000 tokenów (ponad 3.7-krotne zmniejszenie słownika!)
+
+
+3. Który wariant najmocniej zmniejsza słownik i jakim kosztem?
+--------------------------------------------------------------
+Odpowiedź zależy od skali tekstu:
+
+1) W skali lokalnej / małego fragmentu:
+   - Najmocniej słownik unikalnych jednostek zredukowało **usunięcie stop words** (-27.6% w Inwokacji).
+   - Koszt: całkowita destrukcja struktury gramatycznej i składniowej tekstu.
+     Znikają spójniki, przyimki, zaimki ("w", "z", "się", "i", "ten", "tylko").
+     Tekst przestaje być zdaniem, staje się "workiem pojęć" (bag of words).
+     Niemożliwa staje się rekonstrukcja pierwotnego tekstu, analiza relacji
+     ani modelowanie sekwencji w modelach generatywnych.
+
+2) W skali globalnej (cały korpus / zbiór danych):
+   - Bezkonkurencyjny jest **tokenizator podsłowowy (BPE)**:
+     Podczas gdy w języku fleksyjnym liczba unikalnych słów rośnie w nieskończoność
+     wraz z wielkością korpusu (prawo Heapsa), słownik BPE ma **stały, arbitralnie
+     ustalony limit** (np. 5 000 lub 32 000 tokenów). Dla całego Pana Tadeusza
+     BPE redukuje przestrzeń leksykalną z 18 763 form do zaledwie 5 000 tokenów.
+   - Koszt: **wydłużenie sekwencji** (długości tekstu). Tekst wymaga ok. 1.6 - 1.8 razy
+     więcej tokenów niż wyrazów (np. 145 słów -> 264 tokeny BPE; 1990 słów -> 3290 tokenów).
+     W architekturze Transformer, gdzie uwaga (self-attention) skaluje się kwadratowo
+     względem długości sekwencji O(N^2), dłuższa sekwencja podnosi koszt obliczeniowy
+     treningu i generowania.
+
+3) Lematyzacja:
+   - Redukuje słownik w sposób umiarkowany (o 15-20% w większej próbce), łącząc
+     formy fleksyjne ("biegałem", "biegał", "biegła" -> "biegać").
+   - Koszt: utrata precyzyjnych cech morfosyntaktycznych (osoby, czasu, przypadku, liczby).
+     Długość tekstu pozostaje bez zmian (1.00 jedn./wyraz), ale proces wymaga ciężkiego
+     narzędzia lingwistycznego (słownik + model analizy morfosyntaktycznej).
+
+
+4. Wnioski końcowe
+-------------------
+1. **Odwrotna zależność między rozmiarem słownika a długością sekwencji:**
+   W NLP istnieje fundamentalny kompromis: im mniejszy i bardziej uniwersalny
+   chcemy mieć słownik jednostek (np. litery/bajty -> podsłowa BPE -> całe słowa),
+   tym dłuższą sekwencją musimy reprezentować tę samą treść.
+2. **Dlaczego współczesne LLM (GPT, LLaMA, Bielik) wybrały BPE?**
+   - Pozwala zachować 100% informacji (pełna bezstratna odwracalność tekstu do znaków).
+   - Całkowicie likwiduje problem słów nieznanych (brak OOV / [UNK] dzięki pre-tokenizerowi ByteLevel).
+   - Umożliwia reprezentowanie rzadkich form gramatycznych za pomocą częstych morfemów
+     (np. "nie" + "przetłumaczalny", "kot" + "kowi").
+3. **Kiedy stosować tradycyjne metody?**
+   - Usunięcie stop words i lematyzacja nadal sprawdzają się w klasycznych zadaniach IR
+     (Information Retrieval, Elasticsearch, wyszukiwarki słów kluczowych), klasyfikacji
+     tematycznej TF-IDF oraz modelowaniu tematów (LDA), gdzie gramatyka jest szumem,
+     a liczą się wyłącznie słowa kluczowe.
+   - W modelach językowych, tłumaczeniu maszynowym i analizie sentymentu stop words
+     i końcówki fleksyjne niosą kluczowe znaczenie, dlatego standardem pozostaje BPE.
