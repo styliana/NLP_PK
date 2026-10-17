@@ -1,0 +1,90 @@
+Porównanie stemmerów: Porter i Lancaster, William Shakespeare, "Hamlet"
+======================================================================
+Pełne wyniki: wyniki4_d.txt (generuje je zad4_d.py)
+
+Słownik tekstu: 4505 różnych słów (małe litery, min. 3 znaki).
+Porter i Lancaster dają różne rdzenie dla 1805 z nich (40,1%).
+Liczba różnych rdzeni: Porter 3547, Lancaster 3165, czyli Lancaster
+"skleja" słownik mocniej, bo obcina agresywniej.
+
+
+1. Słowa, dla których algorytmy dają różne rdzenie
+--------------------------------------------------
+  słowo     Porter   Lancaster   sensowniejszy wynik
+  --------  -------  ---------   ---------------------------------------------
+  his       hi       his         Lancaster - Porter obciął "s" jak w liczbie
+                                 mnogiej, a "his" to zaimek, nie "hi" + "s"
+  was       wa       was         Lancaster - ten sam błąd Portera ("wa")
+  very      veri     very        Lancaster - Porter zamienia końcowe y na i,
+                                 więc rdzeń nie jest słowem
+  your      your     yo          Porter - Lancaster uciął "ur", zostało "yo"
+  here      here     her         Porter - u Lancastera "here" zlewa się z
+                                 zaimkiem "her"
+  thee      thee     the         Porter - u Lancastera "thee" zlewa się z
+                                 rodzajnikiem "the"
+  father    father   fath        Porter - Lancaster usunął "-er", jakby to
+                                 był przyrostek (jak w "teacher")
+  enter     enter    ent         Porter - jw.; "ent" pasuje do wielu innych
+                                 słów (patrz punkt 2)
+
+Wniosek: Porter jest ostrożniejszy - zwykle zostawia rozpoznawalny wyraz,
+a błędy robi głównie na krótkich słowach zakończonych na -s lub -y
+("his", "was", "very"). Lancaster obcina dużo więcej i często tworzy
+rdzenie, które pokrywają się z innymi słowami ("her", "the", "on").
+W większości przypadków wynik Portera jest sensowniejszy.
+
+
+2. Nadmierne obcinanie (dwa różne wyrazy dostają ten sam rdzeń)
+--------------------------------------------------------------
+Porter:
+  business -> busi    busy -> busi
+  university -> univers    universal -> univers
+  this -> thi    thy -> thi
+Lancaster (przykładów jest dużo więcej):
+  one -> on    only -> on
+  enter -> ent    entreat -> ent    entrance -> ent    entice -> ent
+  mine -> min    minister -> min    mining -> min
+  matter -> mat    material -> mat
+  sent -> sent    sentence -> sent
+  author -> auth    authentic -> auth
+  here -> her (pokrywa się z "her"),  thee -> the (pokrywa się z "the")
+
+Wybrany przykład: business / busy -> "busi" (Porter). "Interes" i "zajęty"
+to dziś zupełnie różne słowa, a stemmer traktuje je jak jedną jednostkę.
+U Lancastera "enter", "entreat", "entrance" i "entice" ("wejść", "błagać",
+"wejście", "kusić") dostają ten sam rdzeń "ent".
+
+
+3. Niedostateczne obcinanie (dwie formy tego samego wyrazu nie schodzą się)
+--------------------------------------------------------------------------
+Najprostszy przypadek to odmiana nieregularna, której żaden stemmer nie
+obsłuży, bo nie ma słownika:
+  speak -> speak    spoke -> spoke (Porter) / spok (Lancaster)
+  take -> take      took -> took
+  good -> good      better -> better (Porter) / bet (Lancaster)
+  gentleman -> gentleman    gentlemen -> gentlemen
+
+Bardziej pouczające są formy regularne, w których stemmer też zawiódł:
+  Porter:     go -> go       goes -> goe
+              do -> do       does -> doe
+              have -> have   has -> ha
+              dear -> dear   dearest -> dearest
+  Lancaster:  go -> go       going -> going
+              do -> do       doing -> doing
+              grave -> grav  gravest -> gravest
+
+Wybrany przykład: "go" i "goes" u Portera dają "go" i "goe". Reguła usuwa
+tylko końcowe "s", a nie "es", bo inaczej zepsułaby słowa typu "horses".
+Na tej samej zasadzie "does" daje "doe", a nie "do".
+
+
+Podsumowanie
+------------
+- Lancaster obcina agresywniej: mniejszy słownik rdzeni (3165 wobec 3547),
+  ale znacznie więcej przypadków nadmiernego obcinania, często z
+  krótkimi rdzeniami pasującymi do wielu słów ("ent", "min", "on").
+- Porter jest ostrożniejszy: rdzenie łatwiej rozpoznać, ale też zdarzają się
+  zlepki (business/busy) i formy, które się nie schodzą (go/goes).
+- Żaden stemmer nie łączy form nieregularnych (speak/spoke, take/took,
+  good/better). Do tego potrzebna jest lematyzacja ze słownikiem
+  (por. część B: fed -> feed, is/are -> be).

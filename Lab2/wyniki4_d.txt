@@ -1,0 +1,141 @@
+Słownik tekstu: 4505 różnych słów (małe litery, min. 3 znaki)
+Porter i Lancaster dają różne rdzenie dla 1805 słów (40.1%)
+Liczba różnych rdzeni: Porter 3547, Lancaster 3165
+
+--- 25 najczęstszych słów z różnymi rdzeniami ---
+słowo            liczba  Porter        Lancaster     
+----------------------------------------------------
+his                 265  hi            his           
+your                236  your          yo            
+have                167  have          hav           
+will                132  will          wil           
+was                 131  wa            was           
+are                 120  are           ar            
+shall               106  shall         shal          
+all                  93  all           al            
+thy                  87  thi           thy           
+come                 86  come          com           
+there                82  there         ther          
+more                 79  more          mor           
+here                 67  here          her           
+very                 66  veri          very          
+time                 66  time          tim           
+make                 59  make          mak           
+well                 59  well          wel           
+father               57  father        fath          
+love                 57  love          lov           
+like                 56  like          lik           
+tis                  54  ti            tis           
+enter                52  enter         ent           
+thee                 51  thee          the           
+these                49  these         thes          
+heaven               49  heaven        heav          
+
+--- Porter: nadmierne obcinanie (różne słowa, ten sam rdzeń) ---
+  thi            this -> thi, thy -> thi
+  thought        thoughts -> thought, thought -> thought
+  excel          excellent -> excel, excellence -> excel
+  ground         ground -> ground, grounds -> ground
+  desir          desire -> desir, desirous -> desir, desires -> desir
+  probabl        probably -> probabl, probable -> probabl
+  memori         memory -> memori, memorial -> memori
+  figur          figuratively -> figur, figure -> figur
+  busi           business -> busi, busy -> busi
+  histori        history -> histori, historie -> histori
+  admir          admiration -> admir, admirable -> admir
+  ignor          ignorance -> ignor, ignorant -> ignor
+  piti           pity -> piti, pitiful -> piti
+  found          found -> found, founded -> found
+  differ         difference -> differ, different -> differ, differences -> differ
+  humbl          humbly -> humbl, humble -> humbl
+  imperi         imperial -> imperi, imperious -> imperi
+  etern          eternal -> etern, eternity -> etern, eterne -> etern
+  estim          estimate -> estim, estimation -> estim
+  translat       translate -> translat, translation -> translat, translated -> translat
+  univers        university -> univers, universities -> univers, universal -> univers
+  convers        conversation -> convers, conversed -> convers, converse -> convers
+  bound          bound -> bound, bounds -> bound
+  secur          secure -> secur, security -> secur
+  consequ        consequently -> consequ, consequences -> consequ
+
+--- Porter: niedostateczne obcinanie (ten sam lemat, różne rdzenie) ---
+  be             was -> wa, are -> are, were -> were, been -> been, being -> be
+  have           have -> have, had -> had, has -> ha, having -> have
+  come           come -> come, comes -> come, came -> came, coming -> come
+  make           make -> make, made -> made, makes -> make, making -> make
+  good           good -> good, better -> better
+  do             did -> did, done -> done, does -> doe, doing -> do
+  give           give -> give, given -> given, gave -> gave, gives -> give, giving -> give
+  say            say -> say, says -> say, said -> said, saying -> say
+  see            see -> see, seen -> seen, seeing -> see, sees -> see
+  know           know -> know, known -> known, knew -> knew, knows -> know, knowing -> know
+  speak          speak -> speak, speaks -> speak, spoke -> spoke, spoken -> spoken, speaking -> speak
+  mean           means -> mean, mean -> mean, meaning -> mean, meant -> meant, meaner -> meaner
+  think          think -> think, thought -> thought
+  take           take -> take, takes -> take, took -> took, taken -> taken, taking -> take
+  hear           hear -> hear, heard -> heard, hearing -> hear
+  tell           tell -> tell, told -> told, tells -> tell
+  leave          leave -> leav, left -> left, leaves -> leav
+  go             gone -> gone, goes -> goe, went -> went, going -> go
+  hold           hold -> hold, holds -> hold, held -> held
+  long           long -> long, longer -> longer
+  dear           dear -> dear, dearest -> dearest
+  find           find -> find, found -> found, finds -> find, finding -> find
+  show           show -> show, shows -> show, shown -> shown, showing -> show
+  stand          stand -> stand, stands -> stand, standing -> stand, stood -> stood
+  gentleman      gentleman -> gentleman, gentlemen -> gentlemen
+
+--- Lancaster: nadmierne obcinanie (różne słowa, ten sam rdzeń) ---
+  ar             are -> ar, arrant -> ar, arises -> ar
+  mor            more -> mor, moralities -> mor
+  on             one -> on, only -> on, ones -> on
+  ent            enter -> ent, entreat -> ent, entrance -> ent, enters -> ent, entreated -> ent, entice -> ent, entered -> ent
+  min            mine -> min, ministers -> min, mining -> min, ministering -> min, minister -> min
+  thought        thoughts -> thought, thought -> thought
+  tru            true -> tru, truth -> tru, truly -> tru, truant -> tru
+  sens           sense -> sens, sensible -> sens, senses -> sens
+  mat            matter -> mat, material -> mat
+  marry          marry -> marry, marriage -> marry, married -> marry, marriages -> marry
+  til            till -> til, tiles -> til
+  believ         believe -> believ, belief -> believ, believed -> believ
+  excel          excellent -> excel, excellence -> excel
+  ground         ground -> ground, grounds -> ground
+  sent           sent -> sent, sentence -> sent
+  virtu          virtue -> virtu, virtues -> virtu, virtuous -> virtu
+  whol           whole -> whol, wholly -> whol
+  pleas          please -> pleas, pleased -> pleas, pleasures -> pleas, pleasure -> pleas, pleasing -> pleas
+  judg           judgment -> judg, judge -> judg, judgments -> judg, judges -> judg
+  auth           author -> auth, authors -> auth, authentic -> auth
+  desir          desire -> desir, desirous -> desir, desires -> desir
+  prob           probably -> prob, probable -> prob, probe -> prob
+  allud          allusion -> allud, alludes -> allud
+  carry          carriages -> carry, carried -> carry, carriage -> carry, carry -> carry
+  mem            memory -> mem, memorial -> mem
+
+--- Lancaster: niedostateczne obcinanie (ten sam lemat, różne rdzenie) ---
+  be             was -> was, are -> ar, were -> wer, been -> been, being -> being
+  have           have -> hav, had -> had, has -> has, having -> hav
+  come           come -> com, comes -> com, came -> cam, coming -> com
+  make           make -> mak, made -> mad, makes -> mak, making -> mak
+  good           good -> good, better -> bet
+  do             did -> did, done -> don, does -> doe, doing -> doing
+  give           give -> giv, given -> giv, gave -> gav, gives -> giv, giving -> giv
+  say            say -> say, says -> say, said -> said, saying -> say
+  see            see -> see, seen -> seen, seeing -> see, sees -> see
+  know           know -> know, known -> known, knew -> knew, knows -> know, knowing -> know
+  speak          speak -> speak, speaks -> speak, spoke -> spok, spoken -> spok, speaking -> speak
+  mean           means -> mean, mean -> mean, meaning -> mean, meant -> meant, meaner -> mean
+  think          think -> think, thought -> thought
+  take           take -> tak, takes -> tak, took -> took, taken -> tak, taking -> tak
+  hear           hear -> hear, heard -> heard, hearing -> hear
+  tell           tell -> tel, told -> told, tells -> tel
+  leave          leave -> leav, left -> left, leaves -> leav
+  go             gone -> gon, goes -> goe, went -> went, going -> going
+  hold           hold -> hold, holds -> hold, held -> held
+  dear           dear -> dear, dearest -> dearest
+  find           find -> find, found -> found, finds -> find, finding -> find
+  show           show -> show, shows -> show, shown -> shown, showing -> show
+  stand          stand -> stand, stands -> stand, standing -> stand, stood -> stood
+  fair           fair -> fair, fairest -> fairest
+  grave          grave -> grav, graves -> grav, gravest -> gravest
+
