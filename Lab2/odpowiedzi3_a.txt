@@ -1,0 +1,63 @@
+Analiza n-gramów: Adam Mickiewicz, "Pan Tadeusz" (Wolne Lektury, bez stopki licencyjnej)
+==========================================================================================
+
+Liczba zdań:    3827
+Liczba wyrazów: 68185 (18763 unikalnych)
+
+
+1. Jakie bigramy dominują w analizowanym tekście?
+-------------------------------------------------
+Dominują bigramy złożone wyłącznie ze słów funkcyjnych: zaimka zwrotnego "się",
+spójników i przyimków, np. "się w" (76), "i z" (72), "się z" (67), "się i" (61),
+"i w" (55), "się na" (47). Wynika to z tego, że najczęstsze unigramy to właśnie
+"i", "w", "się", "z", "na", więc ich połączenia mają największą szansę wystąpić.
+Bigramy te mówią o gramatyce polszczyzny (bardzo częste czasowniki zwrotne
+z "się"), a nie o treści utworu.
+
+Po odfiltrowaniu stop words wychodzą bigramy treściowe: "rzekł sędzia" (13),
+"jaśnie wielmożny" (9), "jenerał dąbrowski" (8), "ksiądz robak" (8),
+"rzekł hrabia" (8), "kapitan ryków" (5). Pokazują one bohaterów utworu
+i dużą rolę dialogu wprowadzanego formułą "rzekł X".
+
+
+2. Czy trigramy pokazują powtarzalne zwroty charakterystyczne dla autora?
+-------------------------------------------------------------------------
+Tak, choć liczności są małe (maks. 8). Wśród najczęstszych trigramów są:
+- okrzyk "hejże na soplicę" (6) - refren sceny zajazdu,
+- "ostatniego z horeszków" (5) - stały epitet Gerwazego/Horeszków,
+- "za mych czasów" (5) - typowe dla gawędy szlacheckiej wspominanie przeszłości,
+- "pro publico bono" (5) - łacińskie wtręty charakterystyczne dla mowy szlachty,
+- "w domu sędziego" (4).
+Ciekawy jest ciąg trigramów o tej samej liczności 4: "z wieku mu i",
+"i z urzędu", "urzędu ten zaszczyt", "zaszczyt należy idąc", "idąc kłaniał się".
+To jeden dłuższy fragment wersu powtórzony w poemacie kilka razy - przykład
+epickiej formuły (powtarzanej frazy), typowej dla stylu eposu.
+Trigramy złożone z samych słów funkcyjnych ("się z nim", "a na to") są
+natomiast cechą języka, a nie autora.
+
+
+3. Jak różni się rozkład unigramów od rozkładu bigramów?
+--------------------------------------------------------
+                 unikalnych   występujące 1 raz   top 10 pokrywa   max
+  unigramy          18 763          63,1 %            16,44 %      2128
+  bigramy           58 790          92,7 %             0,76 %        76
+  trigramy          67 377          99,1 %             0,08 %         8
+
+- Rozkład unigramów jest silnie skoncentrowany: 10 najczęstszych słów
+  (głównie spójniki i przyimki) to ok. 16% całego tekstu, a najczęstsze
+  słowo "i" występuje 2128 razy.
+- Rozkład bigramów jest znacznie bardziej "płaski" i rozproszony: unikalnych
+  bigramów jest ponad 3 razy więcej niż unikalnych słów, ponad 92% z nich
+  pojawia się tylko raz, a top 10 pokrywa poniżej 1% tekstu. Najczęstszy
+  bigram występuje 76 razy, czyli ok. 28 razy rzadziej niż najczęstsze słowo.
+- Oba rozkłady mają "długi ogon" (zbliżony do prawa Zipfa), co widać na
+  wykresie wykresy/3a_ranga_czestosc.png - krzywa bigramów leży niżej i jest
+  bardziej płaska, a trigramów jeszcze bardziej.
+- Wniosek: im dłuższy n-gram, tym rzadsze dane (problem rzadkości danych):
+  do wiarygodnego oszacowania częstości bigramów i trigramów potrzeba
+  znacznie większego korpusu niż dla pojedynczych słów.
+
+
+Wykresy (katalog wykresy/):
+  3a_top10_unigram.png, 3a_top10_bigram.png, 3a_top10_trigram.png,
+  3a_top10_bigram_bez_stop_words.png, 3a_ranga_czestosc.png
