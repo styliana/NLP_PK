@@ -1,0 +1,17 @@
+# Przykłady do wykładu 3 — Podstawy przetwarzania języka naturalnego
+# Wszystko darmowe, bez kluczy API.
+#
+#   pip install -r requirements.txt
+
+nltk>=3.9
+stop-words>=2018.7.23
+spacy>=3.7
+transformers>=4.40
+sentencepiece>=0.2
+tokenizers>=0.19
+tiktoken>=0.7
+rapidfuzz>=3.9
+textdistance>=4.6
+
+# Model języka polskiego dla spaCy (osobne polecenie po instalacji powyższych):
+#   python -m spacy download pl_core_news_sm
