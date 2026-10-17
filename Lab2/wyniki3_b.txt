@@ -1,0 +1,166 @@
+Zdanie 1: Neither a borrower nor a lender be: For loan oft loses both itself and friend; And borrowing dulls the edge of husbandry.
+
+token          POS   rdzeń (Porter)   lemat (WordNet) 
+------------------------------------------------------------
+Neither        CC    neither          neither         
+a              DT    a                a               
+borrower       NN    borrow           borrower          <-- różne
+nor            CC    nor              nor             
+a              DT    a                a               
+lender         NN    lender           lender          
+be             VB    be               be              
+For            IN    for              for             
+loan           NN    loan             loan            
+oft            JJ    oft              oft             
+loses          VBZ   lose             lose            
+both           DT    both             both            
+itself         PRP   itself           itself          
+and            CC    and              and             
+friend         NN    friend           friend          
+And            CC    and              and             
+borrowing      VBG   borrow           borrow          
+dulls          NNS   dull             dulls             <-- różne
+the            DT    the              the             
+edge           NN    edg              edge              <-- różne
+of             IN    of               of              
+husbandry      NN    husbandri        husbandry         <-- różne
+
+Zdanie 2: There are more things in heaven and earth, Horatio, Than are dreamt of in your philosophy.
+
+token          POS   rdzeń (Porter)   lemat (WordNet) 
+------------------------------------------------------------
+There          EX    there            there           
+are            VBP   are              be                <-- różne
+more           JJR   more             more            
+things         NNS   thing            thing           
+in             IN    in               in              
+heaven         NN    heaven           heaven          
+and            CC    and              and             
+earth          NN    earth            earth           
+Horatio        NNP   horatio          horatio         
+Than           NNP   than             than            
+are            VBP   are              be                <-- różne
+dreamt         NN    dreamt           dreamt          
+of             IN    of               of              
+in             IN    in               in              
+your           PRP$  your             your            
+philosophy     NN    philosophi       philosophy        <-- różne
+
+Zdanie 3: The lady doth protest too much, methinks.
+
+token          POS   rdzeń (Porter)   lemat (WordNet) 
+------------------------------------------------------------
+The            DT    the              the             
+lady           NN    ladi             lady              <-- różne
+doth           NN    doth             doth            
+protest        VB    protest          protest         
+too            RB    too              too             
+much           JJ    much             much            
+methinks       NNS   methink          methinks          <-- różne
+
+Zdanie 4: why, she would hang on him, As if increase of appetite had grown By what it fed on: And yet, within a month, Let me not think on't, Frailty, thy name is Woman!
+
+token          POS   rdzeń (Porter)   lemat (WordNet) 
+------------------------------------------------------------
+why            WRB   whi              why               <-- różne
+she            PRP   she              she             
+would          MD    would            would           
+hang           VB    hang             hang            
+on             IN    on               on              
+him            PRP   him              him             
+As             IN    as               a                 <-- różne
+if             IN    if               if              
+increase       NN    increas          increase          <-- różne
+of             IN    of               of              
+appetite       JJ    appetit          appetite          <-- różne
+had            VBD   had              have              <-- różne
+grown          VBN   grown            grow              <-- różne
+By             IN    by               by              
+what           WP    what             what            
+it             PRP   it               it              
+fed            VBD   fed              feed              <-- różne
+on             IN    on               on              
+And            CC    and              and             
+yet            RB    yet              yet             
+within         IN    within           within          
+a              DT    a                a               
+month          NN    month            month           
+Let            VB    let              let             
+me             PRP   me               me              
+not            RB    not              not             
+think          VB    think            think           
+o              VBP   o                o               
+n't            RB    n't              n't             
+Frailty        NNP   frailti          frailty           <-- różne
+thy            JJ    thi              thy               <-- różne
+name           NN    name             name            
+is             VBZ   is               be                <-- różne
+Woman          NNP   woman            woman           
+
+Zdanie 5: To be, or not to be, that is the question: Whether 'tis nobler in the mind to suffer The slings and arrows of outrageous fortune, Or to take arms against a sea of troubles, And, by opposing end them?
+
+token          POS   rdzeń (Porter)   lemat (WordNet) 
+------------------------------------------------------------
+To             TO    to               to              
+be             VB    be               be              
+or             CC    or               or              
+not            RB    not              not             
+to             TO    to               to              
+be             VB    be               be              
+that           DT    that             that            
+is             VBZ   is               be                <-- różne
+the            DT    the              the             
+question       NN    question         question        
+Whether        NNP   whether          whether         
+tis            NN    ti               ti              
+nobler         NN    nobler           nobler          
+in             IN    in               in              
+the            DT    the              the             
+mind           NN    mind             mind            
+to             TO    to               to              
+suffer         VB    suffer           suffer          
+The            DT    the              the             
+slings         NNS   sling            sling           
+and            CC    and              and             
+arrows         NNS   arrow            arrow           
+of             IN    of               of              
+outrageous     JJ    outrag           outrageous        <-- różne
+fortune        NN    fortun           fortune           <-- różne
+Or             CC    or               or              
+to             TO    to               to              
+take           VB    take             take            
+arms           NNS   arm              arm             
+against        IN    against          against         
+a              DT    a                a               
+sea            NN    sea              sea             
+of             IN    of               of              
+troubles       NNS   troubl           trouble           <-- różne
+And            CC    and              and             
+by             IN    by               by              
+opposing       VBG   oppos            oppose            <-- różne
+end            VB    end              end             
+them           PRP   them             them            
+
+Słowa, dla których stemming i lematyzacja dały różne wyniki (22):
+  borrower       rdzeń: borrow         lemat: borrower
+  dulls          rdzeń: dull           lemat: dulls
+  edge           rdzeń: edg            lemat: edge
+  husbandry      rdzeń: husbandri      lemat: husbandry
+  are            rdzeń: are            lemat: be
+  philosophy     rdzeń: philosophi     lemat: philosophy
+  lady           rdzeń: ladi           lemat: lady
+  methinks       rdzeń: methink        lemat: methinks
+  why            rdzeń: whi            lemat: why
+  as             rdzeń: as             lemat: a
+  increase       rdzeń: increas        lemat: increase
+  appetite       rdzeń: appetit        lemat: appetite
+  had            rdzeń: had            lemat: have
+  grown          rdzeń: grown          lemat: grow
+  fed            rdzeń: fed            lemat: feed
+  frailty        rdzeń: frailti        lemat: frailty
+  thy            rdzeń: thi            lemat: thy
+  is             rdzeń: is             lemat: be
+  outrageous     rdzeń: outrag         lemat: outrageous
+  fortune        rdzeń: fortun         lemat: fortune
+  troubles       rdzeń: troubl         lemat: trouble
+  opposing       rdzeń: oppos          lemat: oppose

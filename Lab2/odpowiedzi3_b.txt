@@ -1,0 +1,52 @@
+=================================================================================
+Wybrane zdania:
+  1. Neither a borrower nor a lender be: For loan oft loses both itself and
+     friend; And borrowing dulls the edge of husbandry.
+  2. There are more things in heaven and earth, Horatio, Than are dreamt of in
+     your philosophy.
+  3. The lady doth protest too much, methinks.
+  4. why, she would hang on him, As if increase of appetite had grown By what
+     it fed on: (...) Frailty, thy name is Woman!
+  5. To be, or not to be, that is the question: (...) The slings and arrows of
+     outrageous fortune, (...) And, by opposing end them?
+
+
+Słowa, dla których stemming i lematyzacja dały różne wyniki
+----------------------------------------------------------
+Wszystkich takich słów jest 22. Najciekawsze przypadki:
+
+  token        rdzeń (Porter)   lemat (WordNet)   komentarz
+  -----------  ---------------  ----------------  ------------------------------
+  is / are     is / are         be                odmiana nieregularna: lematyzator
+                                                  zna formy "be", stemmer tylko
+                                                  obcina końcówki
+  had          had              have              jw.
+  fed          fed              feed              jw.
+  grown        grown            grow              jw.
+  troubles     troubl           trouble           rdzeń nie jest słowem
+  opposing     oppos            oppose            jw.
+  philosophy   philosophi       philosophy        reguła Portera y -> i
+  lady         ladi             lady              jw.
+  borrower     borrow           borrower          stemmer usunął przyrostek -er,
+                                                  sprowadzając rzeczownik do
+                                                  czasownika; lemat zachowuje
+                                                  "osobę, która pożycza"
+
+Wnioski:
+- Stemming działa na samym napisie: obcina końcówki według reguł, więc rdzeń
+  często nie jest prawdziwym słowem ("troubl", "ladi", "husbandri") i nie
+  radzi sobie z formami nieregularnymi ("had", "fed", "are" zostają bez zmian).
+- Lematyzacja korzysta ze słownika (WordNet) i części mowy, więc zawsze
+  zwraca istniejący wyraz i rozpoznaje formy nieregularne (is/are -> be,
+  had -> have, fed -> feed).
+- Jakość lematyzacji zależy od tagowania części mowy. Widać to w tabelach:
+  * "dulls" tagger uznał za rzeczownik w liczbie mnogiej (NNS) zamiast za
+    czasownik, więc lemat zostaje "dulls"; stemmer, który nie patrzy na część
+    mowy, dał tu poprawne "dull",
+  * "As" -> "a": WordNet traktuje "as" jako liczbę mnogą rzeczownika "a",
+    bo przyimek (IN) zamieniamy domyślnie na rzeczownik.
+- Archaizmy szekspirowskie ("doth", "methinks", "thy", "'tis") nie są w
+  WordNecie, więc lematyzator zwraca je bez zmian, a Porter obcina je
+  mechanicznie ("thy" -> "thi", "methinks" -> "methink").
+- Tokenizator NLTK, przygotowany dla współczesnego angielskiego, dzieli "on't"
+  (= "on it") na "o" + "n't", jakby było to przeczenie typu "don't".
