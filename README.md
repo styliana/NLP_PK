@@ -16,6 +16,13 @@ Repozytorium projektów laboratoryjnych z przedmiotu **Przetwarzanie Języka Nat
   - Eliminacja stop words oraz ekstrakcja nazw własnych za pomocą wyrażeń regularnych (RegEx z lookbehind).
   - Trening od zera własnego tokenizatora BPE (*ByteLevel*, 1k/5k/30k), benchmark modeli LLM (`gpt2`, `HerBERT`, `Bielik`) oraz analiza podatku językowego (*language tax*).
   - Wielowymiarowe porównanie czterech metod przetwarzania tekstu (wyrazy, lematyzacja, bez stop words, subwordy BPE).
+- **Lab3** – **Wyszukiwanie pełnotekstowe: SQL kontra Solr** (Poziom 5.0)
+  - Porównanie funkcjonalne i wydajnościowe na zbiorze **500 000 rekordów** w języku naturalnym.
+  - PostgreSQL 16 (indeks GIN `tsvector` z wagami 'A'/'B', ranking `ts_rank_cd`, rozszerzenie `pg_trgm`).
+  - Apache Solr 10 (obraz Docker, `SOLR_HEAP=2g`, wyłączony schemaless, model BM25, parser `eDisMax`, facety, highlighting).
+  - Wymagania poziomu 5.0: wykres skalowania (10%, 50%, 100% dla LIKE vs FTS vs Solr), pomiar Facety vs GROUP BY (Solr szybszy 19.5x).
+  - Zaawansowane rozszerzenia: odporność na literówki (*fuzzy search* ~ vs `pg_trgm`) oraz eliminacja duplikatów (*collapsing* po `orig_id`).
+  - Kompletne 4-stronicowe sprawozdanie PDF (`sprawozdanie/Sprawozdanie_Lab3.pdf`) i gotowa paczka oddania `LAB3_Golek_Aleksandra_Karczmarczyk_Klaudia.zip`.
 
 ---
 
@@ -49,12 +56,33 @@ Repozytorium projektów laboratoryjnych z przedmiotu **Przetwarzanie Języka Nat
 │   ├── wyniki*.txt       # Wyniki numeryczne, tabele i macierze
 │   ├── tokenizer_pl*.json# Wytrenowane modele BPE (1k, 5k, 30k/14k)
 │   └── wykresy/          # Wygenerowane histogramy i wykresy (11 plików PNG)
+├── lab3/
+│   ├── Lab3.pdf          # Wymagania i instrukcja do laboratorium 3
+│   ├── README.md         # Dokumentacja modułu Lab3 (Poziom 5.0)
+│   ├── docker-compose.yml# Kontenery PostgreSQL 16 i Solr 10
+│   ├── uruchom_calosc.py # Główny skrypt automatyzujący cały potok
+│   ├── sql/              # Skrypty SQL (inicjalizacja i zapytania testowe)
+│   ├── solr/             # Schemat i konfiguracja Apache Solr 10
+│   ├── scripts/          # Generator danych, loader, benchmark, wykresy, raport
+│   ├── wykresy/          # 4 wygenerowane wykresy (skalowanie, zapytania, facety, rozszerzenia)
+│   ├── sprawozdanie/     # Gotowe sprawozdanie PDF (Sprawozdanie_Lab3.pdf)
+│   └── LAB3_Golek_Aleksandra_Karczmarczyk_Klaudia.zip # Archiwum oddania na platformę Delta
 └── README.md             # Główna dokumentacja repozytorium
 ```
 
 ---
 
 ## Szybkie uruchomienie
+
+### Moduł Lab3 (SQL vs Solr – Ocena 5.0):
+```powershell
+cd lab3
+# Uruchomienie bazy PostgreSQL i silnika Solr 10:
+docker compose up -d
+
+# Pełny potok (generowanie 500k rekordów, ładowanie, benchmark, wykresy, PDF, ZIP):
+python uruchom_calosc.py
+```
 
 ### Moduł Lab2 (Od tekstu do tokenów – Ocena 5.0):
 ```powershell
@@ -77,3 +105,4 @@ python Lab1/Parser1/parser/scraper.py --headless
 Pełna dokumentacja modułów:
 - **Lab1**: [Lab1/Parser1/README.md](file:///C:/Users/DELL/Documents/nlp/Lab1/Parser1/README.md) oraz [Lab1/Parser2/README.md](file:///C:/Users/DELL/Documents/nlp/Lab1/Parser2/README.md)
 - **Lab2**: [Lab2/README.md](file:///C:/Users/DELL/Documents/nlp/Lab2/README.md)
+- **Lab3**: [lab3/README.md](file:///C:/Users/DELL/Documents/nlp/lab3/README.md)

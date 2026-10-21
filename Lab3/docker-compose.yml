@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nlp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nlp_lab3
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/01_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nlp_lab3"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  solr:
+    image: solr:10
+    container_name: nlp_solr
+    restart: unless-stopped
+    ports:
+      - "8983:8983"
+    environment:
+      - SOLR_HEAP=2g
+    command: ["solr-precreate", "nlp_lab3"]
+    volumes:
+      - solrdata:/var/solr
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8983/solr/nlp_lab3/admin/ping || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  pgdata:
+  solrdata:

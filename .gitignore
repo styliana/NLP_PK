@@ -8,3 +8,12 @@ __pycache__/
 /Lab1/Parser1/.idea
 /.idea
 /Lab2/.idea
+lab3/data/*.csv
+lab3/data/*.json
+lab3/*.zip
+lab3/solr_data/
+Lab3/data/*.csv
+Lab3/data/*.json
+Lab3/*.zip
+Lab3/solr_data/
+

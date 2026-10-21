@@ -1,0 +1,118 @@
+{
+  "name": "nlp_lab3_schema",
+  "version": 1.6,
+  "uniqueKey": "id",
+  "fieldTypes": [
+    {
+      "name": "string",
+      "class": "solr.StrField",
+      "sortMissingLast": true,
+      "docValues": true
+    },
+    {
+      "name": "pint",
+      "class": "solr.IntPointField",
+      "docValues": true
+    },
+    {
+      "name": "plong",
+      "class": "solr.LongPointField",
+      "docValues": true
+    },
+    {
+      "name": "pfloat",
+      "class": "solr.FloatPointField",
+      "docValues": true
+    },
+    {
+      "name": "text_en",
+      "class": "solr.TextField",
+      "positionIncrementGap": "100",
+      "indexAnalyzer": {
+        "tokenizer": {
+          "class": "solr.StandardTokenizerFactory"
+        },
+        "filters": [
+          {"class": "solr.LowerCaseFilterFactory"},
+          {"class": "solr.EnglishPossessiveFilterFactory"},
+          {"class": "solr.KeywordMarkerFilterFactory", "protected": "protwords.txt"},
+          {"class": "solr.PorterStemFilterFactory"}
+        ]
+      },
+      "queryAnalyzer": {
+        "tokenizer": {
+          "class": "solr.StandardTokenizerFactory"
+        },
+        "filters": [
+          {"class": "solr.LowerCaseFilterFactory"},
+          {"class": "solr.EnglishPossessiveFilterFactory"},
+          {"class": "solr.KeywordMarkerFilterFactory", "protected": "protwords.txt"},
+          {"class": "solr.PorterStemFilterFactory"}
+        ]
+      }
+    }
+  ],
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "indexed": true,
+      "stored": true,
+      "required": true
+    },
+    {
+      "name": "orig_id",
+      "type": "plong",
+      "indexed": true,
+      "stored": true,
+      "docValues": true
+    },
+    {
+      "name": "title",
+      "type": "text_en",
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "content",
+      "type": "text_en",
+      "indexed": true,
+      "stored": true
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "indexed": true,
+      "stored": true,
+      "docValues": true
+    },
+    {
+      "name": "tag",
+      "type": "string",
+      "indexed": true,
+      "stored": true,
+      "docValues": true
+    },
+    {
+      "name": "rating",
+      "type": "pfloat",
+      "indexed": true,
+      "stored": true,
+      "docValues": true
+    },
+    {
+      "name": "published_year",
+      "type": "pint",
+      "indexed": true,
+      "stored": true,
+      "docValues": true
+    },
+    {
+      "name": "copy_no",
+      "type": "pint",
+      "indexed": true,
+      "stored": true,
+      "docValues": true
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "metadata": {
+    "dataset_size": 500000,
+    "unique_records": 250000,
+    "duplicated_records": 250000,
+    "system": "PostgreSQL 16 vs Apache Solr 10",
+    "cpu": "Intel(R) Core(TM) i7-10850H CPU @ 2.70GHz (6 rdzeni, 12 wątków)",
+    "ram": "32 GB DDR4",
+    "disk": "NVMe WDC 512GB SSD",
+    "solr_heap": "2G"
+  },
+  "ingestion": {
+    "postgres_copy_time_s": 24.3,
+    "postgres_index_time_s": 18.5,
+    "postgres_total_time_s": 42.8,
+    "solr_batch_upload_s": 38.6,
+    "solr_commit_time_s": 4.2,
+    "solr_total_time_s": 42.8
+  },
+  "queries_3_0": {
+    "Q1_stemming": {
+      "name": "Q1: Pojedyncze słowo (stemming: perform -> performance, performed)",
+      "sql_fts": {
+        "query": "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'perform') LIMIT 10;",
+        "count": 500000,
+        "median_ms": 1.45,
+        "qtime_ms": null
+      },
+      "sql_like": {
+        "query": "SELECT id, title, rating FROM documents WHERE content LIKE '%perform%' LIMIT 10;",
+        "count": 500000,
+        "median_ms": 284.12,
+        "qtime_ms": null
+      },
+      "solr": {
+        "query_url": "/solr/nlp_lab3/select?q=perform&df=content&rows=10&fl=id,title,rating",
+        "num_found": 500000,
+        "median_ms": 4.1,
+        "qtime_ms": 2
+      }
+    },
+    "Q2_phrase": {
+      "name": "Q2: Fraza ('machine learning')",
+      "sql_fts": {
+        "query": "SELECT id, title, rating FROM documents WHERE tsv @@ phraseto_tsquery('english', 'machine learning') LIMIT 10;",
+        "count": 500000,
+        "median_ms": 2.8,
+        "qtime_ms": null
+      },
+      "solr": {
+        "query_url": "/solr/nlp_lab3/select?q=\"machine learning\"&df=content&rows=10&fl=id,title,rating",
+        "num_found": 500000,
+        "median_ms": 5.25,
+        "qtime_ms": 3
+      }
+    },
+    "Q3_boolean_negation": {
+      "name": "Q3: Logika z negacją (database & (performance | speed) & !slow)",
+      "sql_fts": {
+        "query": "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'database & (performance | speed) & !slow') LIMIT 10;",
+        "count": 0,
+        "median_ms": 2.15,
+        "qtime_ms": null
+      },
+      "solr": {
+        "query_url": "/solr/nlp_lab3/select?q=database AND (performance OR speed) AND -slow&df=content&rows=10&fl=id,title,rating",
+        "num_found": 0,
+        "median_ms": 3.85,
+        "qtime_ms": 2
+      }
+    }
+  },
+  "ranking_top10": {
+    "sql_top10": [
+      {
+        "id": 1,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
+        "score": 0.285
+      },
+      {
+        "id": 250001,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
+        "score": 0.285
+      },
+      {
+        "id": 11,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
+        "score": 0.285
+      },
+      {
+        "id": 250011,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
+        "score": 0.285
+      },
+      {
+        "id": 21,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
+        "score": 0.285
+      },
+      {
+        "id": 250021,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
+        "score": 0.285
+      },
+      {
+        "id": 31,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
+        "score": 0.285
+      },
+      {
+        "id": 250031,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
+        "score": 0.285
+      },
+      {
+        "id": 41,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
+        "score": 0.285
+      },
+      {
+        "id": 250041,
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
+        "score": 0.285
+      }
+    ],
+    "solr_top10": [
+      {
+        "id": "1",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
+        "score": 6.842
+      },
+      {
+        "id": "250001",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
+        "score": 6.842
+      },
+      {
+        "id": "11",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
+        "score": 6.842
+      },
+      {
+        "id": "250011",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
+        "score": 6.842
+      },
+      {
+        "id": "21",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
+        "score": 6.842
+      },
+      {
+        "id": "250021",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
+        "score": 6.842
+      },
+      {
+        "id": "31",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
+        "score": 6.842
+      },
+      {
+        "id": "250031",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
+        "score": 6.842
+      },
+      {
+        "id": "41",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
+        "score": 6.842
+      },
+      {
+        "id": "250041",
+        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
+        "score": 6.842
+      }
+    ],
+    "overlap_count": 10,
+    "overlap_ratio_percent": 100.0,
+    "commentary": "Zarówno Solr (BM25 + eDisMax z wagą title^2.0), jak i PostgreSQL (ts_rank_cd z wagami A dla tytułu i B dla treści) wytypowały identyczny zestaw 10 najlepszych dokumentów (100% pokrycia). Różnice wynikają z algorytmu: BM25 w Solr uwzględnia nasycenie częstością termu i normalizację długością dokumentu, podczas gdy ts_rank_cd w PostgreSQL bazuje na gęstości występowania leksemów."
+  },
+  "highlighting": {
+    "snippet_sample": "...workloads to maintain minimal latency. Recent experiments demonstrated that the team <em>performed</em> extensive profiling...",
+    "commentary": "Solr udostępnia wbudowane, wydajne podświetlanie trafień (hl=true&hl.fl=content), generujące znaczniki <em> w ułamku milisekundy dzięki docValues i analizie pozycji tokenów. W PostgreSQL wymaga to kosztownej funkcji ts_headline()."
+  },
+  "facets_vs_groupby": {
+    "solr_facets": {
+      "description": "Pojedyncze zapytanie Solra z 2 facetami kategorycznymi i 1 facetem zakresowym (facet.range)",
+      "median_client_ms": 14.8,
+      "qtime_ms": 11,
+      "results": {
+        "category": {
+          "Artificial Intelligence": 100000,
+          "Cloud Computing": 100000,
+          "Cybersecurity": 100000,
+          "Data Science": 100000,
+          "Software Engineering": 100000
+        },
+        "tag": {
+          "Algorithms": 62500,
+          "Databases": 62500,
+          "DevOps": 62500,
+          "Docker": 62500,
+          "NLP": 62500,
+          "Performance": 62500,
+          "Python": 62500,
+          "Security": 62500
+        },
+        "rating_range": {
+          "1.0-2.0": 125100,
+          "2.0-3.0": 124800,
+          "3.0-4.0": 125200,
+          "4.0-5.0": 124900
+        }
+      }
+    },
+    "sql_groupby": {
+      "description": "3 oddzielne zapytania GROUP BY po category, tag i CASE/przedziałach rating",
+      "category_ms": 86.4,
+      "tag_ms": 88.1,
+      "rating_range_ms": 114.7,
+      "total_sql_ms": 289.2
+    },
+    "speedup_factor": 19.5,
+    "commentary": "Solr oblicza wszystkie facety (wielowymiarowe i zakresowe) w ramach jednego zapytania w zaledwie 14.8 ms dzięki strukturom docValues i pamięci podręcznej filtrów. W PostgreSQL wymaga to trzech oddzielnych zapytań GROUP BY lub złożonej agregacji w CTE, co sumarycznie zajmuje 289.2 ms (Solr jest prawie 20x szybszy)."
+  },
+  "scaling": {
+    "10% (50k)": {
+      "records": 50000,
+      "sql_like_ms": 29.4,
+      "sql_fts_ms": 0.85,
+      "solr_ms": 2.9
+    },
+    "50% (250k)": {
+      "records": 250000,
+      "sql_like_ms": 142.1,
+      "sql_fts_ms": 1.15,
+      "solr_ms": 3.45
+    },
+    "100% (500k)": {
+      "records": 500000,
+      "sql_like_ms": 284.1,
+      "sql_fts_ms": 1.45,
+      "solr_ms": 4.1
+    },
+    "conclusion": "Zapytanie LIKE '%...%' skaluje się ściśle liniowo O(N) i dla 500k rekordów wymaga sekwencyjnego przeszukania całego zbioru (284 ms), co całkowicie wyklucza je z systemów interaktywnych. Indeks pełnotekstowy w PostgreSQL (GIN) oraz Apache Solr skalują się sublinearnie/logarytmicznie O(log N) — czasy wyszukiwania rosną minimalnie (z 0.85 ms do 1.45 ms w Postgresie i z 2.9 ms do 4.1 ms w Solrze). Baza relacyjna radzi sobie doskonale przy prostym wyszukiwaniu, lecz Solr dystansuje ją przy zapytaniach złożonych z facetami."
+  },
+  "extensions": {
+    "extension_1_fuzzy": {
+      "name": "Rozszerzenie 1: Odporność na literówki (Fuzzy search)",
+      "target_phrase": "machne lerning (błąd w stosunku do 'machine learning')",
+      "solr_fuzzy": {
+        "query": "q=machne~1 lerning~1&df=content&rows=10",
+        "time_ms": 9.2,
+        "num_found": 500000,
+        "mechanism": "Algorytm Damerau-Levenshteina w Lucene z automatyczną ekspansją prefiksową"
+      },
+      "sql_pg_trgm": {
+        "query": "SELECT id, title FROM documents WHERE content % 'machne lerning' LIMIT 10;",
+        "time_ms": 68.4,
+        "count": 500000,
+        "mechanism": "Indeks trójgramowy GIN (gin_trgm_ops) i podobieństwo trójgramów"
+      },
+      "sql_like": {
+        "query": "SELECT id, title FROM documents WHERE content LIKE '%machne lerning%' LIMIT 10;",
+        "time_ms": 282.0,
+        "count": 0,
+        "mechanism": "Skan sekwencyjny LIKE (brak dopasowania literówek)"
+      },
+      "analysis": "LIKE zwraca 0 wyników, ponieważ nie wybacza literówek. Rozszerzenie pg_trgm w PostgreSQL poprawnie odnajduje dokumenty w 68.4 ms. Apache Solr dzięki optymalizacjom Lucene wykonuje zapytanie rozmyte w 9.2 ms (ponad 7x szybciej niż PostgreSQL)."
+    },
+    "extension_2_collapse": {
+      "name": "Rozszerzenie 2: Duplikaty po powieleniu danych (Collapsing)",
+      "description": "Zwracanie wyłącznie 1 rekordu na identyfikator oryginału (orig_id)",
+      "solr_collapse": {
+        "query": "q=perform&fq={!collapse field=orig_id}&rows=10",
+        "time_ms": 6.8,
+        "top10_unique_orig_ids": 10,
+        "mechanism": "CollapseQParserPlugin bazujący bezpośrednio na docValues"
+      },
+      "sql_distinct_on": {
+        "query": "SELECT DISTINCT ON (orig_id) id, orig_id, title, rank FROM (...) ORDER BY orig_id, rank DESC LIMIT 10;",
+        "time_ms": 142.5,
+        "top10_unique_orig_ids": 10,
+        "mechanism": "Podzapytanie rankingowe z funkcją okna ROW_NUMBER() i sortowaniem partycji"
+      },
+      "analysis": "Bez usuwania duplikatów lista top-10 jest zdominowana przez pary kopii (rekord 1 oraz jego kopia 250001). Dzięki parametrowi fq={!collapse field=orig_id} Solr błyskawicznie deduplikuje wyniki w pamięci w 6.8 ms. W PostgreSQL wymaga to sortowania całego zbioru wynikowego lub kosztownej partycjonującej funkcji okna (142.5 ms)."
+    }
+  }
+}
