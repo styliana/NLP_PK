@@ -1,0 +1,19 @@
+SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon') ORDER BY rank DESC, id LIMIT 10
+
+Limit  (cost=4395.92..4395.94 rows=10 width=93) (actual time=67.511..67.515 rows=10 loops=1)
+  Buffers: shared hit=12974
+  ->  Sort  (cost=4395.92..4398.84 rows=1169 width=93) (actual time=67.510..67.512 rows=10 loops=1)
+        Sort Key: (ts_rank_cd(tsv, '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)) DESC, id
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=12974
+        ->  Bitmap Heap Scan on documents  (cost=79.17..4370.66 rows=1169 width=93) (actual time=4.504..66.010 rows=5094 loops=1)
+              Recheck Cond: (tsv @@ '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)
+              Heap Blocks: exact=4419
+              Buffers: shared hit=12974
+              ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..78.88 rows=1169 width=0) (actual time=3.402..3.403 rows=5094 loops=1)
+                    Index Cond: (tsv @@ '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)
+                    Buffers: shared hit=55
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.172 ms
+Execution Time: 67.541 ms

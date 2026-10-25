@@ -1,0 +1,20 @@
+SELECT count(*) FROM documents WHERE (title || ' ' || abstract) LIKE '%simulate%'
+
+Finalize Aggregate  (cost=104065.04..104065.05 rows=1 width=8) (actual time=851.232..855.986 rows=1 loops=1)
+  Buffers: shared hit=6410 read=97626
+  ->  Gather  (cost=104064.83..104065.04 rows=2 width=8) (actual time=851.003..855.961 rows=3 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=6410 read=97626
+        ->  Partial Aggregate  (cost=103064.83..103064.84 rows=1 width=8) (actual time=838.065..838.067 rows=1 loops=3)
+              Buffers: shared hit=6410 read=97626
+              ->  Parallel Seq Scan on documents  (cost=0.00..103064.77 rows=23 width=0) (actual time=4.656..837.299 rows=3531 loops=3)
+                    Filter: (((title || ' '::text) || abstract) ~~ '%simulate%'::text)
+                    Rows Removed by Filter: 179802
+                    Buffers: shared hit=6410 read=97626
+Planning Time: 0.070 ms
+JIT:
+  Functions: 14
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 0.967 ms, Inlining 0.000 ms, Optimization 0.728 ms, Emission 12.502 ms, Total 14.197 ms
+Execution Time: 856.372 ms

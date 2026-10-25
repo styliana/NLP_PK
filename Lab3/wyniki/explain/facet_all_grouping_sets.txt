@@ -1,0 +1,16 @@
+SELECT field, category, 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE TRUE GROUP BY GROUPING SETS ((field), (category), (1990 + 5 * ((year - 1990) / 5)))
+
+HashAggregate  (cost=112800.35..118302.25 rows=208 width=32) (actual time=570.016..570.047 rows=187 loops=1)
+  Hash Key: field
+  Hash Key: category
+  Hash Key: (1990 + (5 * ((year - 1990) / 5)))
+  Batches: 1  Memory Usage: 64kB
+  Buffers: shared hit=54549 read=44507
+  ->  Seq Scan on documents  (cost=0.00..110051.48 rows=549774 width=24) (actual time=8.736..316.042 rows=550000 loops=1)
+        Buffers: shared hit=54549 read=44507
+Planning Time: 0.131 ms
+JIT:
+  Functions: 10
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 1.087 ms, Inlining 0.000 ms, Optimization 0.589 ms, Emission 8.158 ms, Total 9.834 ms
+Execution Time: 571.265 ms

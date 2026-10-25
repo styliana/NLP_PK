@@ -1,0 +1,21 @@
+SELECT field, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY field ORDER BY 2 DESC
+
+Sort  (cost=89937.94..89937.96 rows=8 width=19) (actual time=83.493..83.495 rows=8 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=41123
+  ->  HashAggregate  (cost=89937.74..89937.82 rows=8 width=19) (actual time=83.479..83.483 rows=8 loops=1)
+        Group Key: field
+        Batches: 1  Memory Usage: 24kB
+        Buffers: shared hit=41123
+        ->  Bitmap Heap Scan on documents  (cost=409.31..89650.76 rows=57396 width=11) (actual time=22.047..63.700 rows=56540 loops=1)
+              Recheck Cond: (tsv @@ '''simul'''::tsquery)
+              Heap Blocks: exact=41105
+              Buffers: shared hit=41123
+              ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..394.96 rows=57396 width=0) (actual time=13.254..13.255 rows=56540 loops=1)
+                    Index Cond: (tsv @@ '''simul'''::tsquery)
+                    Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.232 ms
+Execution Time: 84.169 ms

@@ -1,290 +1,2071 @@
 {
-  "metadata": {
-    "dataset_size": 500000,
-    "unique_records": 250000,
-    "duplicated_records": 250000,
-    "system": "PostgreSQL 16 vs Apache Solr 10",
-    "cpu": "Intel(R) Core(TM) i7-10850H CPU @ 2.70GHz (6 rdzeni, 12 wątków)",
-    "ram": "32 GB DDR4",
-    "disk": "NVMe WDC 512GB SSD",
-    "solr_heap": "2G"
+  "generated_at": "2026-10-22 19:53:20",
+  "runs": 5,
+  "records": 550000,
+  "environment": {
+    "python": "3.14.2",
+    "os": "Windows-11-10.0.26300-SP0",
+    "postgres_version": "16.15 (Debian 16.15-1.pgdg13+2)",
+    "postgres_shared_buffers": "1GB",
+    "postgres_work_mem": "64MB",
+    "postgres_max_parallel_workers_per_gather": "2",
+    "postgres_jit": "on",
+    "solr_version": "10.0.0",
+    "solr_jvm": "25.0.4.1 25.0.4.1+1-LTS",
+    "solr_heap_max_mb": 2048,
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700H",
+    "ram_gb": "31,5",
+    "disk": "SAMSUNG MZAL8512HDLU-00BL2 (SSD)",
+    "docker_mem_gb": 15.4
   },
-  "ingestion": {
-    "postgres_copy_time_s": 24.3,
-    "postgres_index_time_s": 18.5,
-    "postgres_total_time_s": 42.8,
-    "solr_batch_upload_s": 38.6,
-    "solr_commit_time_s": 4.2,
-    "solr_total_time_s": 42.8
+  "dataset_stats": {
+    "source": "arXiv abstracts 2021 (gfissore/arxiv-abstracts-2021, Hugging Face)",
+    "source_url": "https://huggingface.co/datasets/gfissore/arxiv-abstracts-2021",
+    "license": "CC0 1.0 (metadane arXiv); autorzy i zgłaszający pominięci - brak danych osobowych",
+    "source_articles": 1999486,
+    "sampling": "500000 z 1999486 artykułów o najmniejszym crc32(arxiv_id) (deterministyczna, równomierna próbka)",
+    "originals": 500000,
+    "copies": 50000,
+    "total_records": 550000,
+    "copy_rule": "co 10. oryginał powielony (copy_no=1, orig_id=id oryginału)",
+    "csv_size_mb": 555.2,
+    "abstract_chars_avg": 910.2,
+    "abstract_chars_median": 862,
+    "abstract_chars_min": 3,
+    "abstract_chars_max": 4196,
+    "distinct_fields": 8,
+    "field_counts": {
+      "Physics": 290850,
+      "Mathematics": 102634,
+      "Computer Science": 82271,
+      "Statistics": 8937,
+      "Electrical Engineering and Systems Science": 6494,
+      "Quantitative Biology": 5645,
+      "Quantitative Finance": 2283,
+      "Economics": 886
+    },
+    "distinct_categories": 172,
+    "year_min": 1991,
+    "year_max": 2021,
+    "sample_record": {
+      "id": 1,
+      "orig_id": 1,
+      "copy_no": 0,
+      "arxiv_id": "0704.0004",
+      "title": "A determinant of Stirling cycle numbers counts unlabeled acyclic single-source automata",
+      "abstract": "We show that a determinant of Stirling cycle numbers counts unlabeled acyclic single-source automata. The proof involves a bijection from these automata to certain marked lattice paths and a sign-reversing involution to evaluate the determinant.",
+      "field": "Mathematics",
+      "category": "math.CO",
+      "categories": "math.CO",
+      "year": 2007,
+      "n_versions": 1
+    },
+    "prepare_time_s": 312.8
   },
-  "queries_3_0": {
-    "Q1_stemming": {
-      "name": "Q1: Pojedyncze słowo (stemming: perform -> performance, performed)",
-      "sql_fts": {
-        "query": "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'perform') LIMIT 10;",
-        "count": 500000,
-        "median_ms": 1.45,
-        "qtime_ms": null
-      },
-      "sql_like": {
-        "query": "SELECT id, title, rating FROM documents WHERE content LIKE '%perform%' LIMIT 10;",
-        "count": 500000,
-        "median_ms": 284.12,
-        "qtime_ms": null
+  "load_times": {
+    "10%": {
+      "rows": 55000,
+      "postgres": {
+        "rows": 55000,
+        "copy_s": 13.21,
+        "index_s": 4.18,
+        "vacuum_analyze_s": 1.1,
+        "total_s": 18.49,
+        "table_total_mb": 138.8,
+        "gin_index_mb": 19.1
       },
       "solr": {
-        "query_url": "/solr/nlp_lab3/select?q=perform&df=content&rows=10&fl=id,title,rating",
-        "num_found": 500000,
-        "median_ms": 4.1,
-        "qtime_ms": 2
+        "docs": 55000,
+        "upload_s": 18.21,
+        "commit_s": 0.75,
+        "total_s": 18.96,
+        "index_mb": 58.4,
+        "batch_size": 5000
       }
     },
-    "Q2_phrase": {
-      "name": "Q2: Fraza ('machine learning')",
-      "sql_fts": {
-        "query": "SELECT id, title, rating FROM documents WHERE tsv @@ phraseto_tsquery('english', 'machine learning') LIMIT 10;",
-        "count": 500000,
-        "median_ms": 2.8,
-        "qtime_ms": null
+    "50%": {
+      "rows": 275000,
+      "postgres": {
+        "rows": 275000,
+        "copy_s": 73.64,
+        "index_s": 25.68,
+        "vacuum_analyze_s": 1.89,
+        "total_s": 101.21,
+        "table_total_mb": 710.6,
+        "gin_index_mb": 82.5
       },
       "solr": {
-        "query_url": "/solr/nlp_lab3/select?q=\"machine learning\"&df=content&rows=10&fl=id,title,rating",
-        "num_found": 500000,
-        "median_ms": 5.25,
-        "qtime_ms": 3
+        "docs": 275000,
+        "upload_s": 92.69,
+        "commit_s": 0.84,
+        "total_s": 93.53,
+        "index_mb": 300.5,
+        "batch_size": 5000
       }
     },
-    "Q3_boolean_negation": {
-      "name": "Q3: Logika z negacją (database & (performance | speed) & !slow)",
-      "sql_fts": {
-        "query": "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'database & (performance | speed) & !slow') LIMIT 10;",
-        "count": 0,
-        "median_ms": 2.15,
-        "qtime_ms": null
+    "100%": {
+      "rows": 550000,
+      "postgres": {
+        "rows": 550000,
+        "copy_s": 149.54,
+        "index_s": 75.11,
+        "vacuum_analyze_s": 2.49,
+        "total_s": 227.15,
+        "table_total_mb": 1407.3,
+        "gin_index_mb": 148.9
       },
       "solr": {
-        "query_url": "/solr/nlp_lab3/select?q=database AND (performance OR speed) AND -slow&df=content&rows=10&fl=id,title,rating",
-        "num_found": 0,
-        "median_ms": 3.85,
-        "qtime_ms": 2
+        "docs": 550000,
+        "upload_s": 189.44,
+        "commit_s": 2.36,
+        "total_s": 191.8,
+        "index_mb": 597.8,
+        "batch_size": 5000
       }
     }
   },
-  "ranking_top10": {
-    "sql_top10": [
-      {
-        "id": 1,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
-        "score": 0.285
+  "queries": {
+    "Q1": {
+      "name": "Q1: pojedyncze słowo w dowolnej formie (simulate)",
+      "short": "Q1: simulate (dowolna forma)",
+      "like_count": 10594,
+      "like": {
+        "sql": "SELECT count(*) FROM documents WHERE (title || ' ' || abstract) LIKE '%simulate%'",
+        "median_ms": 875.15,
+        "times_ms": [
+          924.6,
+          851.02,
+          924.39,
+          855.14,
+          875.15
+        ],
+        "explain_execution_ms": 856.372
       },
-      {
-        "id": 250001,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
-        "score": 0.285
+      "fts_count": 56540,
+      "fts_count_query": {
+        "sql": "SELECT count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate')",
+        "median_ms": 51.12,
+        "times_ms": [
+          85.8,
+          50.61,
+          53.63,
+          51.12,
+          50.6
+        ],
+        "explain_execution_ms": 54.786
       },
-      {
-        "id": 11,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
-        "score": 0.285
+      "fts_top10_query": {
+        "sql": "SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'simulate')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') ORDER BY rank DESC, id LIMIT 10",
+        "median_ms": 271.96,
+        "times_ms": [
+          274.12,
+          284.76,
+          271.42,
+          271.96,
+          257.15
+        ],
+        "explain_execution_ms": 265.69
       },
-      {
-        "id": 250011,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
-        "score": 0.285
+      "solr_numFound": 56557,
+      "solr": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?df=text_all&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&q=%7B%21lucene+df%3Dtext_all+cache%3Dfalse%7Dsimulate",
+        "median_client_ms": 15.78,
+        "median_qtime_ms": 10,
+        "qtimes_ms": [
+          10,
+          10,
+          7,
+          4,
+          10
+        ],
+        "numFound": 56557
       },
-      {
-        "id": 21,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
-        "score": 0.285
+      "solr_cached": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?df=text_all&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&q=simulate",
+        "median_client_ms": 6.13,
+        "median_qtime_ms": 0,
+        "qtimes_ms": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ],
+        "numFound": 56557
       },
-      {
-        "id": 250021,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
-        "score": 0.285
+      "solr_fq_sort_example": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=simulate&df=text_all&fq=year%3A%5B2015+TO+%2A%5D&fl=id%2Ctitle%2Cyear%2Ccategory&sort=year+desc%2Cscore+desc&rows=5",
+        "median_client_ms": 8.17,
+        "median_qtime_ms": 1,
+        "qtimes_ms": [
+          1
+        ],
+        "numFound": 32953,
+        "docs": [
+          {
+            "id": "419450",
+            "title": "Smart Grids Co-Simulations: Survey & Research Directions",
+            "category": "cs.OH",
+            "year": 2021
+          },
+          {
+            "id": "387426",
+            "title": "A Survey on Simulators for Testing Self-Driving Cars",
+            "category": "cs.RO",
+            "year": 2021
+          },
+          {
+            "id": "419446",
+            "title": "Characterizing Crisp Simulations and Crisp Directed Simulations between Fuzzy Labeled Transition Systems by Using Fuzzy Modal Logics",
+            "category": "cs.LO",
+            "year": 2021
+          },
+          {
+            "id": "403800",
+            "title": "SimNet: Accurate and High-Performance Computer Architecture Simulation using Machine Learning",
+            "category": "cs.AR",
+            "year": 2021
+          },
+          {
+            "id": "419513",
+            "title": "AtlFast3: the next generation of fast simulation in ATLAS",
+            "category": "hep-ex",
+            "year": 2021
+          }
+        ]
       },
-      {
-        "id": 31,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
-        "score": 0.285
+      "sql_fq_example_count": 32937,
+      "edismax": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?defType=edismax&q=simulate&qf=title%5E3+abstract&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&hl=true&hl.fl=abstract&hl.snippets=1&hl.fragsize=160",
+        "median_client_ms": 18.25,
+        "median_qtime_ms": 12,
+        "qtimes_ms": [
+          14,
+          13,
+          11,
+          12,
+          10
+        ],
+        "numFound": 56557
       },
-      {
-        "id": 250031,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
-        "score": 0.285
+      "ts_headline": {
+        "sql": "SELECT id, ts_headline('english', abstract, to_tsquery('english', 'simulate'), 'MaxFragments=1, MaxWords=25, MinWords=12, StartSel=<em>, StopSel=</em>') FROM documents WHERE id IN (SELECT id FROM (SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'simulate')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') ORDER BY rank DESC, id LIMIT 10) s)",
+        "median_ms": 271.92,
+        "times_ms": [
+          285.05,
+          272.1,
+          253.68,
+          268.13,
+          271.92
+        ],
+        "explain_execution_ms": 262.739
       },
-      {
-        "id": 41,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
-        "score": 0.285
-      },
-      {
-        "id": 250041,
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
-        "score": 0.285
-      }
-    ],
-    "solr_top10": [
-      {
-        "id": "1",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
-        "score": 6.842
-      },
-      {
-        "id": "250001",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #1",
-        "score": 6.842
-      },
-      {
-        "id": "11",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
-        "score": 6.842
-      },
-      {
-        "id": "250011",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #11",
-        "score": 6.842
-      },
-      {
-        "id": "21",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
-        "score": 6.842
-      },
-      {
-        "id": "250021",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #21",
-        "score": 6.842
-      },
-      {
-        "id": "31",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
-        "score": 6.842
-      },
-      {
-        "id": "250031",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #31",
-        "score": 6.842
-      },
-      {
-        "id": "41",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
-        "score": 6.842
-      },
-      {
-        "id": "250041",
-        "title": "Modern Architectural Patterns for High Performance Vector Databases #41",
-        "score": 6.842
-      }
-    ],
-    "overlap_count": 10,
-    "overlap_ratio_percent": 100.0,
-    "commentary": "Zarówno Solr (BM25 + eDisMax z wagą title^2.0), jak i PostgreSQL (ts_rank_cd z wagami A dla tytułu i B dla treści) wytypowały identyczny zestaw 10 najlepszych dokumentów (100% pokrycia). Różnice wynikają z algorytmu: BM25 w Solr uwzględnia nasycenie częstością termu i normalizację długością dokumentu, podczas gdy ts_rank_cd w PostgreSQL bazuje na gęstości występowania leksemów."
-  },
-  "highlighting": {
-    "snippet_sample": "...workloads to maintain minimal latency. Recent experiments demonstrated that the team <em>performed</em> extensive profiling...",
-    "commentary": "Solr udostępnia wbudowane, wydajne podświetlanie trafień (hl=true&hl.fl=content), generujące znaczniki <em> w ułamku milisekundy dzięki docValues i analizie pozycji tokenów. W PostgreSQL wymaga to kosztownej funkcji ts_headline()."
-  },
-  "facets_vs_groupby": {
-    "solr_facets": {
-      "description": "Pojedyncze zapytanie Solra z 2 facetami kategorycznymi i 1 facetem zakresowym (facet.range)",
-      "median_client_ms": 14.8,
-      "qtime_ms": 11,
-      "results": {
-        "category": {
-          "Artificial Intelligence": 100000,
-          "Cloud Computing": 100000,
-          "Cybersecurity": 100000,
-          "Data Science": 100000,
-          "Software Engineering": 100000
+      "top10_sql": [
+        {
+          "id": "309025",
+          "orig_id": 309025,
+          "title": "Simulation Typology and Termination Risks",
+          "score": 8.6
         },
-        "tag": {
-          "Algorithms": 62500,
-          "Databases": 62500,
-          "DevOps": 62500,
-          "Docker": 62500,
-          "NLP": 62500,
-          "Performance": 62500,
-          "Python": 62500,
-          "Security": 62500
+        {
+          "id": "205661",
+          "orig_id": 205661,
+          "title": "The Simulator: An Engine to Streamline Simulations",
+          "score": 8.0
         },
-        "rating_range": {
-          "1.0-2.0": 125100,
-          "2.0-3.0": 124800,
-          "3.0-4.0": 125200,
-          "4.0-5.0": 124900
+        {
+          "id": "315692",
+          "orig_id": 315692,
+          "title": "Simulation Credibility Assessment Methodology with FPGA-based Hardware-in-the-loop Platform",
+          "score": 7.4
+        },
+        {
+          "id": "96875",
+          "orig_id": 96875,
+          "title": "Efficient Computing Budget Allocation for Simulation-based Optimization with Stochastic Simulation Time",
+          "score": 7.2
+        },
+        {
+          "id": "349702",
+          "orig_id": 349702,
+          "title": "A Study on the Challenges of Using Robotics Simulators for Testing",
+          "score": 6.2
+        },
+        {
+          "id": "235698",
+          "orig_id": 235698,
+          "title": "Unlocking the Potential of Simulators: Design with RL in Mind",
+          "score": 5.8
+        },
+        {
+          "id": "375624",
+          "orig_id": 375624,
+          "title": "Fast simulation of quantum algorithms using circuit optimization",
+          "score": 5.8
+        },
+        {
+          "id": "105483",
+          "orig_id": 105483,
+          "title": "Physics Educators as Designers of Simulation using Easy Java Simulation (Ejs) Part 2*",
+          "score": 5.6
+        },
+        {
+          "id": "306945",
+          "orig_id": 306945,
+          "title": "XR: Enabling training mode in the human brain XR: Enabling training mode in the human brain",
+          "score": 5.6
+        },
+        {
+          "id": "49466",
+          "orig_id": 49466,
+          "title": "Optimisation of a Crossdocking Distribution Centre Simulation Model",
+          "score": 5.4
+        }
+      ],
+      "top10_solr": [
+        {
+          "id": "205661",
+          "orig_id": 205661,
+          "title": "The Simulator: An Engine to Streamline Simulations",
+          "score": 9.445
+        },
+        {
+          "id": "334329",
+          "orig_id": 334329,
+          "title": "Using asynchronous simulation approach for interactive simulation",
+          "score": 8.73
+        },
+        {
+          "id": "80522",
+          "orig_id": 80522,
+          "title": "Simulations of the Hyades",
+          "score": 8.517
+        },
+        {
+          "id": "72651",
+          "orig_id": 72651,
+          "title": "Simulation in Statistics",
+          "score": 8.517
+        },
+        {
+          "id": "125590",
+          "orig_id": 125590,
+          "title": "Quantum Simulation",
+          "score": 8.517
+        },
+        {
+          "id": "323099",
+          "orig_id": 323099,
+          "title": "The Quijote simulations",
+          "score": 8.517
+        },
+        {
+          "id": "463515",
+          "orig_id": 463515,
+          "title": "Sociophysics Simulations",
+          "score": 8.517
+        },
+        {
+          "id": "352892",
+          "orig_id": 352892,
+          "title": "LGSVL Simulator: A High Fidelity Simulator for Autonomous Driving",
+          "score": 8.411
+        },
+        {
+          "id": "274304",
+          "orig_id": 274304,
+          "title": "Introducing the Simulated Flying Shapes and Simulated Planar Manipulator Datasets",
+          "score": 8.115
+        },
+        {
+          "id": "402045",
+          "orig_id": 402045,
+          "title": "Cathode to Target Simulations for Scorpius: I. Simulation Codes and Models",
+          "score": 8.115
+        }
+      ],
+      "top10_overlap": 1,
+      "top10_duplicate_pairs_sql": 0,
+      "top10_duplicate_pairs_solr": 0,
+      "highlight_doc_id": "205661",
+      "highlight_solr": "The syntax of the <em>simulator</em> leads to <em>simulation</em> code that is easily human-readable. Other benefits of using the <em>simulator</em> include the ability to \"step in\" to a <em>simulation</em> and change one aspect without having to rerun the entire <em>simulation</em> from scratch, the straightforward integration of parallel computing into <em>simulations</em>, and the ability to rapidly generate plots, tables, and reports with minimal effort.",
+      "highlight_sql": "<em>simulator</em> is an R package that streamlines the process of performing <em>simulations</em> by creating a common infrastructure that can be easily used and reused across"
+    },
+    "Q2": {
+      "name": "Q2: fraza (\"neural network\")",
+      "short": "Q2: fraza \"neural network\"",
+      "like_count": 13500,
+      "like": {
+        "sql": "SELECT count(*) FROM documents WHERE (title || ' ' || abstract) LIKE '%neural network%'",
+        "median_ms": 891.68,
+        "times_ms": [
+          918.84,
+          869.6,
+          914.87,
+          891.68,
+          877.95
+        ],
+        "explain_execution_ms": 880.726
+      },
+      "fts_count": 16043,
+      "fts_count_query": {
+        "sql": "SELECT count(*) FROM documents WHERE tsv @@ phraseto_tsquery('english', 'neural network')",
+        "median_ms": 80.95,
+        "times_ms": [
+          80.28,
+          78.19,
+          80.95,
+          92.9,
+          109.08
+        ],
+        "explain_execution_ms": 84.05
+      },
+      "fts_top10_query": {
+        "sql": "SELECT id, orig_id, title, ts_rank_cd(tsv, phraseto_tsquery('english', 'neural network')) AS rank FROM documents WHERE tsv @@ phraseto_tsquery('english', 'neural network') ORDER BY rank DESC, id LIMIT 10",
+        "median_ms": 185.48,
+        "times_ms": [
+          183.37,
+          206.08,
+          185.48,
+          171.45,
+          188.28
+        ],
+        "explain_execution_ms": 172.185
+      },
+      "solr_numFound": 16197,
+      "solr": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?df=text_all&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&q=%7B%21lucene+df%3Dtext_all+cache%3Dfalse%7D%22neural+network%22",
+        "median_client_ms": 13.94,
+        "median_qtime_ms": 8,
+        "qtimes_ms": [
+          12,
+          12,
+          8,
+          7,
+          6
+        ],
+        "numFound": 16197
+      },
+      "solr_cached": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?df=text_all&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&q=%22neural+network%22",
+        "median_client_ms": 4.63,
+        "median_qtime_ms": 0,
+        "qtimes_ms": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "numFound": 16197
+      },
+      "solr_fq_sort_example": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=%22neural+network%22&df=text_all&fq=year%3A%5B2015+TO+%2A%5D&fl=id%2Ctitle%2Cyear%2Ccategory&sort=year+desc%2Cscore+desc&rows=5",
+        "median_client_ms": 5.46,
+        "median_qtime_ms": 1,
+        "qtimes_ms": [
+          1
+        ],
+        "numFound": 15495,
+        "docs": [
+          {
+            "id": "393416",
+            "title": "Symbiotic Hybrid Neural Network Watchdog For Outlier Detection",
+            "category": "cs.LG",
+            "year": 2021
+          },
+          {
+            "id": "390000",
+            "title": "Noise-robust classification with hypergraph neural network",
+            "category": "stat.ML",
+            "year": 2021
+          },
+          {
+            "id": "412641",
+            "title": "Stability Analysis of Time-varying Delay Neural Network for Convex Quadratic Programming With Equality Constraints and Inequality Constraints",
+            "category": "math.OC",
+            "year": 2021
+          },
+          {
+            "id": "400501",
+            "title": "On the approximation of functions by tanh neural networks",
+            "category": "math.NA",
+            "year": 2021
+          },
+          {
+            "id": "419736",
+            "title": "On the space of coefficients of a Feed Forward Neural Network",
+            "category": "cs.LG",
+            "year": 2021
+          }
+        ]
+      },
+      "sql_fq_example_count": 15346,
+      "edismax": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?defType=edismax&q=%22neural+network%22&qf=title%5E3+abstract&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&hl=true&hl.fl=abstract&hl.snippets=1&hl.fragsize=160",
+        "median_client_ms": 15.57,
+        "median_qtime_ms": 9,
+        "qtimes_ms": [
+          11,
+          9,
+          11,
+          9,
+          7
+        ],
+        "numFound": 16197
+      },
+      "ts_headline": {
+        "sql": "SELECT id, ts_headline('english', abstract, phraseto_tsquery('english', 'neural network'), 'MaxFragments=1, MaxWords=25, MinWords=12, StartSel=<em>, StopSel=</em>') FROM documents WHERE id IN (SELECT id FROM (SELECT id, orig_id, title, ts_rank_cd(tsv, phraseto_tsquery('english', 'neural network')) AS rank FROM documents WHERE tsv @@ phraseto_tsquery('english', 'neural network') ORDER BY rank DESC, id LIMIT 10) s)",
+        "median_ms": 184.59,
+        "times_ms": [
+          180.91,
+          184.66,
+          187.16,
+          184.59,
+          182.4
+        ],
+        "explain_execution_ms": 171.754
+      },
+      "top10_sql": [
+        {
+          "id": "265326",
+          "orig_id": 265326,
+          "title": "Cortex Neural Network: learning with Neural Network groups",
+          "score": 5.6
+        },
+        {
+          "id": "371641",
+          "orig_id": 371641,
+          "title": "Extending Answer Set Programs with Neural Networks",
+          "score": 5.4
+        },
+        {
+          "id": "310601",
+          "orig_id": 310601,
+          "title": "Quantifying the generalization error in deep learning in terms of data distribution and neural network smoothness",
+          "score": 5.0
+        },
+        {
+          "id": "371971",
+          "orig_id": 371971,
+          "title": "Theoretical Analysis of the Advantage of Deepening Neural Networks",
+          "score": 5.0
+        },
+        {
+          "id": "351980",
+          "orig_id": 351980,
+          "title": "Can a powerful neural network be a teacher for a weaker neural network?",
+          "score": 4.8
+        },
+        {
+          "id": "280356",
+          "orig_id": 280356,
+          "title": "Quantum Neural Network States: A Brief Review of Methods and Applications",
+          "score": 4.6
+        },
+        {
+          "id": "280357",
+          "orig_id": 280356,
+          "title": "Quantum Neural Network States: A Brief Review of Methods and Applications",
+          "score": 4.6
+        },
+        {
+          "id": "315635",
+          "orig_id": 315635,
+          "title": "Neural Networks on Groups",
+          "score": 4.6
+        },
+        {
+          "id": "351068",
+          "orig_id": 351068,
+          "title": "Neural Network Solutions to Differential Equations in Non-Convex Domains: Solving the Electric Field in the Slit-Well Microfluidic Device",
+          "score": 4.6
+        },
+        {
+          "id": "393592",
+          "orig_id": 393592,
+          "title": "Generating Probabilistic Safety Guarantees for Neural Network Controllers",
+          "score": 4.6
+        }
+      ],
+      "top10_solr": [
+        {
+          "id": "476658",
+          "orig_id": 476658,
+          "title": "Neural Networks",
+          "score": 15.253
+        },
+        {
+          "id": "265326",
+          "orig_id": 265326,
+          "title": "Cortex Neural Network: learning with Neural Network groups",
+          "score": 15.065
+        },
+        {
+          "id": "356845",
+          "orig_id": 356845,
+          "title": "Graphon Neural Networks and the Transferability of Graph Neural Networks",
+          "score": 15.065
+        },
+        {
+          "id": "351980",
+          "orig_id": 351980,
+          "title": "Can a powerful neural network be a teacher for a weaker neural network?",
+          "score": 14.534
+        },
+        {
+          "id": "192099",
+          "orig_id": 192099,
+          "title": "Bitwise Neural Networks",
+          "score": 14.204
+        },
+        {
+          "id": "181978",
+          "orig_id": 181978,
+          "title": "Tensorizing Neural Networks",
+          "score": 14.204
+        },
+        {
+          "id": "315635",
+          "orig_id": 315635,
+          "title": "Neural Networks on Groups",
+          "score": 14.204
+        },
+        {
+          "id": "304391",
+          "orig_id": 304391,
+          "title": "Preference Neural Network",
+          "score": 14.204
+        },
+        {
+          "id": "304392",
+          "orig_id": 304391,
+          "title": "Preference Neural Network",
+          "score": 14.204
+        },
+        {
+          "id": "269172",
+          "orig_id": 269172,
+          "title": "Optical Neural Networks",
+          "score": 14.204
+        }
+      ],
+      "top10_overlap": 3,
+      "top10_duplicate_pairs_sql": 1,
+      "top10_duplicate_pairs_solr": 1,
+      "highlight_doc_id": "476658",
+      "highlight_solr": "We review the theory of <em>neural networks</em>, as it has emerged in the last ten years or so within the physics community, emphasizing questions of biological relevance over those of importance in mathematical statistics and machine learning theory.",
+      "highlight_sql": "review the theory of <em>neural</em> <em>networks</em>, as it has emerged in the last ten years or so within the physics community, emphasizing questions of biological"
+    },
+    "Q3": {
+      "name": "Q3: quantum AND (entanglement OR teleportation) AND NOT photon",
+      "short": "Q3: quantum ∧ (entanglement ∨ teleportation) ∧ ¬photon",
+      "like_count": 3949,
+      "like": {
+        "sql": "SELECT count(*) FROM documents WHERE (title || ' ' || abstract) LIKE '%quantum%' AND ((title || ' ' || abstract) LIKE '%entanglement%' OR (title || ' ' || abstract) LIKE '%teleportation%') AND (title || ' ' || abstract) NOT LIKE '%photon%'",
+        "median_ms": 762.93,
+        "times_ms": [
+          737.13,
+          807.87,
+          734.98,
+          762.93,
+          776.47
+        ],
+        "explain_execution_ms": 800.765
+      },
+      "fts_count": 5094,
+      "fts_count_query": {
+        "sql": "SELECT count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')",
+        "median_ms": 7.82,
+        "times_ms": [
+          8.65,
+          7.82,
+          7.12,
+          7.2,
+          7.84
+        ],
+        "explain_execution_ms": 6.725
+      },
+      "fts_top10_query": {
+        "sql": "SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon') ORDER BY rank DESC, id LIMIT 10",
+        "median_ms": 66.69,
+        "times_ms": [
+          84.55,
+          64.42,
+          66.33,
+          66.69,
+          66.88
+        ],
+        "explain_execution_ms": 67.541
+      },
+      "solr_numFound": 5095,
+      "solr": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?df=text_all&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&q=%7B%21lucene+df%3Dtext_all+cache%3Dfalse%7Dquantum+AND+%28entanglement+OR+teleportation%29+AND+NOT+photon",
+        "median_client_ms": 14.36,
+        "median_qtime_ms": 8,
+        "qtimes_ms": [
+          13,
+          9,
+          8,
+          7,
+          5
+        ],
+        "numFound": 5095
+      },
+      "solr_cached": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?df=text_all&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&q=quantum+AND+%28entanglement+OR+teleportation%29+AND+NOT+photon",
+        "median_client_ms": 5.84,
+        "median_qtime_ms": 0,
+        "qtimes_ms": [
+          0,
+          0,
+          1,
+          2,
+          0
+        ],
+        "numFound": 5095
+      },
+      "solr_fq_sort_example": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=quantum+AND+%28entanglement+OR+teleportation%29+AND+NOT+photon&df=text_all&fq=year%3A%5B2015+TO+%2A%5D&fl=id%2Ctitle%2Cyear%2Ccategory&sort=year+desc%2Cscore+desc&rows=5",
+        "median_client_ms": 19.25,
+        "median_qtime_ms": 1,
+        "qtimes_ms": [
+          1
+        ],
+        "numFound": 2371,
+        "docs": [
+          {
+            "id": "434578",
+            "title": "The effect of acceleration parameter on thermal entanglement and teleportation of a two-qubit Heisenberg XXX model with Dzyaloshinski-Moriya interaction in non-inertial frames",
+            "category": "quant-ph",
+            "year": 2021
+          },
+          {
+            "id": "426101",
+            "title": "Quantum Teleportation with One Classical Bit",
+            "category": "quant-ph",
+            "year": 2021
+          },
+          {
+            "id": "390362",
+            "title": "Probabilistic resumable quantum teleportation in high dimensions",
+            "category": "quant-ph",
+            "year": 2021
+          },
+          {
+            "id": "393931",
+            "title": "Unconditional Microwave Quantum Teleportation of Gaussian States in Lossy Environments",
+            "category": "quant-ph",
+            "year": 2021
+          },
+          {
+            "id": "393932",
+            "title": "Unconditional Microwave Quantum Teleportation of Gaussian States in Lossy Environments",
+            "category": "quant-ph",
+            "year": 2021
+          }
+        ]
+      },
+      "sql_fq_example_count": 2370,
+      "edismax": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?defType=edismax&q=quantum+AND+%28entanglement+OR+teleportation%29+AND+NOT+photon&qf=title%5E3+abstract&rows=10&fl=id%2Corig_id%2Ctitle%2Cscore&hl=true&hl.fl=abstract&hl.snippets=1&hl.fragsize=160",
+        "median_client_ms": 16.99,
+        "median_qtime_ms": 11,
+        "qtimes_ms": [
+          15,
+          11,
+          11,
+          8,
+          9
+        ],
+        "numFound": 5095
+      },
+      "ts_headline": {
+        "sql": "SELECT id, ts_headline('english', abstract, to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon'), 'MaxFragments=1, MaxWords=25, MinWords=12, StartSel=<em>, StopSel=</em>') FROM documents WHERE id IN (SELECT id FROM (SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon') ORDER BY rank DESC, id LIMIT 10) s)",
+        "median_ms": 72.23,
+        "times_ms": [
+          70.0,
+          84.15,
+          72.23,
+          68.12,
+          75.67
+        ],
+        "explain_execution_ms": 73.593
+      },
+      "top10_sql": [
+        {
+          "id": "361896",
+          "orig_id": 361896,
+          "title": "Identifying genuine quantum teleportation",
+          "score": 4.0797
+        },
+        {
+          "id": "548995",
+          "orig_id": 548995,
+          "title": "Quantum Entanglement and Communication Complexity",
+          "score": 3.9018
+        },
+        {
+          "id": "346101",
+          "orig_id": 346101,
+          "title": "Distribution of quantum entanglement: Principles and applications",
+          "score": 3.4951
+        },
+        {
+          "id": "200285",
+          "orig_id": 200285,
+          "title": "Quantum transitions and quantum entanglement from Dirac-like dynamics simulated by trapped ions",
+          "score": 3.269
+        },
+        {
+          "id": "281271",
+          "orig_id": 281271,
+          "title": "Cosmological spectrum of two-point correlation function from vacuum fluctuation of Stringy Axion field in De Sitter space: A study of the role of Quantum Entanglement",
+          "score": 3.1906
+        },
+        {
+          "id": "320479",
+          "orig_id": 320479,
+          "title": "On the effects of an impurity in an Ising-$XXZ$ diamond chain on the thermal entanglement, on the quantum coherence and on the quantum teleportation",
+          "score": 3.1312
+        },
+        {
+          "id": "544823",
+          "orig_id": 544823,
+          "title": "Direct detection of quantum entanglement",
+          "score": 3.0146
+        },
+        {
+          "id": "64410",
+          "orig_id": 64410,
+          "title": "Quantum Entanglement: Separability, Measure, Fidelity of Teleportation and Distillation",
+          "score": 3.0141
+        },
+        {
+          "id": "99698",
+          "orig_id": 99698,
+          "title": "Dynamics of quantum entanglement in the reservoir with memory effects",
+          "score": 2.9059
+        },
+        {
+          "id": "290908",
+          "orig_id": 290908,
+          "title": "Quantum teleportation of shared quantum secret",
+          "score": 2.6038
+        }
+      ],
+      "top10_solr": [
+        {
+          "id": "548615",
+          "orig_id": 548615,
+          "title": "Entanglement Teleportation by Qutrits",
+          "score": 24.6
+        },
+        {
+          "id": "77256",
+          "orig_id": 77256,
+          "title": "Quantum entanglement and teleportation in pulsed cavity-optomechanics",
+          "score": 23.443
+        },
+        {
+          "id": "545428",
+          "orig_id": 545428,
+          "title": "Quantum channels with correlated noise and entanglement teleportation",
+          "score": 23.443
+        },
+        {
+          "id": "545562",
+          "orig_id": 545562,
+          "title": "Quantum teleportation using three-particle entanglement",
+          "score": 23.443
+        },
+        {
+          "id": "64410",
+          "orig_id": 64410,
+          "title": "Quantum Entanglement: Separability, Measure, Fidelity of Teleportation and Distillation",
+          "score": 22.178
+        },
+        {
+          "id": "544835",
+          "orig_id": 544835,
+          "title": "Effects of noisy entangled state transmission on quantum teleportation",
+          "score": 22.178
+        },
+        {
+          "id": "549574",
+          "orig_id": 549574,
+          "title": "Entanglement Teleportation via Werner States",
+          "score": 22.0
+        },
+        {
+          "id": "5122",
+          "orig_id": 5122,
+          "title": "Long-distance entanglement and quantum teleportation in XX spin chains",
+          "score": 21.042
+        },
+        {
+          "id": "383676",
+          "orig_id": 383676,
+          "title": "Quantum teleportation and entanglement swapping with long baseline in outer space",
+          "score": 21.042
+        },
+        {
+          "id": "544934",
+          "orig_id": 544934,
+          "title": "Continuous variable quantum teleportation with a finite-basis entanglement resource",
+          "score": 21.042
+        }
+      ],
+      "top10_overlap": 1,
+      "top10_duplicate_pairs_sql": 0,
+      "top10_duplicate_pairs_solr": 0,
+      "highlight_doc_id": "548615",
+      "highlight_solr": "<em>Quantum</em> <em>entanglement</em>, like othre resources, is now coonsidered to be a resource which can be produced, concentrated if required, transported and consumed. ",
+      "highlight_sql": "<em>Quantum</em> <em>entanglement</em>, like othre resources, is now coonsidered to be a resource which can be produced, concentrated if required, transported and consumed. After its inception"
+    }
+  },
+  "groupby": {
+    "sql": "SELECT field, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY field ORDER BY 2 DESC",
+    "median_ms": 76.66,
+    "times_ms": [
+      71.08,
+      68.68,
+      82.47,
+      76.66,
+      84.45
+    ],
+    "explain_execution_ms": 84.169,
+    "result": [
+      [
+        "Physics",
+        38624
+      ],
+      [
+        "Computer Science",
+        8803
+      ],
+      [
+        "Mathematics",
+        2969
+      ],
+      [
+        "Statistics",
+        2955
+      ],
+      [
+        "Electrical Engineering and Systems Science",
+        1629
+      ],
+      [
+        "Quantitative Biology",
+        1163
+      ],
+      [
+        "Quantitative Finance",
+        264
+      ],
+      [
+        "Economics",
+        133
+      ]
+    ]
+  },
+  "scaling": {
+    "10%": {
+      "records": 55000,
+      "queries": {
+        "Q1": {
+          "like_ms": 198.37,
+          "like_count": 841,
+          "fts_count_ms": 6.45,
+          "fts_count": 4794,
+          "fts_top10_ms": 22.25,
+          "solr_client_ms": 7.41,
+          "solr_qtime_ms": 1,
+          "solr_numFound": 4794
+        },
+        "Q2": {
+          "like_ms": 202.83,
+          "like_count": 85,
+          "fts_count_ms": 2.01,
+          "fts_count": 103,
+          "fts_top10_ms": 2.34,
+          "solr_client_ms": 9.58,
+          "solr_qtime_ms": 2,
+          "solr_numFound": 103
+        },
+        "Q3": {
+          "like_ms": 78.29,
+          "like_count": 490,
+          "fts_count_ms": 2.07,
+          "fts_count": 617,
+          "fts_top10_ms": 8.47,
+          "solr_client_ms": 9.39,
+          "solr_qtime_ms": 3,
+          "solr_numFound": 617
         }
       }
     },
-    "sql_groupby": {
-      "description": "3 oddzielne zapytania GROUP BY po category, tag i CASE/przedziałach rating",
-      "category_ms": 86.4,
-      "tag_ms": 88.1,
-      "rating_range_ms": 114.7,
-      "total_sql_ms": 289.2
+    "50%": {
+      "records": 275000,
+      "queries": {
+        "Q1": {
+          "like_ms": 441.3,
+          "like_count": 5109,
+          "fts_count_ms": 30.9,
+          "fts_count": 28400,
+          "fts_top10_ms": 124.53,
+          "solr_client_ms": 9.41,
+          "solr_qtime_ms": 3,
+          "solr_numFound": 28405
+        },
+        "Q2": {
+          "like_ms": 456.98,
+          "like_count": 3291,
+          "fts_count_ms": 20.7,
+          "fts_count": 3954,
+          "fts_top10_ms": 41.88,
+          "solr_client_ms": 8.09,
+          "solr_qtime_ms": 2,
+          "solr_numFound": 3973
+        },
+        "Q3": {
+          "like_ms": 410.85,
+          "like_count": 2199,
+          "fts_count_ms": 6.56,
+          "fts_count": 2772,
+          "fts_top10_ms": 37.6,
+          "solr_client_ms": 7.82,
+          "solr_qtime_ms": 3,
+          "solr_numFound": 2773
+        }
+      }
     },
-    "speedup_factor": 19.5,
-    "commentary": "Solr oblicza wszystkie facety (wielowymiarowe i zakresowe) w ramach jednego zapytania w zaledwie 14.8 ms dzięki strukturom docValues i pamięci podręcznej filtrów. W PostgreSQL wymaga to trzech oddzielnych zapytań GROUP BY lub złożonej agregacji w CTE, co sumarycznie zajmuje 289.2 ms (Solr jest prawie 20x szybszy)."
-  },
-  "scaling": {
-    "10% (50k)": {
-      "records": 50000,
-      "sql_like_ms": 29.4,
-      "sql_fts_ms": 0.85,
-      "solr_ms": 2.9
-    },
-    "50% (250k)": {
-      "records": 250000,
-      "sql_like_ms": 142.1,
-      "sql_fts_ms": 1.15,
-      "solr_ms": 3.45
-    },
-    "100% (500k)": {
-      "records": 500000,
-      "sql_like_ms": 284.1,
-      "sql_fts_ms": 1.45,
-      "solr_ms": 4.1
-    },
-    "conclusion": "Zapytanie LIKE '%...%' skaluje się ściśle liniowo O(N) i dla 500k rekordów wymaga sekwencyjnego przeszukania całego zbioru (284 ms), co całkowicie wyklucza je z systemów interaktywnych. Indeks pełnotekstowy w PostgreSQL (GIN) oraz Apache Solr skalują się sublinearnie/logarytmicznie O(log N) — czasy wyszukiwania rosną minimalnie (z 0.85 ms do 1.45 ms w Postgresie i z 2.9 ms do 4.1 ms w Solrze). Baza relacyjna radzi sobie doskonale przy prostym wyszukiwaniu, lecz Solr dystansuje ją przy zapytaniach złożonych z facetami."
-  },
-  "extensions": {
-    "extension_1_fuzzy": {
-      "name": "Rozszerzenie 1: Odporność na literówki (Fuzzy search)",
-      "target_phrase": "machne lerning (błąd w stosunku do 'machine learning')",
-      "solr_fuzzy": {
-        "query": "q=machne~1 lerning~1&df=content&rows=10",
-        "time_ms": 9.2,
-        "num_found": 500000,
-        "mechanism": "Algorytm Damerau-Levenshteina w Lucene z automatyczną ekspansją prefiksową"
-      },
-      "sql_pg_trgm": {
-        "query": "SELECT id, title FROM documents WHERE content % 'machne lerning' LIMIT 10;",
-        "time_ms": 68.4,
-        "count": 500000,
-        "mechanism": "Indeks trójgramowy GIN (gin_trgm_ops) i podobieństwo trójgramów"
-      },
-      "sql_like": {
-        "query": "SELECT id, title FROM documents WHERE content LIKE '%machne lerning%' LIMIT 10;",
-        "time_ms": 282.0,
-        "count": 0,
-        "mechanism": "Skan sekwencyjny LIKE (brak dopasowania literówek)"
-      },
-      "analysis": "LIKE zwraca 0 wyników, ponieważ nie wybacza literówek. Rozszerzenie pg_trgm w PostgreSQL poprawnie odnajduje dokumenty w 68.4 ms. Apache Solr dzięki optymalizacjom Lucene wykonuje zapytanie rozmyte w 9.2 ms (ponad 7x szybciej niż PostgreSQL)."
-    },
-    "extension_2_collapse": {
-      "name": "Rozszerzenie 2: Duplikaty po powieleniu danych (Collapsing)",
-      "description": "Zwracanie wyłącznie 1 rekordu na identyfikator oryginału (orig_id)",
-      "solr_collapse": {
-        "query": "q=perform&fq={!collapse field=orig_id}&rows=10",
-        "time_ms": 6.8,
-        "top10_unique_orig_ids": 10,
-        "mechanism": "CollapseQParserPlugin bazujący bezpośrednio na docValues"
-      },
-      "sql_distinct_on": {
-        "query": "SELECT DISTINCT ON (orig_id) id, orig_id, title, rank FROM (...) ORDER BY orig_id, rank DESC LIMIT 10;",
-        "time_ms": 142.5,
-        "top10_unique_orig_ids": 10,
-        "mechanism": "Podzapytanie rankingowe z funkcją okna ROW_NUMBER() i sortowaniem partycji"
-      },
-      "analysis": "Bez usuwania duplikatów lista top-10 jest zdominowana przez pary kopii (rekord 1 oraz jego kopia 250001). Dzięki parametrowi fq={!collapse field=orig_id} Solr błyskawicznie deduplikuje wyniki w pamięci w 6.8 ms. W PostgreSQL wymaga to sortowania całego zbioru wynikowego lub kosztownej partycjonującej funkcji okna (142.5 ms)."
+    "100%": {
+      "records": 550000,
+      "queries": {
+        "Q1": {
+          "like_ms": 869.03,
+          "like_count": 10594,
+          "fts_count_ms": 56.62,
+          "fts_count": 56540,
+          "fts_top10_ms": 260.84,
+          "solr_client_ms": 9.25,
+          "solr_qtime_ms": 3,
+          "solr_numFound": 56557
+        },
+        "Q2": {
+          "like_ms": 901.64,
+          "like_count": 13500,
+          "fts_count_ms": 78.13,
+          "fts_count": 16043,
+          "fts_top10_ms": 172.69,
+          "solr_client_ms": 9.78,
+          "solr_qtime_ms": 4,
+          "solr_numFound": 16197
+        },
+        "Q3": {
+          "like_ms": 794.49,
+          "like_count": 3949,
+          "fts_count_ms": 11.77,
+          "fts_count": 5094,
+          "fts_top10_ms": 80.73,
+          "solr_client_ms": 9.41,
+          "solr_qtime_ms": 4,
+          "solr_numFound": 5095
+        }
+      }
     }
-  }
+  },
+  "facets_vs_groupby": {
+    "Q1": {
+      "solr": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+df%3Dtext_all+cache%3Dfalse%7Dsimulate&rows=0&facet=true&facet.field=field&facet.field=category&f.category.facet.limit=10&f.field.facet.limit=-1&facet.mincount=1&facet.range=year&facet.range.start=1990&facet.range.end=2025&facet.range.gap=5",
+        "median_client_ms": 11.96,
+        "median_qtime_ms": 7,
+        "qtimes_ms": [
+          12,
+          11,
+          7,
+          7,
+          6
+        ],
+        "numFound": 56557
+      },
+      "solr_counts": {
+        "field": {
+          "Computer Science": 8806,
+          "Economics": 134,
+          "Electrical Engineering and Systems Science": 1629,
+          "Mathematics": 2970,
+          "Physics": 38635,
+          "Quantitative Biology": 1163,
+          "Quantitative Finance": 264,
+          "Statistics": 2956
+        },
+        "category": {
+          "astro-ph": 3551,
+          "astro-ph.GA": 2363,
+          "astro-ph.CO": 2347,
+          "quant-ph": 2216,
+          "cond-mat.soft": 2202,
+          "cond-mat.stat-mech": 2180,
+          "cond-mat.mtrl-sci": 1976,
+          "cs.IT": 1708,
+          "stat.ME": 1679,
+          "astro-ph.HE": 1521
+        },
+        "year": {
+          "1990": 336,
+          "1995": 1807,
+          "2000": 3655,
+          "2005": 6381,
+          "2010": 11425,
+          "2015": 20345,
+          "2020": 12608
+        }
+      },
+      "sql_field": {
+        "sql": "SELECT field, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY field ORDER BY 2 DESC",
+        "median_ms": 92.54,
+        "times_ms": [
+          80.11,
+          92.54,
+          120.58,
+          88.32,
+          106.61
+        ],
+        "explain_execution_ms": 68.687
+      },
+      "sql_category": {
+        "sql": "SELECT category, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY category ORDER BY 2 DESC LIMIT 10",
+        "median_ms": 119.91,
+        "times_ms": [
+          153.72,
+          113.58,
+          119.91,
+          115.93,
+          157.96
+        ],
+        "explain_execution_ms": 80.639
+      },
+      "sql_year": {
+        "sql": "SELECT 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') AND year >= 1990 GROUP BY y ORDER BY y",
+        "median_ms": 99.34,
+        "times_ms": [
+          99.34,
+          97.31,
+          99.97,
+          99.73,
+          92.62
+        ],
+        "explain_execution_ms": 86.018
+      },
+      "sql_three_queries_ms": 311.79,
+      "sql_grouping_sets": {
+        "sql": "SELECT field, category, 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY GROUPING SETS ((field), (category), (1990 + 5 * ((year - 1990) / 5)))",
+        "median_ms": 91.34,
+        "times_ms": [
+          110.77,
+          91.34,
+          94.01,
+          86.92,
+          85.64
+        ],
+        "explain_execution_ms": 98.924
+      },
+      "sql_counts": {
+        "field": {
+          "Physics": 38624,
+          "Computer Science": 8803,
+          "Mathematics": 2969,
+          "Statistics": 2955,
+          "Electrical Engineering and Systems Science": 1629,
+          "Quantitative Biology": 1163,
+          "Quantitative Finance": 264,
+          "Economics": 133
+        },
+        "category": {
+          "astro-ph": 3551,
+          "astro-ph.GA": 2363,
+          "astro-ph.CO": 2347,
+          "quant-ph": 2216,
+          "cond-mat.soft": 2202,
+          "cond-mat.stat-mech": 2180,
+          "cond-mat.mtrl-sci": 1973,
+          "cs.IT": 1707,
+          "stat.ME": 1678,
+          "astro-ph.HE": 1519
+        },
+        "year": {
+          "1990": 336,
+          "1995": 1807,
+          "2000": 3655,
+          "2005": 6381,
+          "2010": 11424,
+          "2015": 20334,
+          "2020": 12603
+        }
+      },
+      "counts_equal": {
+        "field": false,
+        "category": false,
+        "year": false
+      }
+    },
+    "all": {
+      "solr": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7D%2A%3A%2A&rows=0&facet=true&facet.field=field&facet.field=category&f.category.facet.limit=10&f.field.facet.limit=-1&facet.mincount=1&facet.range=year&facet.range.start=1990&facet.range.end=2025&facet.range.gap=5",
+        "median_client_ms": 34.75,
+        "median_qtime_ms": 28,
+        "qtimes_ms": [
+          31,
+          28,
+          33,
+          28,
+          28
+        ],
+        "numFound": 550000
+      },
+      "solr_counts": {
+        "field": {
+          "Computer Science": 90616,
+          "Economics": 971,
+          "Electrical Engineering and Systems Science": 7183,
+          "Mathematics": 112934,
+          "Physics": 319829,
+          "Quantitative Biology": 6188,
+          "Quantitative Finance": 2505,
+          "Statistics": 9774
+        },
+        "category": {
+          "hep-ph": 32872,
+          "hep-th": 26095,
+          "astro-ph": 25964,
+          "quant-ph": 24153,
+          "cond-mat.mes-hall": 14999,
+          "gr-qc": 14775,
+          "cs.CV": 14459,
+          "cond-mat.mtrl-sci": 13502,
+          "cs.LG": 12766,
+          "cond-mat.str-el": 11447
+        },
+        "year": {
+          "1990": 5592,
+          "1995": 27660,
+          "2000": 50438,
+          "2005": 75839,
+          "2010": 115937,
+          "2015": 175384,
+          "2020": 99150
+        }
+      },
+      "sql_field": {
+        "sql": "SELECT field, count(*) FROM documents WHERE TRUE GROUP BY field ORDER BY 2 DESC",
+        "median_ms": 179.68,
+        "times_ms": [
+          183.44,
+          179.68,
+          179.04,
+          189.79,
+          159.68
+        ],
+        "explain_execution_ms": 181.108
+      },
+      "sql_category": {
+        "sql": "SELECT category, count(*) FROM documents WHERE TRUE GROUP BY category ORDER BY 2 DESC LIMIT 10",
+        "median_ms": 170.85,
+        "times_ms": [
+          156.72,
+          170.85,
+          159.43,
+          171.38,
+          173.52
+        ],
+        "explain_execution_ms": 170.787
+      },
+      "sql_year": {
+        "sql": "SELECT 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE TRUE AND year >= 1990 GROUP BY y ORDER BY y",
+        "median_ms": 161.95,
+        "times_ms": [
+          169.87,
+          161.95,
+          155.51,
+          156.71,
+          167.19
+        ],
+        "explain_execution_ms": 193.865
+      },
+      "sql_three_queries_ms": 512.48,
+      "sql_grouping_sets": {
+        "sql": "SELECT field, category, 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE TRUE GROUP BY GROUPING SETS ((field), (category), (1990 + 5 * ((year - 1990) / 5)))",
+        "median_ms": 519.37,
+        "times_ms": [
+          492.15,
+          530.81,
+          466.34,
+          519.37,
+          701.3
+        ],
+        "explain_execution_ms": 571.265
+      },
+      "sql_counts": {
+        "field": {
+          "Physics": 319829,
+          "Mathematics": 112934,
+          "Computer Science": 90616,
+          "Statistics": 9774,
+          "Electrical Engineering and Systems Science": 7183,
+          "Quantitative Biology": 6188,
+          "Quantitative Finance": 2505,
+          "Economics": 971
+        },
+        "category": {
+          "hep-ph": 32872,
+          "hep-th": 26095,
+          "astro-ph": 25964,
+          "quant-ph": 24153,
+          "cond-mat.mes-hall": 14999,
+          "gr-qc": 14775,
+          "cs.CV": 14459,
+          "cond-mat.mtrl-sci": 13502,
+          "cs.LG": 12766,
+          "cond-mat.str-el": 11447
+        },
+        "year": {
+          "1990": 5592,
+          "1995": 27660,
+          "2000": 50438,
+          "2005": 75839,
+          "2010": 115937,
+          "2015": 175384,
+          "2020": 99150
+        }
+      },
+      "counts_equal": {
+        "field": true,
+        "category": true,
+        "year": true
+      }
+    }
+  },
+  "ext_fuzzy": {
+    "entanglment": {
+      "correct_word": "entanglement",
+      "like": {
+        "sql": "SELECT count(*) FROM documents WHERE title LIKE '%entanglment%'",
+        "median_ms": 2.05,
+        "times_ms": [
+          2.05,
+          2.02,
+          1.98,
+          2.21,
+          2.07
+        ],
+        "explain_execution_ms": 1.435,
+        "count": 0
+      },
+      "pg_trgm": {
+        "sql": "SELECT count(*) FROM documents WHERE 'entanglment' <% title",
+        "median_ms": 125.98,
+        "times_ms": [
+          112.0,
+          98.55,
+          131.16,
+          184.61,
+          125.98
+        ],
+        "explain_execution_ms": 118.007,
+        "count": 4121,
+        "top5": [
+          [
+            "A measure of qubit environment entanglement for pure dephasing evolutions",
+            0.818
+          ],
+          [
+            "Group Invariant Entanglements in Generalized Tensor Products",
+            0.727
+          ],
+          [
+            "Off-resonant entanglement generation in a lossy cavity",
+            0.727
+          ],
+          [
+            "Off-resonant entanglement generation in a lossy cavity",
+            0.727
+          ],
+          [
+            "A New Tripartite Coherent-Entangled State Generated by An Asymmetric Beam-Splitter and Its Applications",
+            0.727
+          ]
+        ]
+      },
+      "solr_exact": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=title_exact%3Aentanglment&rows=0",
+        "median_client_ms": 4.25,
+        "median_qtime_ms": 0,
+        "qtimes_ms": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "numFound": 0,
+        "count": 0
+      },
+      "solr_fuzzy": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7Dtitle_exact%3Aentanglment~2&rows=5&fl=title",
+        "median_client_ms": 29.43,
+        "median_qtime_ms": 24,
+        "qtimes_ms": [
+          24,
+          29,
+          25,
+          21,
+          13
+        ],
+        "numFound": 3261,
+        "count": 3261,
+        "top5": [
+          "Entanglement-annihilating and entanglement-breaking channels",
+          "Entanglement Classification via Single Entanglement Measure",
+          "Maximal Entanglement - A New Measure of Entanglement",
+          "Entanglement Wedge Cross Sections Require Tripartite Entanglement",
+          "Holographic entanglement entropy and generalized entanglement temperature"
+        ]
+      },
+      "solr_correct_word_count": 3200
+    },
+    "superconductivty": {
+      "correct_word": "superconductivity",
+      "like": {
+        "sql": "SELECT count(*) FROM documents WHERE title LIKE '%superconductivty%'",
+        "median_ms": 1.58,
+        "times_ms": [
+          1.37,
+          1.65,
+          1.85,
+          1.5,
+          1.58
+        ],
+        "explain_execution_ms": 0.516,
+        "count": 0
+      },
+      "pg_trgm": {
+        "sql": "SELECT count(*) FROM documents WHERE 'superconductivty' <% title",
+        "median_ms": 164.58,
+        "times_ms": [
+          164.58,
+          177.54,
+          190.31,
+          164.44,
+          164.24
+        ],
+        "explain_execution_ms": 179.13,
+        "count": 6996,
+        "top5": [
+          [
+            "Mechanism for Odd Parity Superconductivity in Iron-Based Superconductors",
+            0.882
+          ],
+          [
+            "Topological Odd-Parity Superconductivity at Type-II 2D Van Hove Singularities",
+            0.882
+          ],
+          [
+            "Possible high temperature odd parity superconductivity in LaNi$_{7/8}$Co$_{1/8}$O$_3$ (111) bilayers",
+            0.882
+          ],
+          [
+            "Odd-parity superconductivity in bilayer transition metal dichalcogenides",
+            0.882
+          ],
+          [
+            "Possible signatures of mixed-parity superconductivity in doped polar SrTiO3 films",
+            0.882
+          ]
+        ]
+      },
+      "solr_exact": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=title_exact%3Asuperconductivty&rows=0",
+        "median_client_ms": 4.55,
+        "median_qtime_ms": 0,
+        "qtimes_ms": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "numFound": 0,
+        "count": 0
+      },
+      "solr_fuzzy": {
+        "url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7Dtitle_exact%3Asuperconductivty~2&rows=5&fl=title",
+        "median_client_ms": 22.7,
+        "median_qtime_ms": 17,
+        "qtimes_ms": [
+          23,
+          25,
+          14,
+          17,
+          13
+        ],
+        "numFound": 1792,
+        "count": 1792,
+        "top5": [
+          "Transient superconductivity without superconductivity",
+          "Transient superconductivity without superconductivity",
+          "Heat Superconductivity",
+          "Frustrated multiband superconductivity",
+          "Band-edge superconductivity"
+        ]
+      },
+      "solr_correct_word_count": 1773
+    }
+  },
+  "ext_analysis": [
+    {
+      "sentence": "The simulated annealing algorithms were simulating complex networks' behaviour.",
+      "solr_chain": [
+        {
+          "stage": "StandardTokenizer",
+          "tokens": [
+            "The",
+            "simulated",
+            "annealing",
+            "algorithms",
+            "were",
+            "simulating",
+            "complex",
+            "networks",
+            "behaviour"
+          ]
+        },
+        {
+          "stage": "LowerCaseFilter",
+          "tokens": [
+            "the",
+            "simulated",
+            "annealing",
+            "algorithms",
+            "were",
+            "simulating",
+            "complex",
+            "networks",
+            "behaviour"
+          ]
+        },
+        {
+          "stage": "StopFilter",
+          "tokens": [
+            "simulated",
+            "annealing",
+            "algorithms",
+            "were",
+            "simulating",
+            "complex",
+            "networks",
+            "behaviour"
+          ]
+        },
+        {
+          "stage": "EnglishPossessiveFilter",
+          "tokens": [
+            "simulated",
+            "annealing",
+            "algorithms",
+            "were",
+            "simulating",
+            "complex",
+            "networks",
+            "behaviour"
+          ]
+        },
+        {
+          "stage": "SnowballFilter",
+          "tokens": [
+            "simul",
+            "anneal",
+            "algorithm",
+            "were",
+            "simul",
+            "complex",
+            "network",
+            "behaviour"
+          ]
+        }
+      ],
+      "solr_tokens": [
+        "simul",
+        "anneal",
+        "algorithm",
+        "were",
+        "simul",
+        "complex",
+        "network",
+        "behaviour"
+      ],
+      "pg_to_tsvector": "'algorithm':4 'anneal':3 'behaviour':9 'complex':7 'network':8 'simul':2,6"
+    },
+    {
+      "sentence": "Next-to-leading order QCD corrections for e+e- annihilation at 10 TeV energies.",
+      "solr_chain": [
+        {
+          "stage": "StandardTokenizer",
+          "tokens": [
+            "Next",
+            "to",
+            "leading",
+            "order",
+            "QCD",
+            "corrections",
+            "for",
+            "e",
+            "e",
+            "annihilation",
+            "at",
+            "10",
+            "TeV",
+            "energies"
+          ]
+        },
+        {
+          "stage": "LowerCaseFilter",
+          "tokens": [
+            "next",
+            "to",
+            "leading",
+            "order",
+            "qcd",
+            "corrections",
+            "for",
+            "e",
+            "e",
+            "annihilation",
+            "at",
+            "10",
+            "tev",
+            "energies"
+          ]
+        },
+        {
+          "stage": "StopFilter",
+          "tokens": [
+            "next",
+            "leading",
+            "order",
+            "qcd",
+            "corrections",
+            "e",
+            "e",
+            "annihilation",
+            "10",
+            "tev",
+            "energies"
+          ]
+        },
+        {
+          "stage": "EnglishPossessiveFilter",
+          "tokens": [
+            "next",
+            "leading",
+            "order",
+            "qcd",
+            "corrections",
+            "e",
+            "e",
+            "annihilation",
+            "10",
+            "tev",
+            "energies"
+          ]
+        },
+        {
+          "stage": "SnowballFilter",
+          "tokens": [
+            "next",
+            "lead",
+            "order",
+            "qcd",
+            "correct",
+            "e",
+            "e",
+            "annihil",
+            "10",
+            "tev",
+            "energi"
+          ]
+        }
+      ],
+      "solr_tokens": [
+        "next",
+        "lead",
+        "order",
+        "qcd",
+        "correct",
+        "e",
+        "e",
+        "annihil",
+        "10",
+        "tev",
+        "energi"
+      ],
+      "pg_to_tsvector": "'10':13 'annihil':11 'correct':7 'e':9,10 'energi':15 'lead':4 'next':2 'next-to-lead':1 'order':5 'qcd':6 'tev':14"
+    },
+    {
+      "sentence": "We don't observe photons; the photonic crystals' band gaps were measured in 2019.",
+      "solr_chain": [
+        {
+          "stage": "StandardTokenizer",
+          "tokens": [
+            "We",
+            "don't",
+            "observe",
+            "photons",
+            "the",
+            "photonic",
+            "crystals",
+            "band",
+            "gaps",
+            "were",
+            "measured",
+            "in",
+            "2019"
+          ]
+        },
+        {
+          "stage": "LowerCaseFilter",
+          "tokens": [
+            "we",
+            "don't",
+            "observe",
+            "photons",
+            "the",
+            "photonic",
+            "crystals",
+            "band",
+            "gaps",
+            "were",
+            "measured",
+            "in",
+            "2019"
+          ]
+        },
+        {
+          "stage": "StopFilter",
+          "tokens": [
+            "we",
+            "don't",
+            "observe",
+            "photons",
+            "photonic",
+            "crystals",
+            "band",
+            "gaps",
+            "were",
+            "measured",
+            "2019"
+          ]
+        },
+        {
+          "stage": "EnglishPossessiveFilter",
+          "tokens": [
+            "we",
+            "don't",
+            "observe",
+            "photons",
+            "photonic",
+            "crystals",
+            "band",
+            "gaps",
+            "were",
+            "measured",
+            "2019"
+          ]
+        },
+        {
+          "stage": "SnowballFilter",
+          "tokens": [
+            "we",
+            "don't",
+            "observ",
+            "photon",
+            "photon",
+            "crystal",
+            "band",
+            "gap",
+            "were",
+            "measur",
+            "2019"
+          ]
+        }
+      ],
+      "solr_tokens": [
+        "we",
+        "don't",
+        "observ",
+        "photon",
+        "photon",
+        "crystal",
+        "band",
+        "gap",
+        "were",
+        "measur",
+        "2019"
+      ],
+      "pg_to_tsvector": "'2019':14 'band':9 'crystal':8 'gap':10 'measur':12 'observ':4 'photon':5,7"
+    }
+  ],
+  "ext_collapse": {
+    "query": "Q1: pojedyncze słowo w dowolnej formie (simulate)",
+    "solr_plain": {
+      "url": "http://localhost:8983/solr/nlp_lab3/select?defType=edismax&q=simulate&qf=title%5E3+abstract&rows=10&fl=id%2Corig_id%2Ccopy_no%2Ctitle%2Cscore",
+      "median_client_ms": 5.81,
+      "median_qtime_ms": 0,
+      "qtimes_ms": [
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "numFound": 56557,
+      "duplicate_pairs": 0,
+      "docs": [
+        {
+          "id": "205661",
+          "orig_id": 205661,
+          "copy_no": 0,
+          "title": "The Simulator: An Engine to Streamline Simulations"
+        },
+        {
+          "id": "334329",
+          "orig_id": 334329,
+          "copy_no": 0,
+          "title": "Using asynchronous simulation approach for interactive simulation"
+        },
+        {
+          "id": "80522",
+          "orig_id": 80522,
+          "copy_no": 0,
+          "title": "Simulations of the Hyades"
+        },
+        {
+          "id": "72651",
+          "orig_id": 72651,
+          "copy_no": 0,
+          "title": "Simulation in Statistics"
+        },
+        {
+          "id": "125590",
+          "orig_id": 125590,
+          "copy_no": 0,
+          "title": "Quantum Simulation"
+        },
+        {
+          "id": "323099",
+          "orig_id": 323099,
+          "copy_no": 0,
+          "title": "The Quijote simulations"
+        },
+        {
+          "id": "463515",
+          "orig_id": 463515,
+          "copy_no": 0,
+          "title": "Sociophysics Simulations"
+        },
+        {
+          "id": "352892",
+          "orig_id": 352892,
+          "copy_no": 0,
+          "title": "LGSVL Simulator: A High Fidelity Simulator for Autonomous Driving"
+        },
+        {
+          "id": "274304",
+          "orig_id": 274304,
+          "copy_no": 0,
+          "title": "Introducing the Simulated Flying Shapes and Simulated Planar Manipulator Datasets"
+        },
+        {
+          "id": "402045",
+          "orig_id": 402045,
+          "copy_no": 0,
+          "title": "Cathode to Target Simulations for Scorpius: I. Simulation Codes and Models"
+        }
+      ]
+    },
+    "solr_collapse": {
+      "url": "http://localhost:8983/solr/nlp_lab3/select?defType=edismax&q=simulate&qf=title%5E3+abstract&rows=10&fl=id%2Corig_id%2Ccopy_no%2Ctitle%2Cscore&fq=%7B%21collapse+field%3Dorig_id%7D",
+      "median_client_ms": 5.72,
+      "median_qtime_ms": 0,
+      "qtimes_ms": [
+        0,
+        1,
+        0,
+        0,
+        1
+      ],
+      "numFound": 51416,
+      "duplicate_pairs": 0,
+      "docs": [
+        {
+          "id": "205661",
+          "orig_id": 205661,
+          "copy_no": 0,
+          "title": "The Simulator: An Engine to Streamline Simulations"
+        },
+        {
+          "id": "334329",
+          "orig_id": 334329,
+          "copy_no": 0,
+          "title": "Using asynchronous simulation approach for interactive simulation"
+        },
+        {
+          "id": "80522",
+          "orig_id": 80522,
+          "copy_no": 0,
+          "title": "Simulations of the Hyades"
+        },
+        {
+          "id": "72651",
+          "orig_id": 72651,
+          "copy_no": 0,
+          "title": "Simulation in Statistics"
+        },
+        {
+          "id": "125590",
+          "orig_id": 125590,
+          "copy_no": 0,
+          "title": "Quantum Simulation"
+        },
+        {
+          "id": "323099",
+          "orig_id": 323099,
+          "copy_no": 0,
+          "title": "The Quijote simulations"
+        },
+        {
+          "id": "463515",
+          "orig_id": 463515,
+          "copy_no": 0,
+          "title": "Sociophysics Simulations"
+        },
+        {
+          "id": "352892",
+          "orig_id": 352892,
+          "copy_no": 0,
+          "title": "LGSVL Simulator: A High Fidelity Simulator for Autonomous Driving"
+        },
+        {
+          "id": "274304",
+          "orig_id": 274304,
+          "copy_no": 0,
+          "title": "Introducing the Simulated Flying Shapes and Simulated Planar Manipulator Datasets"
+        },
+        {
+          "id": "402045",
+          "orig_id": 402045,
+          "copy_no": 0,
+          "title": "Cathode to Target Simulations for Scorpius: I. Simulation Codes and Models"
+        }
+      ]
+    },
+    "solr_numFound_without_copies": 51416,
+    "sql_plain_top10": {
+      "sql": "SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'simulate')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') ORDER BY rank DESC, id LIMIT 10",
+      "median_ms": 281.33,
+      "times_ms": [
+        269.97,
+        311.28,
+        281.33,
+        288.71,
+        261.28
+      ],
+      "duplicate_pairs": 0
+    },
+    "sql_distinct_on": {
+      "sql": "SELECT id, orig_id, title, rank FROM (SELECT DISTINCT ON (orig_id) id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'simulate')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') ORDER BY orig_id, rank DESC, id) s ORDER BY rank DESC, id LIMIT 10",
+      "median_ms": 269.44,
+      "times_ms": [
+        279.49,
+        269.44,
+        265.25,
+        272.61,
+        265.77
+      ],
+      "explain_execution_ms": 275.584,
+      "duplicate_pairs": 0
+    },
+    "sql_distinct_orig_count": 51400
+  },
+  "ext_deep_paging": [
+    {
+      "position": 0,
+      "solr_start_ms": 16.91,
+      "solr_start_qtime_ms": 12,
+      "solr_cursor_ms": 16.88,
+      "solr_cursor_qtime_ms": 13,
+      "solr_same_page": true,
+      "sql_offset_ms": 0.73,
+      "sql_keyset_ms": 0.75,
+      "solr_start_url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7D%2A%3A%2A&sort=id+asc&rows=10&start=0&fl=id"
+    },
+    {
+      "position": 1000,
+      "solr_start_ms": 19.63,
+      "solr_start_qtime_ms": 15,
+      "solr_cursor_ms": 16.94,
+      "solr_cursor_qtime_ms": 13,
+      "solr_same_page": true,
+      "sql_offset_ms": 0.81,
+      "sql_keyset_ms": 0.73,
+      "solr_start_url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7D%2A%3A%2A&sort=id+asc&rows=10&start=1000&fl=id"
+    },
+    {
+      "position": 10000,
+      "solr_start_ms": 29.27,
+      "solr_start_qtime_ms": 25,
+      "solr_cursor_ms": 17.39,
+      "solr_cursor_qtime_ms": 13,
+      "solr_same_page": true,
+      "sql_offset_ms": 1.47,
+      "sql_keyset_ms": 0.75,
+      "solr_start_url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7D%2A%3A%2A&sort=id+asc&rows=10&start=10000&fl=id"
+    },
+    {
+      "position": 100000,
+      "solr_start_ms": 128.43,
+      "solr_start_qtime_ms": 122,
+      "solr_cursor_ms": 19.78,
+      "solr_cursor_qtime_ms": 14,
+      "solr_same_page": true,
+      "sql_offset_ms": 7.79,
+      "sql_keyset_ms": 0.79,
+      "solr_start_url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7D%2A%3A%2A&sort=id+asc&rows=10&start=100000&fl=id"
+    },
+    {
+      "position": 250000,
+      "solr_start_ms": 469.68,
+      "solr_start_qtime_ms": 465,
+      "solr_cursor_ms": 23.83,
+      "solr_cursor_qtime_ms": 18,
+      "solr_same_page": true,
+      "sql_offset_ms": 18.11,
+      "sql_keyset_ms": 1.04,
+      "solr_start_url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7D%2A%3A%2A&sort=id+asc&rows=10&start=250000&fl=id"
+    },
+    {
+      "position": 500000,
+      "solr_start_ms": 671.58,
+      "solr_start_qtime_ms": 666,
+      "solr_cursor_ms": 29.3,
+      "solr_cursor_qtime_ms": 24,
+      "solr_same_page": true,
+      "sql_offset_ms": 42.18,
+      "sql_keyset_ms": 0.84,
+      "solr_start_url": "http://localhost:8983/solr/nlp_lab3/select?q=%7B%21lucene+cache%3Dfalse%7D%2A%3A%2A&sort=id+asc&rows=10&start=500000&fl=id"
+    }
+  ]
 }

@@ -1,0 +1,18 @@
+SELECT count(*) FROM documents WHERE (title || ' ' || abstract) LIKE '%quantum%' AND ((title || ' ' || abstract) LIKE '%entanglement%' OR (title || ' ' || abstract) LIKE '%teleportation%') AND (title || ' ' || abstract) NOT LIKE '%photon%'
+
+Aggregate  (cost=109219.00..109219.01 rows=1 width=8) (actual time=791.447..800.307 rows=1 loops=1)
+  Buffers: shared hit=55609 read=49599
+  ->  Gather  (cost=1000.00..109219.00 rows=1 width=0) (actual time=5.630..799.690 rows=3949 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=55609 read=49599
+        ->  Parallel Seq Scan on documents  (cost=0.00..108218.90 rows=1 width=0) (actual time=5.246..775.639 rows=1316 loops=3)
+              Filter: ((((title || ' '::text) || abstract) ~~ '%quantum%'::text) AND (((title || ' '::text) || abstract) !~~ '%photon%'::text) AND ((((title || ' '::text) || abstract) ~~ '%entanglement%'::text) OR (((title || ' '::text) || abstract) ~~ '%teleportation%'::text)))
+              Rows Removed by Filter: 182017
+              Buffers: shared hit=55609 read=49599
+Planning Time: 0.080 ms
+JIT:
+  Functions: 11
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 1.421 ms, Inlining 0.000 ms, Optimization 0.765 ms, Emission 13.510 ms, Total 15.696 ms
+Execution Time: 800.765 ms

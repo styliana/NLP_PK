@@ -1,0 +1,20 @@
+SELECT count(*) FROM documents WHERE (title || ' ' || abstract) LIKE '%neural network%'
+
+Finalize Aggregate  (cost=104065.04..104065.05 rows=1 width=8) (actual time=869.388..880.246 rows=1 loops=1)
+  Buffers: shared hit=46661 read=57375
+  ->  Gather  (cost=104064.83..104065.04 rows=2 width=8) (actual time=869.046..880.204 rows=3 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=46661 read=57375
+        ->  Partial Aggregate  (cost=103064.83..103064.84 rows=1 width=8) (actual time=855.129..855.130 rows=1 loops=3)
+              Buffers: shared hit=46661 read=57375
+              ->  Parallel Seq Scan on documents  (cost=0.00..103064.77 rows=23 width=0) (actual time=7.005..854.330 rows=4500 loops=3)
+                    Filter: (((title || ' '::text) || abstract) ~~ '%neural network%'::text)
+                    Rows Removed by Filter: 178833
+                    Buffers: shared hit=46661 read=57375
+Planning Time: 0.070 ms
+JIT:
+  Functions: 14
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 1.060 ms, Inlining 0.000 ms, Optimization 0.730 ms, Emission 11.539 ms, Total 13.329 ms
+Execution Time: 880.726 ms

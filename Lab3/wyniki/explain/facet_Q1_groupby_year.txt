@@ -1,0 +1,22 @@
+SELECT 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') AND year >= 1990 GROUP BY y ORDER BY y
+
+Sort  (cost=90656.58..90656.66 rows=31 width=12) (actual time=85.452..85.454 rows=7 loops=1)
+  Sort Key: ((1990 + (5 * ((year - 1990) / 5))))
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=41123
+  ->  HashAggregate  (cost=90655.19..90655.81 rows=31 width=12) (actual time=85.434..85.437 rows=7 loops=1)
+        Group Key: (1990 + (5 * ((year - 1990) / 5)))
+        Batches: 1  Memory Usage: 24kB
+        Buffers: shared hit=41123
+        ->  Bitmap Heap Scan on documents  (cost=409.31..90368.21 rows=57396 width=4) (actual time=23.043..74.595 rows=56540 loops=1)
+              Recheck Cond: (tsv @@ '''simul'''::tsquery)
+              Filter: (year >= 1990)
+              Heap Blocks: exact=41105
+              Buffers: shared hit=41123
+              ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..394.96 rows=57396 width=0) (actual time=13.224..13.224 rows=56540 loops=1)
+                    Index Cond: (tsv @@ '''simul'''::tsquery)
+                    Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.208 ms
+Execution Time: 86.018 ms

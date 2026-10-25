@@ -1,0 +1,16 @@
+SELECT count(*) FROM documents WHERE 'entanglment' <% title
+
+Aggregate  (cost=18103.14..18103.15 rows=1 width=8) (actual time=117.967..117.968 rows=1 loops=1)
+  Buffers: shared hit=4064
+  ->  Bitmap Heap Scan on documents  (cost=196.38..18089.26 rows=5553 width=0) (actual time=21.332..117.311 rows=4121 loops=1)
+        Filter: ('entanglment'::text <% title)
+        Rows Removed by Filter: 259
+        Heap Blocks: exact=3797
+        Buffers: shared hit=4064
+        ->  Bitmap Index Scan on documents_title_trgm  (cost=0.00..194.99 rows=5553 width=0) (actual time=20.676..20.677 rows=4380 loops=1)
+              Index Cond: (title %> 'entanglment'::text)
+              Buffers: shared hit=267
+Planning:
+  Buffers: shared hit=1
+Planning Time: 1.634 ms
+Execution Time: 118.007 ms

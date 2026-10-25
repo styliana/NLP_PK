@@ -1,0 +1,19 @@
+SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'simulate')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') ORDER BY rank DESC, id LIMIT 10
+
+Limit  (cost=91034.56..91034.58 rows=10 width=93) (actual time=265.659..265.663 rows=10 loops=1)
+  Buffers: shared hit=194880
+  ->  Sort  (cost=91034.56..91178.05 rows=57396 width=93) (actual time=265.657..265.659 rows=10 loops=1)
+        Sort Key: (ts_rank_cd(tsv, '''simul'''::tsquery)) DESC, id
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=194880
+        ->  Bitmap Heap Scan on documents  (cost=409.31..89794.25 rows=57396 width=93) (actual time=20.898..249.898 rows=56540 loops=1)
+              Recheck Cond: (tsv @@ '''simul'''::tsquery)
+              Heap Blocks: exact=41105
+              Buffers: shared hit=194880
+              ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..394.96 rows=57396 width=0) (actual time=11.196..11.196 rows=56540 loops=1)
+                    Index Cond: (tsv @@ '''simul'''::tsquery)
+                    Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.211 ms
+Execution Time: 265.690 ms

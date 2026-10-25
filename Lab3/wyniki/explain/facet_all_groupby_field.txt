@@ -1,0 +1,33 @@
+SELECT field, count(*) FROM documents WHERE TRUE GROUP BY field ORDER BY 2 DESC
+
+Sort  (cost=103494.46..103494.48 rows=8 width=19) (actual time=172.868..180.568 rows=8 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=52933 read=46139
+  ->  Finalize GroupAggregate  (cost=103492.31..103494.34 rows=8 width=19) (actual time=172.840..180.557 rows=8 loops=1)
+        Group Key: field
+        Buffers: shared hit=52933 read=46139
+        ->  Gather Merge  (cost=103492.31..103494.18 rows=16 width=19) (actual time=172.716..180.430 rows=24 loops=1)
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=52933 read=46139
+              ->  Sort  (cost=102492.28..102492.30 rows=8 width=19) (actual time=155.254..155.257 rows=8 loops=3)
+                    Sort Key: field
+                    Sort Method: quicksort  Memory: 25kB
+                    Buffers: shared hit=52933 read=46139
+                    Worker 0:  Sort Method: quicksort  Memory: 25kB
+                    Worker 1:  Sort Method: quicksort  Memory: 25kB
+                    ->  Partial HashAggregate  (cost=102492.08..102492.16 rows=8 width=19) (actual time=155.211..155.215 rows=8 loops=3)
+                          Group Key: field
+                          Batches: 1  Memory Usage: 24kB
+                          Buffers: shared hit=52917 read=46139
+                          Worker 0:  Batches: 1  Memory Usage: 24kB
+                          Worker 1:  Batches: 1  Memory Usage: 24kB
+                          ->  Parallel Seq Scan on documents  (cost=0.00..101346.73 rows=229072 width=11) (actual time=0.020..75.695 rows=183333 loops=3)
+                                Buffers: shared hit=52917 read=46139
+Planning Time: 0.087 ms
+JIT:
+  Functions: 18
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 1.324 ms, Inlining 0.000 ms, Optimization 0.902 ms, Emission 16.741 ms, Total 18.967 ms
+Execution Time: 181.108 ms

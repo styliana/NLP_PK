@@ -1,0 +1,28 @@
+SELECT id, ts_headline('english', abstract, to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon'), 'MaxFragments=1, MaxWords=25, MinWords=12, StartSel=<em>, StopSel=</em>') FROM documents WHERE id IN (SELECT id FROM (SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon') ORDER BY rank DESC, id LIMIT 10) s)
+
+Nested Loop  (cost=4396.49..4483.10 rows=10 width=40) (actual time=71.558..73.552 rows=10 loops=1)
+  Buffers: shared hit=13018
+  ->  HashAggregate  (cost=4396.07..4396.17 rows=10 width=8) (actual time=71.175..71.178 rows=10 loops=1)
+        Group Key: documents_1.id
+        Batches: 1  Memory Usage: 24kB
+        Buffers: shared hit=12974
+        ->  Limit  (cost=4395.92..4395.94 rows=10 width=52) (actual time=71.163..71.166 rows=10 loops=1)
+              Buffers: shared hit=12974
+              ->  Sort  (cost=4395.92..4398.84 rows=1169 width=52) (actual time=71.161..71.163 rows=10 loops=1)
+                    Sort Key: (ts_rank_cd(documents_1.tsv, '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)) DESC, documents_1.id
+                    Sort Method: top-N heapsort  Memory: 25kB
+                    Buffers: shared hit=12974
+                    ->  Bitmap Heap Scan on documents documents_1  (cost=79.17..4370.66 rows=1169 width=52) (actual time=4.300..69.978 rows=5094 loops=1)
+                          Recheck Cond: (tsv @@ '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)
+                          Heap Blocks: exact=4419
+                          Buffers: shared hit=12974
+                          ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..78.88 rows=1169 width=0) (actual time=3.412..3.412 rows=5094 loops=1)
+                                Index Cond: (tsv @@ '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)
+                                Buffers: shared hit=55
+  ->  Index Scan using documents_pkey on documents  (cost=0.42..8.44 rows=1 width=795) (actual time=0.004..0.004 rows=1 loops=10)
+        Index Cond: (id = documents_1.id)
+        Buffers: shared hit=40
+Planning:
+  Buffers: shared hit=9
+Planning Time: 0.400 ms
+Execution Time: 73.593 ms
