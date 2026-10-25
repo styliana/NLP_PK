@@ -1,525 +1,470 @@
 #!/usr/bin/env python3
 """
-Moduł automatycznych pomiarów wydajności i porównania funkcjonalnego dla Laboratorium 3.
-Realizuje pełne wymagania poziomów 3.0, 4.0 oraz 5.0:
-- Pomiar 3 podstawowych zapytań (LIKE vs FTS w PostgreSQL vs Solr 10) - mediana z 5 uruchomień
-- Ranking trafności (ts_rank_cd vs eDisMax z qf) i porównanie top-10 wyników
-- Podświetlanie trafień (hl) w Solr
-- Agregacje facety vs GROUP BY (2 pola kategoryczne + facet zakresowy)
-- Skalowanie (10%, 50%, 100% danych) dla LIKE, SQL FTS i Solr
-- Rozszerzenie 1: Odporność na literówki (Solr fuzzy query ~ vs pg_trgm vs LIKE)
-- Rozszerzenie 2: Collapsing po identyfikatorze oryginału (Solr collapse vs SQL DISTINCT ON)
+Pomiary i porównanie funkcjonalne PostgreSQL 16 (tsvector + GIN) i Apache Solr 10 - Lab 3, poziom 5.0.
+
+Wszystko jest mierzone na żywych bazach; bez połączenia skrypt kończy się błędem.
+Metodyka: 1 uruchomienie rozgrzewające, potem RUNS (5) pomiarów i mediana.
+SQL: czas po stronie klienta + "Execution Time" z EXPLAIN (ANALYZE, BUFFERS) (plany w wyniki/explain/).
+Solr: QTime + czas po stronie klienta; wariant bez cache wyników ({!... cache=false}) jako główny,
+bo PostgreSQL nie ma cache wyników zapytań - wariant z cache zapisujemy obok.
+
+Zakres:
+  3.0  Q1-Q3 w SQL (LIKE + FTS) i w Solrze (q, fq, fl, sort, rows) + pełne URL-e
+  4.0  ranking top-10 (ts_rank_cd vs eDisMax z qf), GROUP BY, facety, podświetlanie, porównanie top-10,
+       czasy ładowania (z loadera)
+  5.0  skalowanie 10/50/100%, facety (2 pola + facet.range) vs GROUP BY
+  Rozszerzenia: literówki (fuzzy vs pg_trgm vs LIKE), własny typ pola + Analysis vs to_tsvector,
+       duplikaty po powieleniu (collapse vs DISTINCT ON), głębokie stronicowanie (start vs cursorMark)
 """
 
-import os
-import time
 import json
+import os
+import platform
+import re
 import statistics
+import subprocess
+import sys
+import time
+
+import psycopg2
 import requests
 
-PG_CONFIG = {
-    "host": "localhost",
-    "port": 5432,
-    "dbname": "nlp_lab3",
-    "user": "postgres",
-    "password": "postgres"
-}
+sys.path.insert(0, os.path.dirname(__file__))
+from common import (DATASETS, FULL, PG_CONFIG, QUERIES, RESULTS_DIR, RUNS, SOLR_URL,  # noqa: E402
+                    solr_lucene_q)
 
-SOLR_BASE_URL = "http://localhost:8983/solr"
-CORE_NAME = "nlp_lab3"
+EXPLAIN_DIR = os.path.join(RESULTS_DIR, "explain")
+SESSION = requests.Session()
+EDISMAX_QF = "title^3 abstract"
+HEADLINE_OPTS = "MaxFragments=1, MaxWords=25, MinWords=12, StartSel=<em>, StopSel=</em>"
 
 
-def check_connections():
-    pg_ok = False
-    solr_ok = False
-    try:
-        import psycopg2
-        conn = psycopg2.connect(**PG_CONFIG, connect_timeout=2)
-        conn.close()
-        pg_ok = True
-    except Exception:
-        pass
+# ---------------------------------------------------------------------------- pomiary
 
-    try:
-        r = requests.get(f"{SOLR_BASE_URL}/{CORE_NAME}/admin/ping", timeout=2)
-        if r.status_code == 200:
-            solr_ok = True
-    except Exception:
-        pass
-
-    return pg_ok, solr_ok
+def ms(t0):
+    return (time.perf_counter() - t0) * 1000.0
 
 
-def measure_sql(conn, query, params=None, runs=5):
-    cur = conn.cursor()
+def sql_measure(cur, sql, name=None, runs=RUNS):
+    """Mediana czasu klienta z `runs` uruchomień (po rozgrzewce) + EXPLAIN ANALYZE."""
+    cur.execute(sql)
+    rows = cur.fetchall()
     times = []
-    result_count = 0
-    explain_output = ""
-
-    # Rozgrzanie cache (uruchomienie 0)
-    try:
-        cur.execute(query, params)
-        cur.fetchall()
-    except Exception as e:
-        conn.rollback()
-        return {"error": str(e)}
-
-    # Pomiary rozgrzanego cache (5 uruchomień)
     for _ in range(runs):
         t0 = time.perf_counter()
-        cur.execute(query, params)
+        cur.execute(sql)
         rows = cur.fetchall()
-        t1 = time.perf_counter()
-        times.append((t1 - t0) * 1000.0)  # ms
-        result_count = len(rows)
-
-    # Pobranie planu wykonania z EXPLAIN ANALYZE
-    try:
-        cur.execute(f"EXPLAIN (ANALYZE, BUFFERS) {query}", params)
-        explain_lines = cur.fetchall()
-        explain_output = "\n".join([line[0] for line in explain_lines])
-    except Exception:
-        conn.rollback()
-
-    cur.close()
-    return {
-        "median_ms": statistics.median(times),
-        "min_ms": min(times),
-        "max_ms": max(times),
-        "times_ms": times,
-        "count": result_count,
-        "explain": explain_output
-    }
+        times.append(ms(t0))
+    result = {"sql": " ".join(sql.split()), "median_ms": round(statistics.median(times), 2),
+              "times_ms": [round(t, 2) for t in times], "rows": rows}
+    if name:
+        cur.execute("EXPLAIN (ANALYZE, BUFFERS) " + sql)
+        plan = "\n".join(r[0] for r in cur.fetchall())
+        os.makedirs(EXPLAIN_DIR, exist_ok=True)
+        with open(os.path.join(EXPLAIN_DIR, f"{name}.txt"), "w", encoding="utf-8") as f:
+            f.write(result["sql"] + "\n\n" + plan + "\n")
+        m = re.search(r"Execution Time: ([\d.]+) ms", plan)
+        result["explain_execution_ms"] = float(m.group(1)) if m else None
+    return result
 
 
-def measure_solr(url, runs=5):
-    times_client = []
-    qtimes = []
-    num_found = 0
-    last_response = {}
+def solr_url(core, params, handler="select"):
+    return requests.Request("GET", f"{SOLR_URL}/{core}/{handler}", params=params).prepare().url
 
-    # Rozgrzanie cache
-    try:
-        r0 = requests.get(url, timeout=10)
-        r0_json = r0.json()
-    except Exception as e:
-        return {"error": str(e)}
 
+def solr_get(core, params, handler="select"):
+    r = SESSION.get(f"{SOLR_URL}/{core}/{handler}", params=params, timeout=120)
+    body = r.json()
+    if r.status_code != 200 or "error" in body:
+        raise RuntimeError(f"Solr {core}: {body.get('error', {}).get('msg', r.text[:300])}\n{r.url}")
+    return body
+
+
+def solr_measure(core, params, runs=RUNS):
+    body = solr_get(core, params)
+    client, qtimes = [], []
     for _ in range(runs):
         t0 = time.perf_counter()
-        r = requests.get(url, timeout=10)
-        t1 = time.perf_counter()
-        times_client.append((t1 - t0) * 1000.0)
-        resp_json = r.json()
-        qtimes.append(resp_json.get("responseHeader", {}).get("QTime", 0))
-        num_found = resp_json.get("response", {}).get("numFound", 0)
-        last_response = resp_json
-
-    return {
-        "median_client_ms": statistics.median(times_client),
-        "median_qtime_ms": statistics.median(qtimes),
-        "qtimes": qtimes,
-        "num_found": num_found,
-        "response": last_response
-    }
+        body = solr_get(core, params)
+        client.append(ms(t0))
+        qtimes.append(body["responseHeader"]["QTime"])
+    return {"url": solr_url(core, params), "median_client_ms": round(statistics.median(client), 2),
+            "median_qtime_ms": statistics.median(qtimes), "qtimes_ms": qtimes,
+            "numFound": body.get("response", {}).get("numFound"), "body": body}
 
 
-def run_full_benchmark(use_live_db=True):
-    pg_ok, solr_ok = check_connections()
+def strip(m):
+    """Usuwa z wyniku pomiaru surowe dane (wiersze / odpowiedź), zostawia liczby i zapytanie."""
+    return {k: v for k, v in m.items() if k not in ("rows", "body")}
 
-    if use_live_db and pg_ok and solr_ok:
-        print("Wykryto aktywne usługi PostgreSQL i Solr. Przeprowadzanie pomiarów LIVE...")
-        return run_live_benchmark()
+
+# ---------------------------------------------------------------------------- środowisko
+
+def environment(cur):
+    env = {"python": platform.python_version(), "os": platform.platform()}
+    cur.execute("SHOW server_version;")
+    env["postgres_version"] = cur.fetchone()[0]
+    for setting in ("shared_buffers", "work_mem", "max_parallel_workers_per_gather", "jit"):
+        cur.execute(f"SHOW {setting};")
+        env[f"postgres_{setting}"] = cur.fetchone()[0]
+    info = SESSION.get(f"{SOLR_URL}/admin/info/system", timeout=10).json()
+    env["solr_version"] = info.get("lucene", {}).get("solr-spec-version")
+    env["solr_jvm"] = info.get("jvm", {}).get("version")
+    env["solr_heap_max_mb"] = round(info.get("jvm", {}).get("memory", {}).get("raw", {}).get("max", 0) / 1024 ** 2)
+    if platform.system() == "Windows":
+        def ps(cmd):
+            return subprocess.run(["powershell", "-NoProfile", "-Command", cmd],
+                                  capture_output=True, text=True).stdout.strip()
+        env["cpu"] = ps("(Get-CimInstance Win32_Processor).Name")
+        env["ram_gb"] = ps("[math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory/1GB,1)")
+        env["disk"] = ps("(Get-PhysicalDisk | Select-Object -First 1 | "
+                         "ForEach-Object { $_.FriendlyName + ' (' + $_.MediaType + ')' })")
     else:
-        print("Usługi bazodanowe nie są aktywne lub wybrano tryb referencyjny.")
-        print("Generowanie reprezentatywnych wyników wzorcowych dla konfiguracji Core i7-10850H...")
-        return generate_reference_benchmark()
+        env["cpu"] = platform.processor()
+    try:
+        env["docker_mem_gb"] = round(int(subprocess.run(
+            ["docker", "info", "--format", "{{.MemTotal}}"], capture_output=True, text=True).stdout) / 1024 ** 3, 1)
+    except (ValueError, OSError):
+        env["docker_mem_gb"] = None
+    return env
 
 
-def run_live_benchmark():
-    import psycopg2
-    conn = psycopg2.connect(**PG_CONFIG)
+# ---------------------------------------------------------------------------- 3.0 / 4.0: zapytania
 
-    results = {
-        "metadata": {
-            "dataset_size": 500000,
-            "system": "PostgreSQL 16 vs Apache Solr 10",
-            "cpu": "Intel(R) Core(TM) i7-10850H CPU @ 2.70GHz",
-            "ram": "32 GB DDR4",
-            "solr_heap": "2G"
-        },
-        "queries_3_0": {},
-        "ranking_top10": {},
-        "facets_vs_groupby": {},
-        "scaling": {},
-        "extensions": {}
-    }
+def top10_sql(tsquery, table):
+    return (f"SELECT id, orig_id, title, ts_rank_cd(tsv, {tsquery}) AS rank FROM {table} "
+            f"WHERE tsv @@ {tsquery} ORDER BY rank DESC, id LIMIT 10")
 
-    # 1. Q1: Stemming
-    q1_sql_fts = "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'perform') LIMIT 10;"
-    q1_sql_like = "SELECT id, title, rating FROM documents WHERE content LIKE '%perform%' LIMIT 10;"
-    q1_solr_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=perform&df=content&rows=10&fl=id,title,rating"
 
-    print("Mierzenie Q1 (Stemming)...")
-    results["queries_3_0"]["Q1_FTS_SQL"] = measure_sql(conn, q1_sql_fts)
-    results["queries_3_0"]["Q1_LIKE_SQL"] = measure_sql(conn, q1_sql_like)
-    results["queries_3_0"]["Q1_SOLR"] = measure_solr(q1_solr_url)
+def duplicate_pairs(docs):
+    origs = [int(d["orig_id"]) for d in docs]
+    return sum(1 for o in set(origs) if origs.count(o) > 1)
 
-    # 2. Q2: Fraza "machine learning"
-    q2_sql = "SELECT id, title, rating FROM documents WHERE tsv @@ phraseto_tsquery('english', 'machine learning') LIMIT 10;"
-    q2_solr_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=\"machine learning\"&df=content&rows=10&fl=id,title,rating"
 
-    print("Mierzenie Q2 (Fraza)...")
-    results["queries_3_0"]["Q2_PHRASE_SQL"] = measure_sql(conn, q2_sql)
-    results["queries_3_0"]["Q2_PHRASE_SOLR"] = measure_solr(q2_solr_url)
+def run_queries(cur):
+    t, core = FULL["table"], FULL["core"]
+    out = {}
+    for key, q in QUERIES.items():
+        print(f"  {key}...")
+        like = sql_measure(cur, f"SELECT count(*) FROM {t} WHERE {q['like']}", f"{key}_like_count")
+        fts_count = sql_measure(cur, f"SELECT count(*) FROM {t} WHERE tsv @@ {q['tsquery']}", f"{key}_fts_count")
+        fts_top = sql_measure(cur, top10_sql(q["tsquery"], t), f"{key}_fts_top10")
 
-    # 3. Q3: Logika z negacją
-    q3_sql = "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'database & (performance | speed) & !slow') LIMIT 10;"
-    q3_solr_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=database AND (performance OR speed) AND -slow&df=content&rows=10&fl=id,title,rating"
+        base = {"df": "text_all", "rows": 10, "fl": "id,orig_id,title,score"}
+        solr_nocache = solr_measure(core, dict(base, q=solr_lucene_q(q["solr"], cache=False)))
+        solr_cache = solr_measure(core, dict(base, q=q["solr"]))
 
-    print("Mierzenie Q3 (Logika z negacją)...")
-    results["queries_3_0"]["Q3_BOOL_SQL"] = measure_sql(conn, q3_sql)
-    results["queries_3_0"]["Q3_BOOL_SOLR"] = measure_solr(q3_solr_url)
+        # wariant z pozostałymi parametrami z instrukcji: fq, fl, sort, rows
+        fq_params = {"q": q["solr"], "df": "text_all", "fq": "year:[2015 TO *]",
+                     "fl": "id,title,year,category", "sort": "year desc,score desc", "rows": 5}
+        solr_fq = solr_measure(core, fq_params, runs=1)
+        sql_fq = sql_measure(cur, f"SELECT count(*) FROM {t} WHERE tsv @@ {q['tsquery']} AND year >= 2015", runs=1)
 
-    # 4. Ranking Top 10 (4.0)
-    print("Mierzenie Rankingu Top-10 (ts_rank_cd vs eDisMax)...")
-    q_rank_sql = "SELECT id, title, ts_rank_cd(tsv, to_tsquery('english', 'perform')) AS rank FROM documents WHERE tsv @@ to_tsquery('english', 'perform') ORDER BY rank DESC, id ASC LIMIT 10;"
-    q_rank_solr_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?defType=edismax&q=perform&qf=title^2.0 content^1.0&rows=10&fl=id,title,score"
+        # 4.0: eDisMax z wagami pól + podświetlanie
+        edismax_params = {"defType": "edismax", "q": q["solr"], "qf": EDISMAX_QF, "rows": 10,
+                          "fl": "id,orig_id,title,score", "hl": "true", "hl.fl": "abstract",
+                          "hl.snippets": 1, "hl.fragsize": 160}
+        edismax = solr_measure(core, edismax_params)
+        headline = sql_measure(
+            cur, f"SELECT id, ts_headline('english', abstract, {q['tsquery']}, '{HEADLINE_OPTS}') "
+                 f"FROM {t} WHERE id IN (SELECT id FROM ({top10_sql(q['tsquery'], t)}) s)",
+            f"{key}_ts_headline")
 
-    cur = conn.cursor()
-    cur.execute(q_rank_sql)
-    sql_top10 = [{"id": str(r[0]), "title": r[1], "score": float(r[2])} for r in cur.fetchall()]
-    cur.close()
+        sql_docs = [{"id": str(r[0]), "orig_id": r[1], "title": r[2], "score": round(float(r[3]), 4)}
+                    for r in fts_top["rows"]]
+        solr_docs = [{"id": d["id"], "orig_id": d["orig_id"], "title": d["title"], "score": round(d["score"], 3)}
+                     for d in edismax["body"]["response"]["docs"]]
+        overlap = len({d["id"] for d in sql_docs} & {d["id"] for d in solr_docs})
+        first_id = solr_docs[0]["id"] if solr_docs else None
+        hl_solr = (edismax["body"].get("highlighting", {}).get(first_id, {}).get("abstract") or [""])[0]
+        cur.execute(f"SELECT ts_headline('english', abstract, {q['tsquery']}, '{HEADLINE_OPTS}') "
+                    f"FROM {t} WHERE id = %s", (int(first_id),))
+        hl_sql = cur.fetchone()[0] if first_id else None
 
-    solr_top10_resp = requests.get(q_rank_solr_url).json()
-    solr_top10 = solr_top10_resp.get("response", {}).get("docs", [])
-
-    results["ranking_top10"] = {
-        "sql_top10": sql_top10,
-        "solr_top10": solr_top10,
-        "overlap_count": len(set([x["id"] for x in sql_top10]).intersection(set([x["id"] for x in solr_top10])))
-    }
-
-    # 5. Facety vs GROUP BY (5.0)
-    print("Mierzenie Facetów Solr vs GROUP BY SQL...")
-    solr_facets_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=perform&df=content&rows=0&facet=true&facet.field=category&facet.field=tag&facet.range=rating&facet.range.start=1.0&facet.range.end=5.0&facet.range.gap=1.0"
-    results["facets_vs_groupby"]["solr_facets"] = measure_solr(solr_facets_url)
-
-    sql_group1 = "SELECT category, COUNT(*) FROM documents WHERE tsv @@ to_tsquery('english', 'perform') GROUP BY category;"
-    sql_group2 = "SELECT tag, COUNT(*) FROM documents WHERE tsv @@ to_tsquery('english', 'perform') GROUP BY tag;"
-    sql_group3 = "SELECT CASE WHEN rating >= 1.0 AND rating < 2.0 THEN '1-2' WHEN rating >= 2.0 AND rating < 3.0 THEN '2-3' WHEN rating >= 3.0 AND rating < 4.0 THEN '3-4' ELSE '4-5' END AS r, COUNT(*) FROM documents WHERE tsv @@ to_tsquery('english', 'perform') GROUP BY r;"
-
-    m1 = measure_sql(conn, sql_group1)
-    m2 = measure_sql(conn, sql_group2)
-    m3 = measure_sql(conn, sql_group3)
-    results["facets_vs_groupby"]["sql_groupby"] = {
-        "category_ms": m1["median_ms"],
-        "tag_ms": m2["median_ms"],
-        "rating_range_ms": m3["median_ms"],
-        "total_sql_ms": m1["median_ms"] + m2["median_ms"] + m3["median_ms"]
-    }
-
-    # 6. Skalowanie 10%, 50%, 100% (5.0)
-    print("Mierzenie Skalowania (10%, 50%, 100%)...")
-    # Zapytania z filtrowaniem wielkości zbioru id <= limit
-    limits = {"10% (50k)": 50000, "50% (250k)": 250000, "100% (500k)": 500000}
-    scaling_data = {}
-    for label, lim in limits.items():
-        sql_fts = f"SELECT id FROM documents WHERE id <= {lim} AND tsv @@ to_tsquery('english', 'perform') LIMIT 10;"
-        sql_like = f"SELECT id FROM documents WHERE id <= {lim} AND content LIKE '%perform%' LIMIT 10;"
-        solr_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=perform&fq=id:[1 TO {lim}]&df=content&rows=10"
-
-        scaling_data[label] = {
-            "sql_fts_ms": measure_sql(conn, sql_fts)["median_ms"],
-            "sql_like_ms": measure_sql(conn, sql_like)["median_ms"],
-            "solr_ms": measure_solr(solr_url)["median_client_ms"]
+        out[key] = {
+            "name": q["name"], "short": q["short"],
+            "like_count": like["rows"][0][0], "like": strip(like),
+            "fts_count": fts_count["rows"][0][0], "fts_count_query": strip(fts_count),
+            "fts_top10_query": strip(fts_top),
+            "solr_numFound": solr_nocache["numFound"],
+            "solr": strip(solr_nocache), "solr_cached": strip(solr_cache),
+            "solr_fq_sort_example": dict(strip(solr_fq), docs=solr_fq["body"]["response"]["docs"]),
+            "sql_fq_example_count": sql_fq["rows"][0][0],
+            "edismax": dict(strip(edismax), numFound=edismax["numFound"]),
+            "ts_headline": strip(headline),
+            "top10_sql": sql_docs, "top10_solr": solr_docs,
+            "top10_overlap": overlap,
+            "top10_duplicate_pairs_sql": duplicate_pairs(sql_docs),
+            "top10_duplicate_pairs_solr": duplicate_pairs(solr_docs),
+            "highlight_doc_id": first_id, "highlight_solr": hl_solr, "highlight_sql": hl_sql,
         }
-    results["scaling"] = scaling_data
-
-    # 7. Rozszerzenia (5.0)
-    print("Mierzenie Rozszerzenia 1 (Fuzzy search) i Rozszerzenia 2 (Collapsing)...")
-    # Fuzzy
-    sql_fuzzy = "SELECT id, title FROM documents WHERE content % 'machne lerning' LIMIT 10;"
-    solr_fuzzy_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=machne~1 lerning~1&df=content&rows=10"
-    results["extensions"]["fuzzy"] = {
-        "sql_pg_trgm_ms": measure_sql(conn, sql_fuzzy)["median_ms"],
-        "solr_fuzzy_ms": measure_solr(solr_fuzzy_url)["median_client_ms"]
-    }
-
-    # Collapse
-    sql_collapse = """
-    WITH RankedDocs AS (
-        SELECT id, orig_id, title,
-               ts_rank_cd(tsv, to_tsquery('english', 'perform')) AS rank_score,
-               ROW_NUMBER() OVER (PARTITION BY orig_id ORDER BY ts_rank_cd(tsv, to_tsquery('english', 'perform')) DESC) as rn
-        FROM documents
-        WHERE tsv @@ to_tsquery('english', 'perform')
-    )
-    SELECT id, orig_id, title, rank_score FROM RankedDocs WHERE rn = 1 LIMIT 10;
-    """
-    solr_collapse_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=perform&df=content&fq={{!collapse field=orig_id}}&rows=10"
-    results["extensions"]["collapse"] = {
-        "sql_collapse_ms": measure_sql(conn, sql_collapse)["median_ms"],
-        "solr_collapse_ms": measure_solr(solr_collapse_url)["median_client_ms"]
-    }
-
-    conn.close()
-    return results
+    return out
 
 
-def generate_reference_benchmark():
-    """
-    Zwraca zweryfikowane, rzetelne pomiary referencyjne dla 500 000 rekordów
-    dla procesora Intel Core i7-10850H, PostgreSQL 16 i Solr 10.
-    """
+def groupby_4_0(cur):
+    q = QUERIES["Q1"]["tsquery"]
+    m = sql_measure(cur, f"SELECT field, count(*) FROM {FULL['table']} WHERE tsv @@ {q} "
+                         f"GROUP BY field ORDER BY 2 DESC", "Q1_groupby_field")
+    return dict(strip(m), result=[list(r) for r in m["rows"]])
+
+
+# ---------------------------------------------------------------------------- 5.0: skalowanie
+
+def scaling(cur):
+    out = {}
+    for ds in DATASETS:
+        cur.execute(f"SELECT to_regclass('{ds['table']}') IS NOT NULL")
+        if not cur.fetchone()[0]:
+            print(f"  pomijam {ds['label']} - brak tabeli {ds['table']} (uruchom loader)")
+            continue
+        cur.execute(f"SELECT count(*) FROM {ds['table']}")
+        rows = cur.fetchone()[0]
+        print(f"  {ds['label']} ({rows} rekordów)...")
+        per_q = {}
+        for key, q in QUERIES.items():
+            like = sql_measure(cur, f"SELECT count(*) FROM {ds['table']} WHERE {q['like']}")
+            fts_count = sql_measure(cur, f"SELECT count(*) FROM {ds['table']} WHERE tsv @@ {q['tsquery']}")
+            fts_top = sql_measure(cur, top10_sql(q["tsquery"], ds["table"]))
+            solr = solr_measure(ds["core"], {"q": solr_lucene_q(q["solr"], cache=False), "rows": 10,
+                                             "fl": "id,score"})
+            per_q[key] = {
+                "like_ms": like["median_ms"], "like_count": like["rows"][0][0],
+                "fts_count_ms": fts_count["median_ms"], "fts_count": fts_count["rows"][0][0],
+                "fts_top10_ms": fts_top["median_ms"],
+                "solr_client_ms": solr["median_client_ms"], "solr_qtime_ms": solr["median_qtime_ms"],
+                "solr_numFound": solr["numFound"],
+            }
+        out[ds["label"]] = {"records": rows, "queries": per_q}
+    return out
+
+
+# ---------------------------------------------------------------------------- 5.0: facety vs GROUP BY
+
+def facets_vs_groupby(cur):
+    t, core = FULL["table"], FULL["core"]
+    out = {}
+    for label, where, solr_q in (("Q1", f"tsv @@ {QUERIES['Q1']['tsquery']}", solr_lucene_q(QUERIES["Q1"]["solr"], False)),
+                                 ("all", "TRUE", "{!lucene cache=false}*:*")):
+        print(f"  facety dla {label}...")
+        params = {"q": solr_q, "rows": 0, "facet": "true",
+                  "facet.field": ["field", "category"], "f.category.facet.limit": 10,
+                  "f.field.facet.limit": -1, "facet.mincount": 1,
+                  "facet.range": "year", "facet.range.start": 1990, "facet.range.end": 2025,
+                  "facet.range.gap": 5}
+        solr = solr_measure(core, params)
+        ff = solr["body"]["facet_counts"]["facet_fields"]
+        pairs = lambda lst: dict(zip(lst[::2], lst[1::2]))  # noqa: E731
+        solr_res = {"field": pairs(ff["field"]), "category": pairs(ff["category"]),
+                    "year": pairs(solr["body"]["facet_counts"]["facet_ranges"]["year"]["counts"])}
+
+        bucket = "1990 + 5 * ((year - 1990) / 5)"
+        g1 = sql_measure(cur, f"SELECT field, count(*) FROM {t} WHERE {where} GROUP BY field ORDER BY 2 DESC",
+                         f"facet_{label}_groupby_field")
+        g2 = sql_measure(cur, f"SELECT category, count(*) FROM {t} WHERE {where} GROUP BY category "
+                              f"ORDER BY 2 DESC LIMIT 10", f"facet_{label}_groupby_category")
+        g3 = sql_measure(cur, f"SELECT {bucket} AS y, count(*) FROM {t} WHERE {where} AND year >= 1990 "
+                              f"GROUP BY y ORDER BY y", f"facet_{label}_groupby_year")
+        gs = sql_measure(cur, f"SELECT field, category, {bucket} AS y, count(*) FROM {t} WHERE {where} "
+                              f"GROUP BY GROUPING SETS ((field), (category), ({bucket}))",
+                         f"facet_{label}_grouping_sets")
+        sql_res = {"field": {r[0]: r[1] for r in g1["rows"]},
+                   "category": {r[0]: r[1] for r in g2["rows"]},
+                   "year": {str(r[0]): r[1] for r in g3["rows"]}}
+        out[label] = {
+            "solr": dict(strip(solr), numFound=solr["numFound"]),
+            "solr_counts": solr_res,
+            "sql_field": strip(g1), "sql_category": strip(g2), "sql_year": strip(g3),
+            "sql_three_queries_ms": round(g1["median_ms"] + g2["median_ms"] + g3["median_ms"], 2),
+            "sql_grouping_sets": strip(gs),
+            "sql_counts": sql_res,
+            "counts_equal": {k: solr_res[k] == sql_res[k] for k in solr_res},
+        }
+    return out
+
+
+# ---------------------------------------------------------------------------- rozszerzenia
+
+def ext_fuzzy(cur):
+    t, core = FULL["table"], FULL["core"]
+    out = {}
+    for typo, correct in (("entanglment", "entanglement"), ("superconductivty", "superconductivity")):
+        print(f"  literówka '{typo}'...")
+        like = sql_measure(cur, f"SELECT count(*) FROM {t} WHERE title LIKE '%{typo}%'", f"fuzzy_{typo}_like")
+        trgm = sql_measure(cur, f"SELECT count(*) FROM {t} WHERE '{typo}' <% title", f"fuzzy_{typo}_trgm")
+        trgm_top = sql_measure(cur, f"SELECT title, word_similarity('{typo}', title) AS s FROM {t} "
+                                    f"WHERE '{typo}' <% title ORDER BY s DESC, id LIMIT 5", runs=1)
+        exact = solr_measure(core, {"q": f"title_exact:{typo}", "rows": 0})
+        fuzzy = solr_measure(core, {"q": f"{{!lucene cache=false}}title_exact:{typo}~2", "rows": 5, "fl": "title"})
+        correct_q = solr_measure(core, {"q": f"title_exact:{correct}", "rows": 0}, runs=1)
+        out[typo] = {
+            "correct_word": correct,
+            "like": dict(strip(like), count=like["rows"][0][0]),
+            "pg_trgm": dict(strip(trgm), count=trgm["rows"][0][0],
+                            top5=[[r[0], round(float(r[1]), 3)] for r in trgm_top["rows"]]),
+            "solr_exact": dict(strip(exact), count=exact["numFound"]),
+            "solr_fuzzy": dict(strip(fuzzy), count=fuzzy["numFound"],
+                               top5=[d["title"] for d in fuzzy["body"]["response"]["docs"]]),
+            "solr_correct_word_count": correct_q["numFound"],
+        }
+    return out
+
+
+ANALYSIS_SENTENCES = [
+    "The simulated annealing algorithms were simulating complex networks' behaviour.",
+    "Next-to-leading order QCD corrections for e+e- annihilation at 10 TeV energies.",
+    "We don't observe photons; the photonic crystals' band gaps were measured in 2019.",
+]
+
+
+def ext_analysis(cur):
+    core = FULL["core"]
+    out = []
+    for s in ANALYSIS_SENTENCES:
+        body = solr_get(core, {"analysis.fieldtype": "text_en_lab", "analysis.fieldvalue": s},
+                        handler="analysis/field")
+        stages = body["analysis"]["field_types"]["text_en_lab"]["index"]
+        chain = []
+        for i in range(0, len(stages), 2):
+            chain.append({"stage": stages[i].split(".")[-1], "tokens": [tok["text"] for tok in stages[i + 1]]})
+        cur.execute("SELECT to_tsvector('english', %s)::text", (s,))
+        out.append({"sentence": s, "solr_chain": chain, "solr_tokens": chain[-1]["tokens"],
+                    "pg_to_tsvector": cur.fetchone()[0]})
+    return out
+
+
+def ext_collapse(cur):
+    t, core = FULL["table"], FULL["core"]
+    q = QUERIES["Q1"]
+    print("  collapse po orig_id...")
+    plain = solr_measure(core, {"defType": "edismax", "q": q["solr"], "qf": EDISMAX_QF, "rows": 10,
+                                "fl": "id,orig_id,copy_no,title,score"})
+    collapsed = solr_measure(core, {"defType": "edismax", "q": q["solr"], "qf": EDISMAX_QF, "rows": 10,
+                                    "fl": "id,orig_id,copy_no,title,score", "fq": "{!collapse field=orig_id}"})
+    no_copies = solr_measure(core, {"defType": "edismax", "q": q["solr"], "qf": EDISMAX_QF, "rows": 0,
+                                    "fq": "copy_no:0"}, runs=1)
+    sql_plain = sql_measure(cur, top10_sql(q["tsquery"], t))
+    sql_dedup = sql_measure(cur, (
+        f"SELECT id, orig_id, title, rank FROM ("
+        f"SELECT DISTINCT ON (orig_id) id, orig_id, title, ts_rank_cd(tsv, {q['tsquery']}) AS rank "
+        f"FROM {t} WHERE tsv @@ {q['tsquery']} ORDER BY orig_id, rank DESC, id) s "
+        f"ORDER BY rank DESC, id LIMIT 10"), "collapse_sql_distinct_on")
+    sql_distinct_count = sql_measure(cur, f"SELECT count(DISTINCT orig_id) FROM {t} WHERE tsv @@ {q['tsquery']}",
+                                     runs=1)
+
+    def docs(m):
+        return [{"id": d["id"], "orig_id": d["orig_id"], "copy_no": d["copy_no"], "title": d["title"]}
+                for d in m["body"]["response"]["docs"]]
+
     return {
-        "metadata": {
-            "dataset_size": 500000,
-            "unique_records": 250000,
-            "duplicated_records": 250000,
-            "system": "PostgreSQL 16 vs Apache Solr 10",
-            "cpu": "Intel(R) Core(TM) i7-10850H CPU @ 2.70GHz (6 rdzeni, 12 wątków)",
-            "ram": "32 GB DDR4",
-            "disk": "NVMe WDC 512GB SSD",
-            "solr_heap": "2G"
-        },
-        "ingestion": {
-            "postgres_copy_time_s": 24.3,
-            "postgres_index_time_s": 18.5,
-            "postgres_total_time_s": 42.8,
-            "solr_batch_upload_s": 38.6,
-            "solr_commit_time_s": 4.2,
-            "solr_total_time_s": 42.8
-        },
-        "queries_3_0": {
-            "Q1_stemming": {
-                "name": "Q1: Pojedyncze słowo (stemming: perform -> performance, performed)",
-                "sql_fts": {
-                    "query": "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'perform') LIMIT 10;",
-                    "count": 500000,
-                    "median_ms": 1.45,
-                    "qtime_ms": None
-                },
-                "sql_like": {
-                    "query": "SELECT id, title, rating FROM documents WHERE content LIKE '%perform%' LIMIT 10;",
-                    "count": 500000,
-                    "median_ms": 284.12,
-                    "qtime_ms": None
-                },
-                "solr": {
-                    "query_url": "/solr/nlp_lab3/select?q=perform&df=content&rows=10&fl=id,title,rating",
-                    "num_found": 500000,
-                    "median_ms": 4.10,
-                    "qtime_ms": 2
-                }
-            },
-            "Q2_phrase": {
-                "name": "Q2: Fraza ('machine learning')",
-                "sql_fts": {
-                    "query": "SELECT id, title, rating FROM documents WHERE tsv @@ phraseto_tsquery('english', 'machine learning') LIMIT 10;",
-                    "count": 500000,
-                    "median_ms": 2.80,
-                    "qtime_ms": None
-                },
-                "solr": {
-                    "query_url": "/solr/nlp_lab3/select?q=\"machine learning\"&df=content&rows=10&fl=id,title,rating",
-                    "num_found": 500000,
-                    "median_ms": 5.25,
-                    "qtime_ms": 3
-                }
-            },
-            "Q3_boolean_negation": {
-                "name": "Q3: Logika z negacją (database & (performance | speed) & !slow)",
-                "sql_fts": {
-                    "query": "SELECT id, title, rating FROM documents WHERE tsv @@ to_tsquery('english', 'database & (performance | speed) & !slow') LIMIT 10;",
-                    "count": 0,
-                    "median_ms": 2.15,
-                    "qtime_ms": None
-                },
-                "solr": {
-                    "query_url": "/solr/nlp_lab3/select?q=database AND (performance OR speed) AND -slow&df=content&rows=10&fl=id,title,rating",
-                    "num_found": 0,
-                    "median_ms": 3.85,
-                    "qtime_ms": 2
-                }
-            }
-        },
-        "ranking_top10": {
-            "sql_top10": [
-                {"id": 1, "title": "Modern Architectural Patterns for High Performance Vector Databases #1", "score": 0.285},
-                {"id": 250001, "title": "Modern Architectural Patterns for High Performance Vector Databases #1", "score": 0.285},
-                {"id": 11, "title": "Modern Architectural Patterns for High Performance Vector Databases #11", "score": 0.285},
-                {"id": 250011, "title": "Modern Architectural Patterns for High Performance Vector Databases #11", "score": 0.285},
-                {"id": 21, "title": "Modern Architectural Patterns for High Performance Vector Databases #21", "score": 0.285},
-                {"id": 250021, "title": "Modern Architectural Patterns for High Performance Vector Databases #21", "score": 0.285},
-                {"id": 31, "title": "Modern Architectural Patterns for High Performance Vector Databases #31", "score": 0.285},
-                {"id": 250031, "title": "Modern Architectural Patterns for High Performance Vector Databases #31", "score": 0.285},
-                {"id": 41, "title": "Modern Architectural Patterns for High Performance Vector Databases #41", "score": 0.285},
-                {"id": 250041, "title": "Modern Architectural Patterns for High Performance Vector Databases #41", "score": 0.285}
-            ],
-            "solr_top10": [
-                {"id": "1", "title": "Modern Architectural Patterns for High Performance Vector Databases #1", "score": 6.842},
-                {"id": "250001", "title": "Modern Architectural Patterns for High Performance Vector Databases #1", "score": 6.842},
-                {"id": "11", "title": "Modern Architectural Patterns for High Performance Vector Databases #11", "score": 6.842},
-                {"id": "250011", "title": "Modern Architectural Patterns for High Performance Vector Databases #11", "score": 6.842},
-                {"id": "21", "title": "Modern Architectural Patterns for High Performance Vector Databases #21", "score": 6.842},
-                {"id": "250021", "title": "Modern Architectural Patterns for High Performance Vector Databases #21", "score": 6.842},
-                {"id": "31", "title": "Modern Architectural Patterns for High Performance Vector Databases #31", "score": 6.842},
-                {"id": "250031", "title": "Modern Architectural Patterns for High Performance Vector Databases #31", "score": 6.842},
-                {"id": "41", "title": "Modern Architectural Patterns for High Performance Vector Databases #41", "score": 6.842},
-                {"id": "250041", "title": "Modern Architectural Patterns for High Performance Vector Databases #41", "score": 6.842}
-            ],
-            "overlap_count": 10,
-            "overlap_ratio_percent": 100.0,
-            "commentary": "Zarówno Solr (BM25 + eDisMax z wagą title^2.0), jak i PostgreSQL (ts_rank_cd z wagami A dla tytułu i B dla treści) wytypowały identyczny zestaw 10 najlepszych dokumentów (100% pokrycia). Różnice wynikają z algorytmu: BM25 w Solr uwzględnia nasycenie częstością termu i normalizację długością dokumentu, podczas gdy ts_rank_cd w PostgreSQL bazuje na gęstości występowania leksemów."
-        },
-        "highlighting": {
-            "snippet_sample": "...workloads to maintain minimal latency. Recent experiments demonstrated that the team <em>performed</em> extensive profiling...",
-            "commentary": "Solr udostępnia wbudowane, wydajne podświetlanie trafień (hl=true&hl.fl=content), generujące znaczniki <em> w ułamku milisekundy dzięki docValues i analizie pozycji tokenów. W PostgreSQL wymaga to kosztownej funkcji ts_headline()."
-        },
-        "facets_vs_groupby": {
-            "solr_facets": {
-                "description": "Pojedyncze zapytanie Solra z 2 facetami kategorycznymi i 1 facetem zakresowym (facet.range)",
-                "median_client_ms": 14.8,
-                "qtime_ms": 11,
-                "results": {
-                    "category": {"Artificial Intelligence": 100000, "Cloud Computing": 100000, "Cybersecurity": 100000, "Data Science": 100000, "Software Engineering": 100000},
-                    "tag": {"Algorithms": 62500, "Databases": 62500, "DevOps": 62500, "Docker": 62500, "NLP": 62500, "Performance": 62500, "Python": 62500, "Security": 62500},
-                    "rating_range": {"1.0-2.0": 125100, "2.0-3.0": 124800, "3.0-4.0": 125200, "4.0-5.0": 124900}
-                }
-            },
-            "sql_groupby": {
-                "description": "3 oddzielne zapytania GROUP BY po category, tag i CASE/przedziałach rating",
-                "category_ms": 86.4,
-                "tag_ms": 88.1,
-                "rating_range_ms": 114.7,
-                "total_sql_ms": 289.2
-            },
-            "speedup_factor": 19.5,
-            "commentary": "Solr oblicza wszystkie facety (wielowymiarowe i zakresowe) w ramach jednego zapytania w zaledwie 14.8 ms dzięki strukturom docValues i pamięci podręcznej filtrów. W PostgreSQL wymaga to trzech oddzielnych zapytań GROUP BY lub złożonej agregacji w CTE, co sumarycznie zajmuje 289.2 ms (Solr jest prawie 20x szybszy)."
-        },
-        "scaling": {
-            "10% (50k)": {
-                "records": 50000,
-                "sql_like_ms": 29.4,
-                "sql_fts_ms": 0.85,
-                "solr_ms": 2.90
-            },
-            "50% (250k)": {
-                "records": 250000,
-                "sql_like_ms": 142.1,
-                "sql_fts_ms": 1.15,
-                "solr_ms": 3.45
-            },
-            "100% (500k)": {
-                "records": 500000,
-                "sql_like_ms": 284.1,
-                "sql_fts_ms": 1.45,
-                "solr_ms": 4.10
-            },
-            "conclusion": "Zapytanie LIKE '%...%' skaluje się ściśle liniowo O(N) i dla 500k rekordów wymaga sekwencyjnego przeszukania całego zbioru (284 ms), co całkowicie wyklucza je z systemów interaktywnych. Indeks pełnotekstowy w PostgreSQL (GIN) oraz Apache Solr skalują się sublinearnie/logarytmicznie O(log N) — czasy wyszukiwania rosną minimalnie (z 0.85 ms do 1.45 ms w Postgresie i z 2.9 ms do 4.1 ms w Solrze). Baza relacyjna radzi sobie doskonale przy prostym wyszukiwaniu, lecz Solr dystansuje ją przy zapytaniach złożonych z facetami."
-        },
-        "extensions": {
-            "extension_1_fuzzy": {
-                "name": "Rozszerzenie 1: Odporność na literówki (Fuzzy search)",
-                "target_phrase": "machne lerning (błąd w stosunku do 'machine learning')",
-                "solr_fuzzy": {
-                    "query": "q=machne~1 lerning~1&df=content&rows=10",
-                    "time_ms": 9.2,
-                    "num_found": 500000,
-                    "mechanism": "Algorytm Damerau-Levenshteina w Lucene z automatyczną ekspansją prefiksową"
-                },
-                "sql_pg_trgm": {
-                    "query": "SELECT id, title FROM documents WHERE content % 'machne lerning' LIMIT 10;",
-                    "time_ms": 68.4,
-                    "count": 500000,
-                    "mechanism": "Indeks trójgramowy GIN (gin_trgm_ops) i podobieństwo trójgramów"
-                },
-                "sql_like": {
-                    "query": "SELECT id, title FROM documents WHERE content LIKE '%machne lerning%' LIMIT 10;",
-                    "time_ms": 282.0,
-                    "count": 0,
-                    "mechanism": "Skan sekwencyjny LIKE (brak dopasowania literówek)"
-                },
-                "analysis": "LIKE zwraca 0 wyników, ponieważ nie wybacza literówek. Rozszerzenie pg_trgm w PostgreSQL poprawnie odnajduje dokumenty w 68.4 ms. Apache Solr dzięki optymalizacjom Lucene wykonuje zapytanie rozmyte w 9.2 ms (ponad 7x szybciej niż PostgreSQL)."
-            },
-            "extension_2_collapse": {
-                "name": "Rozszerzenie 2: Duplikaty po powieleniu danych (Collapsing)",
-                "description": "Zwracanie wyłącznie 1 rekordu na identyfikator oryginału (orig_id)",
-                "solr_collapse": {
-                    "query": "q=perform&fq={!collapse field=orig_id}&rows=10",
-                    "time_ms": 6.8,
-                    "top10_unique_orig_ids": 10,
-                    "mechanism": "CollapseQParserPlugin bazujący bezpośrednio na docValues"
-                },
-                "sql_distinct_on": {
-                    "query": "SELECT DISTINCT ON (orig_id) id, orig_id, title, rank FROM (...) ORDER BY orig_id, rank DESC LIMIT 10;",
-                    "time_ms": 142.5,
-                    "top10_unique_orig_ids": 10,
-                    "mechanism": "Podzapytanie rankingowe z funkcją okna ROW_NUMBER() i sortowaniem partycji"
-                },
-                "analysis": "Bez usuwania duplikatów lista top-10 jest zdominowana przez pary kopii (rekord 1 oraz jego kopia 250001). Dzięki parametrowi fq={!collapse field=orig_id} Solr błyskawicznie deduplikuje wyniki w pamięci w 6.8 ms. W PostgreSQL wymaga to sortowania całego zbioru wynikowego lub kosztownej partycjonującej funkcji okna (142.5 ms)."
-            }
-        }
+        "query": q["name"],
+        "solr_plain": dict(strip(plain), duplicate_pairs=duplicate_pairs(docs(plain)), docs=docs(plain)),
+        "solr_collapse": dict(strip(collapsed), duplicate_pairs=duplicate_pairs(docs(collapsed)),
+                              docs=docs(collapsed)),
+        "solr_numFound_without_copies": no_copies["numFound"],
+        "sql_plain_top10": dict(strip(sql_plain),
+                                duplicate_pairs=duplicate_pairs([{"orig_id": r[1]} for r in sql_plain["rows"]])),
+        "sql_distinct_on": dict(strip(sql_dedup),
+                                duplicate_pairs=duplicate_pairs([{"orig_id": r[1]} for r in sql_dedup["rows"]])),
+        "sql_distinct_orig_count": sql_distinct_count["rows"][0][0],
     }
 
 
-def save_benchmark_results(results, output_dir):
-    os.makedirs(output_dir, exist_ok=True)
-    json_path = os.path.join(output_dir, "benchmark_results.json")
-    with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-    print(f"Zapisano wyniki benchmarku w formacie JSON: {json_path}")
+def ext_deep_paging(cur):
+    t, core = FULL["table"], FULL["core"]
+    total = solr_get(core, {"q": "*:*", "rows": 0})["response"]["numFound"]
+    positions = [p for p in (0, 1_000, 10_000, 100_000, 250_000, 500_000) if p < total - 10]
+    print(f"  zbieranie cursorMark dla pozycji {positions}...")
+    step = 1000
+    marks, cursor, pos = {0: "*"}, "*", 0
+    while pos < positions[-1]:
+        body = solr_get(core, {"q": "*:*", "sort": "id asc", "rows": step, "fl": "id", "cursorMark": cursor})
+        cursor = body["nextCursorMark"]
+        pos += step
+        marks[pos] = cursor
 
-    # Tworzenie podsumowania w Markdown
-    md_path = os.path.join(output_dir, "benchmark_summary.md")
-    with open(md_path, "w", encoding="utf-8") as f:
-        f.write("# Podsumowanie Benchmarku: PostgreSQL 16 vs Apache Solr 10\n\n")
-        f.write(f"**Sprzęt:** {results['metadata']['cpu']} | {results['metadata']['ram']} | {results['metadata'].get('disk', 'NVMe SSD')}\n")
-        f.write(f"**Rozmiar zbioru:** {results['metadata']['dataset_size']:,} rekordów\n\n")
+    out = []
+    for p in positions:
+        print(f"  strona od pozycji {p}...")
+        start = solr_measure(core, {"q": "{!lucene cache=false}*:*", "sort": "id asc", "rows": 10,
+                                    "start": p, "fl": "id"})
+        cur_m = solr_measure(core, {"q": "{!lucene cache=false}*:*", "sort": "id asc", "rows": 10,
+                                    "cursorMark": marks[p], "fl": "id"})
+        same = [d["id"] for d in start["body"]["response"]["docs"]] == \
+               [d["id"] for d in cur_m["body"]["response"]["docs"]]
+        offset = sql_measure(cur, f"SELECT id FROM {t} ORDER BY id LIMIT 10 OFFSET {p}")
+        cur.execute(f"SELECT id FROM {t} ORDER BY id OFFSET {p - 1} LIMIT 1" if p else "SELECT 0")
+        key = cur.fetchone()[0]
+        keyset = sql_measure(cur, f"SELECT id FROM {t} WHERE id > {key} ORDER BY id LIMIT 10")
+        out.append({
+            "position": p,
+            "solr_start_ms": start["median_client_ms"], "solr_start_qtime_ms": start["median_qtime_ms"],
+            "solr_cursor_ms": cur_m["median_client_ms"], "solr_cursor_qtime_ms": cur_m["median_qtime_ms"],
+            "solr_same_page": same,
+            "sql_offset_ms": offset["median_ms"], "sql_keyset_ms": keyset["median_ms"],
+            "solr_start_url": start["url"],
+        })
+    return out
 
-        f.write("## 1. Porównanie podstawowych zapytań (Poziom 3.0)\n\n")
-        f.write("| Zapytanie | SQL: liczba | Solr: numFound | Czas SQL (FTS) | Czas SQL (LIKE) | Czas Solr (QTime) | Czas Solr (Client) |\n")
-        f.write("| :--- | :---: | :---: | :---: | :---: | :---: | :---: |\n")
 
-        q1 = results["queries_3_0"]["Q1_stemming"]
-        q2 = results["queries_3_0"]["Q2_phrase"]
-        q3 = results["queries_3_0"]["Q3_boolean_negation"]
+# ---------------------------------------------------------------------------- main
 
-        f.write(f"| **Q1 (Stemming)** | {q1['sql_fts']['count']:,} | {q1['solr']['num_found']:,} | {q1['sql_fts']['median_ms']:.2f} ms | {q1['sql_like']['median_ms']:.2f} ms | {q1['solr']['qtime_ms']} ms | {q1['solr']['median_ms']:.2f} ms |\n")
-        f.write(f"| **Q2 (Fraza)** | {q2['sql_fts']['count']:,} | {q2['solr']['num_found']:,} | {q2['sql_fts']['median_ms']:.2f} ms | - | {q2['solr']['qtime_ms']} ms | {q2['solr']['median_ms']:.2f} ms |\n")
-        f.write(f"| **Q3 (Negacja)** | {q3['sql_fts']['count']:,} | {q3['solr']['num_found']:,} | {q3['sql_fts']['median_ms']:.2f} ms | - | {q3['solr']['qtime_ms']} ms | {q3['solr']['median_ms']:.2f} ms |\n\n")
+def check_services():
+    try:
+        psycopg2.connect(**PG_CONFIG, connect_timeout=3).close()
+    except psycopg2.Error as e:
+        sys.exit(f"Brak połączenia z PostgreSQL ({e}). Uruchom: docker compose up -d")
+    try:
+        SESSION.get(f"{SOLR_URL}/{FULL['core']}/admin/ping", timeout=5).raise_for_status()
+    except requests.RequestException as e:
+        sys.exit(f"Brak połączenia z Solrem ({e}). Uruchom: docker compose up -d")
 
-        f.write("## 2. Skalowanie: 10% vs 50% vs 100% (Poziom 5.0)\n\n")
-        f.write("| Wielkość zbioru | SQL LIKE (ms) | SQL FTS GIN (ms) | Apache Solr 10 (ms) |\n")
-        f.write("| :--- | :---: | :---: | :---: |\n")
-        for k, v in results["scaling"].items():
-            if isinstance(v, dict):
-                f.write(f"| **{k}** | {v['sql_like_ms']:.1f} ms | {v['sql_fts_ms']:.2f} ms | {v['solr_ms']:.2f} ms |\n")
-        f.write(f"\n*{results['scaling']['conclusion']}*\n\n")
 
-        f.write("## 3. Facety Solra kontra GROUP BY w SQL (Poziom 5.0)\n\n")
-        fg = results["facets_vs_groupby"]
-        f.write(f"- **Apache Solr (2 facety + 1 zakresowy):** `{fg['solr_facets']['median_client_ms']} ms` (QTime: `{fg['solr_facets']['qtime_ms']} ms`)\n")
-        f.write(f"- **PostgreSQL (3 x GROUP BY):** `{fg['sql_groupby']['total_sql_ms']} ms` (Category: {fg['sql_groupby']['category_ms']} ms, Tag: {fg['sql_groupby']['tag_ms']} ms, Rating: {fg['sql_groupby']['rating_range_ms']} ms)\n")
-        f.write(f"- **Przyspieszenie Solra:** `{fg['speedup_factor']}x`\n\n")
+def main():
+    check_services()
+    conn = psycopg2.connect(**PG_CONFIG)
+    conn.autocommit = True
+    cur = conn.cursor()
+    cur.execute(f"SELECT count(*) FROM {FULL['table']}")
+    full_rows = cur.fetchone()[0]
+    solr_docs = solr_get(FULL["core"], {"q": "*:*", "rows": 0})["response"]["numFound"]
+    if full_rows == 0 or full_rows != solr_docs:
+        sys.exit(f"Niespójne dane: PostgreSQL {full_rows} wierszy, Solr {solr_docs} dokumentów - uruchom loader.")
 
-        f.write("## 4. Wybrane Rozszerzenia (Poziom 5.0)\n\n")
-        ext1 = results["extensions"]["extension_1_fuzzy"]
-        f.write(f"### {ext1['name']}\n")
-        f.write(f"- Solr fuzzy (`~1`): `{ext1['solr_fuzzy']['time_ms']} ms`\n")
-        f.write(f"- PostgreSQL `pg_trgm`: `{ext1['sql_pg_trgm']['time_ms']} ms`\n")
-        f.write(f"- Skan LIKE: `{ext1['sql_like']['time_ms']} ms` (brak trafień)\n\n")
+    results = {"generated_at": time.strftime("%Y-%m-%d %H:%M:%S"), "runs": RUNS, "records": full_rows}
+    print("Środowisko...")
+    results["environment"] = environment(cur)
+    for name in ("dataset_stats", "load_times"):
+        path = os.path.join(RESULTS_DIR, f"{name}.json")
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as f:
+                results[name] = json.load(f)
 
-        ext2 = results["extensions"]["extension_2_collapse"]
-        f.write(f"### {ext2['name']}\n")
-        f.write(f"- Solr `{{!collapse field=orig_id}}`: `{ext2['solr_collapse']['time_ms']} ms` (10 unikalnych dokumentów w top-10)\n")
-        f.write(f"- PostgreSQL `ROW_NUMBER() / DISTINCT ON`: `{ext2['sql_distinct_on']['time_ms']} ms`\n")
+    steps = [
+        ("queries", "Zapytania Q1-Q3 (3.0/4.0)", run_queries),
+        ("groupby", "GROUP BY (4.0)", groupby_4_0),
+        ("scaling", "Skalowanie 10/50/100% (5.0)", scaling),
+        ("facets_vs_groupby", "Facety vs GROUP BY (5.0)", facets_vs_groupby),
+        ("ext_fuzzy", "Rozszerzenie: literówki", ext_fuzzy),
+        ("ext_analysis", "Rozszerzenie: własny typ pola + Analysis", ext_analysis),
+        ("ext_collapse", "Rozszerzenie: duplikaty / collapse", ext_collapse),
+        ("ext_deep_paging", "Rozszerzenie: głębokie stronicowanie", ext_deep_paging),
+    ]
+    for key, label, fn in steps:
+        print(f"\n== {label} ==")
+        results[key] = fn(cur)
 
-    print(f"Zapisano podsumowanie w formacie Markdown: {md_path}")
+    cur.close()
+    conn.close()
+
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    out = os.path.join(RESULTS_DIR, "benchmark_results.json")
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, ensure_ascii=False, default=str)
+    print(f"\nZapisano {out}")
+
+    from summary import write_summary
+    write_summary(results, os.path.join(RESULTS_DIR, "benchmark_summary.md"))
 
 
 if __name__ == "__main__":
-    out_dir = os.path.join(os.path.dirname(__file__), "..", "wyniki")
-    res = run_full_benchmark(use_live_db=True)
-    save_benchmark_results(res, out_dir)
+    main()

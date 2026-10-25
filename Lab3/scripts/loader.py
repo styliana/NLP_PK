@@ -1,148 +1,200 @@
 #!/usr/bin/env python3
 """
-Moduł ładowania danych do PostgreSQL i Apache Solr 10.
-- PostgreSQL: wykorzystuje szybki strumień COPY (psycopg2)
-- Solr 10: ładuje paczkami (5 000 dokumentów w JSON) przez endpoint /update,
-  z pojedynczym zatwierdzeniem (commit=true) na końcu.
-Mierzy i zwraca dokładne czasy ładowania oraz indeksowania.
+Ładowanie zbioru do PostgreSQL i Apache Solr 10 - trzy wielkości zbioru (10%, 50%, 100%).
+
+PostgreSQL: CREATE TABLE (z kolumną tsvector GENERATED), COPY z pliku CSV, potem budowa indeksów
+GIN i VACUUM ANALYZE - każdy etap mierzony osobno.
+Solr: paczki po 5 000 dokumentów JSON przez /update bez commita, jeden commit na końcu.
+
+Czasy zapisywane są do wyniki/load_times.json (benchmark dołącza je do wyników).
+Użycie:  python scripts/loader.py                 # wszystkie trzy zbiory
+         python scripts/loader.py --only 100%     # tylko pełny zbiór
 """
 
-import os
+import argparse
 import csv
+import itertools
 import json
+import os
+import sys
 import time
-import requests
+
 import psycopg2
+import requests
 
-PG_CONFIG = {
-    "host": "localhost",
-    "port": 5432,
-    "dbname": "nlp_lab3",
-    "user": "postgres",
-    "password": "postgres"
-}
+sys.path.insert(0, os.path.dirname(__file__))
+from common import CSV_PATH, DATASETS, PG_CONFIG, RESULTS_DIR, SOLR_URL, SQL_DIR  # noqa: E402
 
-SOLR_BASE_URL = "http://localhost:8983/solr"
-CORE_NAME = "nlp_lab3"
+LOAD_TIMES = os.path.join(RESULTS_DIR, "load_times.json")
+SOLR_BATCH = 5000
 
 
-def load_to_postgres(csv_path, batch_size=50000):
-    print("\n--- Rozpoczynanie ładowania danych do PostgreSQL ---")
-    start_time = time.time()
+class HeadReader:
+    """Plikopodobny obiekt dla COPY: oddaje nagłówek i pierwsze `rows` wierszy CSV
+    (prepare_data.py zapisuje jeden rekord na linię)."""
 
+    def __init__(self, f, rows):
+        self.f = f
+        self.left = rows + 1
+
+    def readline(self, size=-1):
+        if self.left <= 0:
+            return ""
+        line = self.f.readline()
+        if line:
+            self.left -= 1
+        return line
+
+    def read(self, size=-1):
+        parts, total = [], 0
+        while self.left > 0 and (size is None or size < 0 or total < size):
+            line = self.readline()
+            if not line:
+                break
+            parts.append(line)
+            total += len(line)
+        return "".join(parts)
+
+
+def count_rows(path):
+    with open(path, encoding="utf-8") as f:
+        return sum(1 for _ in f) - 1
+
+
+def sql_template(name, table):
+    with open(os.path.join(SQL_DIR, name), encoding="utf-8") as f:
+        return f.read().replace("{t}", table)
+
+
+def load_postgres(table, rows):
     conn = psycopg2.connect(**PG_CONFIG)
     cur = conn.cursor()
-
-    # Czyszczenie istniejących danych
-    print("Czyszczenie tabeli documents...")
-    cur.execute("TRUNCATE TABLE documents RESTART IDENTITY;")
+    cur.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm;")
+    cur.execute(f"DROP TABLE IF EXISTS {table};")
+    cur.execute(sql_template("02_schema.sql", table))
     conn.commit()
 
-    print(f"Strumieniowanie z pliku: {csv_path} przez COPY...")
-    copy_start = time.time()
-    with open(csv_path, "r", encoding="utf-8") as f:
-        copy_sql = """
-        COPY documents(id, orig_id, title, content, category, tag, rating, published_year, copy_no)
-        FROM STDIN WITH (FORMAT csv, HEADER true, DELIMITER ',');
-        """
-        cur.copy_expert(copy_sql, f)
+    t0 = time.perf_counter()
+    with open(CSV_PATH, encoding="utf-8") as f:
+        cur.copy_expert(
+            f"COPY {table} (id, orig_id, copy_no, arxiv_id, title, abstract, field, category, "
+            f"categories, year, n_versions) FROM STDIN WITH (FORMAT csv, HEADER true)",
+            HeadReader(f, rows),
+        )
     conn.commit()
-    copy_duration = time.time() - copy_start
+    copy_s = time.perf_counter() - t0
 
-    # Weryfikacja liczby wierszy
-    cur.execute("SELECT count(*) FROM documents;")
-    count = cur.fetchone()[0]
+    t0 = time.perf_counter()
+    cur.execute(sql_template("03_indexes.sql", table))
+    conn.commit()
+    index_s = time.perf_counter() - t0
 
+    conn.autocommit = True
+    t0 = time.perf_counter()
+    cur.execute(f"VACUUM ANALYZE {table};")
+    vacuum_s = time.perf_counter() - t0
+
+    cur.execute(f"SELECT count(*), pg_total_relation_size('{table}'), "
+                f"pg_relation_size('{table}_tsv_gin') FROM {table};")
+    count, total_bytes, gin_bytes = cur.fetchone()
     cur.close()
     conn.close()
-
-    total_duration = time.time() - start_time
-    print(f"Zakończono ładowanie do PostgreSQL: {count} rekordów.")
-    print(f"Czas COPY: {copy_duration:.2f} s | Całkowity czas: {total_duration:.2f} s")
     return {
-        "count": count,
-        "copy_time": copy_duration,
-        "total_time": total_duration
+        "rows": count,
+        "copy_s": round(copy_s, 2),
+        "index_s": round(index_s, 2),
+        "vacuum_analyze_s": round(vacuum_s, 2),
+        "total_s": round(copy_s + index_s + vacuum_s, 2),
+        "table_total_mb": round(total_bytes / 1024 ** 2, 1),
+        "gin_index_mb": round(gin_bytes / 1024 ** 2, 1),
     }
 
 
-def load_to_solr(csv_path, batch_size=5000):
-    print("\n--- Rozpoczynanie ładowania danych do Apache Solr 10 ---")
-    start_time = time.time()
-
-    update_url = f"{SOLR_BASE_URL}/{CORE_NAME}/update"
-
-    # Czyszczenie istniejących dokumentów w Solr
-    print("Usuwanie starych dokumentów z rdzenia Solr...")
-    requests.post(update_url, json={"delete": {"query": "*:*"}}, headers={"Content-Type": "application/json"})
-    requests.post(f"{update_url}?commit=true")
-
-    print(f"Wysyłanie paczek dokumentów po {batch_size} do {update_url}...")
-    batch = []
-    total_loaded = 0
-
-    with open(csv_path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            doc = {
-                "id": row["id"],
-                "orig_id": int(row["orig_id"]),
-                "title": row["title"],
-                "content": row["content"],
-                "category": row["category"],
-                "tag": row["tag"],
-                "rating": float(row["rating"]),
-                "published_year": int(row["published_year"]),
-                "copy_no": int(row["copy_no"])
-            }
-            batch.append(doc)
-
-            if len(batch) >= batch_size:
-                r = requests.post(f"{update_url}?commit=false", json=batch, headers={"Content-Type": "application/json"})
-                if r.status_code != 200:
-                    print(f"Błąd ładowania paczki: {r.text}")
-                total_loaded += len(batch)
-                if total_loaded % 50000 == 0:
-                    print(f"  Załadowano do Solr: {total_loaded} dokumentów...")
-                batch = []
-
-        if batch:
-            requests.post(f"{update_url}?commit=false", json=batch, headers={"Content-Type": "application/json"})
-            total_loaded += len(batch)
-
-    print("Wykonywanie końcowego zatwierdzenia (commit=true)...")
-    commit_start = time.time()
-    r = requests.post(f"{update_url}?commit=true")
-    commit_duration = time.time() - commit_start
-
-    # Weryfikacja liczby dokumentów
-    verify_url = f"{SOLR_BASE_URL}/{CORE_NAME}/select?q=*:*&rows=0"
-    res = requests.get(verify_url).json()
-    num_found = res.get("response", {}).get("numFound", 0)
-
-    total_duration = time.time() - start_time
-    print(f"Zakończono ładowanie do Solr: {num_found} dokumentów.")
-    print(f"Czas wysyłki paczek: {(total_duration - commit_duration):.2f} s | Czas commit: {commit_duration:.2f} s | Całkowity czas: {total_duration:.2f} s")
-
+def to_solr_doc(row):
     return {
-        "count": num_found,
-        "commit_time": commit_duration,
-        "total_time": total_duration
+        "id": row["id"],
+        "orig_id": int(row["orig_id"]),
+        "copy_no": int(row["copy_no"]),
+        "arxiv_id": row["arxiv_id"],
+        "title": row["title"],
+        "abstract": row["abstract"],
+        "field": row["field"],
+        "category": row["category"],
+        "categories": row["categories"].split(),
+        "year": int(row["year"]),
+        "n_versions": int(row["n_versions"]),
     }
+
+
+def load_solr(core, rows):
+    session = requests.Session()
+    update = f"{SOLR_URL}/{core}/update"
+    session.post(update, params={"commit": "true"}, json={"delete": {"query": "*:*"}}).raise_for_status()
+
+    t0 = time.perf_counter()
+    with open(CSV_PATH, encoding="utf-8", newline="") as f:
+        reader = itertools.islice(csv.DictReader(f), rows)
+        while True:
+            batch = [to_solr_doc(r) for r in itertools.islice(reader, SOLR_BATCH)]
+            if not batch:
+                break
+            r = session.post(update, json=batch, timeout=300)
+            if r.status_code != 200:
+                raise RuntimeError(f"Błąd paczki do {core}: {r.text[:500]}")
+    upload_s = time.perf_counter() - t0
+
+    t0 = time.perf_counter()
+    session.post(update, json={"commit": {}}, timeout=600).raise_for_status()
+    commit_s = time.perf_counter() - t0
+
+    num_found = session.get(f"{SOLR_URL}/{core}/select", params={"q": "*:*", "rows": 0}).json()["response"]["numFound"]
+    status = session.get(f"{SOLR_URL}/admin/cores", params={"action": "STATUS", "core": core}).json()
+    index_bytes = status["status"][core]["index"]["sizeInBytes"]
+    return {
+        "docs": num_found,
+        "upload_s": round(upload_s, 2),
+        "commit_s": round(commit_s, 2),
+        "total_s": round(upload_s + commit_s, 2),
+        "index_mb": round(index_bytes / 1024 ** 2, 1),
+        "batch_size": SOLR_BATCH,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Loader PostgreSQL + Solr dla Lab 3")
+    parser.add_argument("--only", choices=[d["label"] for d in DATASETS], help="załaduj tylko jeden zbiór")
+    args = parser.parse_args()
+
+    if not os.path.exists(CSV_PATH):
+        sys.exit(f"Brak {CSV_PATH} - uruchom najpierw: python scripts/prepare_data.py")
+
+    total = count_rows(CSV_PATH)
+    results = {}
+    if os.path.exists(LOAD_TIMES):
+        with open(LOAD_TIMES, encoding="utf-8") as f:
+            results = json.load(f)
+
+    for ds in DATASETS:
+        if args.only and ds["label"] != args.only:
+            continue
+        rows = int(total * ds["fraction"])
+        print(f"\n=== Zbiór {ds['label']}: {rows} rekordów -> tabela {ds['table']}, rdzeń {ds['core']} ===")
+        pg = load_postgres(ds["table"], rows)
+        print(f"PostgreSQL: COPY {pg['copy_s']} s, indeksy {pg['index_s']} s, "
+              f"VACUUM ANALYZE {pg['vacuum_analyze_s']} s, {pg['rows']} wierszy, {pg['table_total_mb']} MB")
+        solr = load_solr(ds["core"], rows)
+        print(f"Solr: wysyłka {solr['upload_s']} s, commit {solr['commit_s']} s, "
+              f"{solr['docs']} dokumentów, indeks {solr['index_mb']} MB")
+        if pg["rows"] != solr["docs"]:
+            print("UWAGA: liczba rekordów w PostgreSQL i Solrze się różni!")
+        results[ds["label"]] = {"rows": rows, "postgres": pg, "solr": solr}
+
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+        with open(LOAD_TIMES, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+
+    print(f"\nZapisano czasy ładowania do {LOAD_TIMES}")
 
 
 if __name__ == "__main__":
-    csv_file = os.path.join(os.path.dirname(__file__), "..", "data", "documents.csv")
-    if not os.path.exists(csv_file):
-        print(f"Brak pliku {csv_file}. Wygeneruj go najpierw za pomocą data_generator.py")
-    else:
-        # Próba ładowania jeśli usługi są włączone
-        try:
-            load_to_postgres(csv_file)
-        except Exception as e:
-            print(f"Błąd ładowania PostgreSQL: {e}")
-
-        try:
-            load_to_solr(csv_file)
-        except Exception as e:
-            print(f"Błąd ładowania Solr: {e}")
+    main()

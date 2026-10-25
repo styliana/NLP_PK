@@ -1,205 +1,184 @@
 #!/usr/bin/env python3
 """
-Generator wykresów dla Laboratorium nr 3 (NLP: SQL kontra Solr).
-Generuje wykresy w formacie PNG do katalogu wykresy/:
-1. skalowanie_zapytan.png (Wymóg 5.0: LIKE vs FTS vs Solr dla 10%, 50%, 100%)
-2. czasy_zapytan_porownanie.png (Porównanie czasów Q1, Q2, Q3)
-3. facety_vs_groupby.png (Wymóg 5.0: Facety Solra vs GROUP BY w SQL)
-4. rozszerzenia_porownanie.png (Wymóg 5.0: Rozszerzenie Fuzzy search i Collapsing)
+Wykresy PNG do sprawozdania z wyniki/benchmark_results.json (tylko prawdziwe pomiary).
+
+1. skalowanie_zapytan.png        - 5.0: LIKE vs SQL FTS vs Solr dla 10/50/100% (Q1-Q3)
+2. czasy_zapytan_porownanie.png  - Q1-Q3 na pełnym zbiorze
+3. facety_vs_groupby.png         - 5.0: facety Solra vs GROUP BY
+4. glebokie_stronicowanie.png    - rozszerzenie: start/rows vs cursorMark, OFFSET vs keyset
+5. rozszerzenia_porownanie.png   - rozszerzenia: literówki i collapse
 """
 
-import os
 import json
-import matplotlib.pyplot as plt
-import numpy as np
+import os
+import sys
 
-# Konfiguracja stylu
-plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
-plt.rcParams['font.family'] = 'DejaVu Sans'
-plt.rcParams['font.size'] = 10
-plt.rcParams['axes.titlesize'] = 12
-plt.rcParams['axes.labelsize'] = 11
+import matplotlib
 
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
 
-def load_results(json_path):
-    with open(json_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+sys.path.insert(0, os.path.dirname(__file__))
+from common import PLOTS_DIR, RESULTS_DIR  # noqa: E402
 
+# Stałe kolory na system (ten sam system = ten sam kolor na każdym wykresie).
+C_LIKE = "#eb6834"
+C_PG = "#2a78d6"
+C_SOLR = "#1baf7a"
+INK = "#0b0b0b"
+INK_2 = "#52514e"
+GRID = "#e4e3df"
 
-def plot_scaling(results, output_dir):
-    scaling = results["scaling"]
-    sizes_k = [50, 250, 500]  # tysiące rekordów
-    like_times = [
-        scaling["10% (50k)"]["sql_like_ms"],
-        scaling["50% (250k)"]["sql_like_ms"],
-        scaling["100% (500k)"]["sql_like_ms"]
-    ]
-    fts_times = [
-        scaling["10% (50k)"]["sql_fts_ms"],
-        scaling["50% (250k)"]["sql_fts_ms"],
-        scaling["100% (500k)"]["sql_fts_ms"]
-    ]
-    solr_times = [
-        scaling["10% (50k)"]["solr_ms"],
-        scaling["50% (250k)"]["solr_ms"],
-        scaling["100% (500k)"]["solr_ms"]
-    ]
-
-    fig, ax = plt.subplots(figsize=(9, 5.5), dpi=300)
-
-    ax.plot(sizes_k, like_times, marker='o', linewidth=2.5, color='#d9534f', label="SQL LIKE '%...%' (skan sekwencyjny O(N))")
-    ax.plot(sizes_k, fts_times, marker='s', linewidth=2.5, color='#337ab7', label="PostgreSQL FTS (indeks GIN O(log N))")
-    ax.plot(sizes_k, solr_times, marker='^', linewidth=2.5, color='#5cb85c', label="Apache Solr 10 (odwrócony indeks Lucene)")
-
-    # Etykiety punktów
-    for x, y in zip(sizes_k, like_times):
-        ax.annotate(f"{y:.1f} ms", (x, y), textcoords="offset points", xytext=(0, 8), ha='center', fontweight='bold', color='#d9534f')
-    for x, y in zip(sizes_k, fts_times):
-        ax.annotate(f"{y:.2f} ms", (x, y), textcoords="offset points", xytext=(0, -15), ha='center', fontweight='bold', color='#337ab7')
-    for x, y in zip(sizes_k, solr_times):
-        ax.annotate(f"{y:.2f} ms", (x, y), textcoords="offset points", xytext=(0, 8), ha='center', fontweight='bold', color='#5cb85c')
-
-    ax.set_title("Skalowanie zapytań pełnotekstowych dla 10%, 50% i 100% danych (500k rekordów)", pad=15, fontweight='bold')
-    ax.set_xlabel("Wielkość zbioru danych [tysiące rekordów]")
-    ax.set_ylabel("Czas wykonania zapytania [ms]")
-    ax.set_xticks(sizes_k)
-    ax.set_xticklabels(["50k (10%)", "250k (50%)", "500k (100%)"])
-    ax.legend(loc="upper left", frameon=True)
-    ax.grid(True, linestyle="--", alpha=0.6)
-
-    plt.tight_layout()
-    out_file = os.path.join(output_dir, "skalowanie_zapytan.png")
-    plt.savefig(out_file)
-    plt.close()
-    print(f"Wygenerowano wykres: {out_file}")
+plt.rcParams.update({
+    "font.family": "DejaVu Sans", "font.size": 9, "axes.titlesize": 10, "axes.labelsize": 9,
+    "axes.edgecolor": GRID, "axes.labelcolor": INK_2, "xtick.color": INK_2, "ytick.color": INK_2,
+    "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.color": GRID,
+    "grid.linewidth": 0.6, "axes.axisbelow": True, "legend.frameon": False, "text.color": INK,
+})
 
 
-def plot_queries_comparison(results, output_dir):
-    q1 = results["queries_3_0"]["Q1_stemming"]
-    q2 = results["queries_3_0"]["Q2_phrase"]
-    q3 = results["queries_3_0"]["Q3_boolean_negation"]
-
-    categories = ["Q1: Stemming\n('perform')", "Q2: Fraza\n('machine learning')", "Q3: Negacja boolowska\n(A & (B | C) & !D)"]
-    sql_fts = [q1["sql_fts"]["median_ms"], q2["sql_fts"]["median_ms"], q3["sql_fts"]["median_ms"]]
-    solr_qtime = [q1["solr"]["qtime_ms"], q2["solr"]["qtime_ms"], q3["solr"]["qtime_ms"]]
-    solr_client = [q1["solr"]["median_ms"], q2["solr"]["median_ms"], q3["solr"]["median_ms"]]
-
-    x = np.arange(len(categories))
-    width = 0.25
-
-    fig, ax = plt.subplots(figsize=(9, 5), dpi=300)
-
-    rects1 = ax.bar(x - width, sql_fts, width, label='PostgreSQL 16 (FTS GIN)', color='#337ab7')
-    rects2 = ax.bar(x, solr_qtime, width, label='Apache Solr 10 (QTime silnika)', color='#5cb85c')
-    rects3 = ax.bar(x + width, solr_client, width, label='Apache Solr 10 (Klient HTTP)', color='#f0ad4e')
-
-    # Dodanie etykiet słupków
-    def autolabel(rects):
-        for rect in rects:
-            height = rect.get_height()
-            ax.annotate(f'{height:.2f} ms' if height < 10 else f'{height:.1f} ms',
-                        xy=(rect.get_x() + rect.get_width() / 2, height),
-                        xytext=(0, 3), textcoords="offset points",
-                        ha='center', va='bottom', fontsize=9)
-
-    autolabel(rects1)
-    autolabel(rects2)
-    autolabel(rects3)
-
-    ax.set_title("Porównanie czasów wykonania zapytań (mediana z 5 prób, zbiór 500k rekordów)", pad=15, fontweight='bold')
-    ax.set_ylabel("Czas wykonania [ms]")
-    ax.set_xticks(x)
-    ax.set_xticklabels(categories)
-    ax.legend(loc="upper right", frameon=True)
-    ax.grid(True, linestyle="--", alpha=0.6, axis='y')
-
-    plt.tight_layout()
-    out_file = os.path.join(output_dir, "czasy_zapytan_porownanie.png")
-    plt.savefig(out_file)
-    plt.close()
-    print(f"Wygenerowano wykres: {out_file}")
+def save(fig, name):
+    os.makedirs(PLOTS_DIR, exist_ok=True)
+    path = os.path.join(PLOTS_DIR, name)
+    fig.savefig(path, dpi=200, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+    print(f"Zapisano {path}")
 
 
-def plot_facets_vs_groupby(results, output_dir):
-    fg = results["facets_vs_groupby"]
-    labels = ["Category GROUP BY", "Tag GROUP BY", "Rating Range GROUP BY", "SQL GROUP BY (Suma)", "Solr Facets (Wszystko w 1)"]
-    times = [
-        fg["sql_groupby"]["category_ms"],
-        fg["sql_groupby"]["tag_ms"],
-        fg["sql_groupby"]["rating_range_ms"],
-        fg["sql_groupby"]["total_sql_ms"],
-        fg["solr_facets"]["median_client_ms"]
-    ]
-    colors = ['#5bc0de', '#5bc0de', '#5bc0de', '#d9534f', '#5cb85c']
-
-    fig, ax = plt.subplots(figsize=(9, 5), dpi=300)
-    bars = ax.barh(labels, times, color=colors, height=0.6)
-
-    for bar, val in zip(bars, times):
-        ax.text(val + 5, bar.get_y() + bar.get_height() / 2, f"{val:.1f} ms",
-                va='center', ha='left', fontweight='bold', fontsize=10)
-
-    ax.set_xlim(0, max(times) * 1.15)
-    ax.set_xlabel("Czas wykonania zapytania [ms]")
-    ax.set_title("Wydajnosc agregacji: Solr Facets (1 zapytanie) vs PostgreSQL GROUP BY", pad=15, fontweight='bold', fontsize=11)
-    ax.grid(True, linestyle="--", alpha=0.6, axis='x')
-
-    # Adnotacja o przewadze
-    ax.text(0.70, 0.20, f"Przyspieszenie Solra:\n{fg['speedup_factor']:.1f}x szybciej!",
-            transform=ax.transAxes, fontsize=12, fontweight='bold',
-            bbox=dict(boxstyle="round,pad=0.5", facecolor="#dff0d8", edgecolor="#5cb85c"))
-
-    plt.tight_layout()
-    out_file = os.path.join(output_dir, "facety_vs_groupby.png")
-    plt.savefig(out_file)
-    plt.close()
-    print(f"Wygenerowano wykres: {out_file}")
+def bars(ax, groups, series, log=True):
+    """Słupki pogrupowane; series = [(etykieta, kolor, [wartości], hatch)]."""
+    width = 0.8 / len(series)
+    for i, (label, color, values, hatch) in enumerate(series):
+        xs = [g + (i - (len(series) - 1) / 2) * width for g in range(len(groups))]
+        ax.bar(xs, values, width * 0.92, label=label, color=color, hatch=hatch,
+               edgecolor="white" if not hatch else color, facecolor=color if not hatch else "white", linewidth=0.8)
+        for x, v in zip(xs, values):
+            ax.annotate(f"{v:.1f}" if v >= 10 else f"{v:.2f}", (x, v), xytext=(0, 2), textcoords="offset points",
+                        ha="center", va="bottom", fontsize=7, color=INK_2)
+    ax.set_xticks(range(len(groups)))
+    ax.set_xticklabels(groups)
+    if log:
+        ax.set_yscale("log")
 
 
-def plot_extensions(results, output_dir):
-    ext1 = results["extensions"]["extension_1_fuzzy"]
-    ext2 = results["extensions"]["extension_2_collapse"]
+def plot_scaling(r):
+    sc = r["scaling"]
+    labels = list(sc.keys())
+    recs = [sc[l]["records"] / 1000 for l in labels]
+    queries = list(next(iter(sc.values()))["queries"].keys())
+    fig, axes = plt.subplots(1, len(queries), figsize=(11, 3.6), sharey=True)
+    for ax, q in zip(axes, queries):
+        for label, color, key, ls in (("SQL LIKE '%…%'", C_LIKE, "like_ms", "-"),
+                                      ("PostgreSQL FTS (GIN), ranking top-10", C_PG, "fts_top10_ms", "-"),
+                                      ("PostgreSQL FTS (GIN), sam count(*)", C_PG, "fts_count_ms", "--"),
+                                      ("Solr (bez cache wyników)", C_SOLR, "solr_client_ms", "-")):
+            ys = [sc[l]["queries"][q][key] for l in labels]
+            ax.plot(recs, ys, ls, color=color, lw=2, marker="o", ms=5, label=label)
+            ax.annotate(f"{ys[-1]:.1f}" if ys[-1] >= 10 else f"{ys[-1]:.2f}", (recs[-1], ys[-1]),
+                        xytext=(4, 0), textcoords="offset points", va="center", fontsize=7, color=INK_2)
+        ax.set_title(r["queries"][q].get("short", q), loc="left", fontsize=9)
+        ax.set_xticks(recs)
+        ax.set_xticklabels([f"{l}\n{int(x)}k" for l, x in zip(labels, recs)])
+        ax.set_yscale("log")
+        ax.set_xlabel("wielkość zbioru [tys. rekordów]")
+    axes[0].set_ylabel("czas zapytania [ms] (skala log.)")
+    handles, lbls = axes[0].get_legend_handles_labels()
+    fig.legend(handles, lbls, loc="upper center", ncol=4, bbox_to_anchor=(0.5, 1.06))
+    fig.suptitle("Skalowanie: czas zapytań dla 10%, 50% i 100% zbioru (mediana z 5)", y=1.12, fontweight="bold")
+    save(fig, "skalowanie_zapytan.png")
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5), dpi=300)
 
-    # Wykres 1: Fuzzy Search
-    fuzzy_labels = ["LIKE '%...%'\n(0 trafień)", "PostgreSQL\npg_trgm", "Apache Solr\nFuzzy (~)"]
-    fuzzy_times = [ext1["sql_like"]["time_ms"], ext1["sql_pg_trgm"]["time_ms"], ext1["solr_fuzzy"]["time_ms"]]
-    ax1.bar(fuzzy_labels, fuzzy_times, color=['#d9534f', '#337ab7', '#5cb85c'], width=0.55)
-    for i, v in enumerate(fuzzy_times):
-        ax1.text(i, v + 4, f"{v:.1f} ms", ha='center', fontweight='bold')
-    ax1.set_title("Rozszerzenie 1: Odporność na literówki\n('machne lerning')", fontweight='bold')
-    ax1.set_ylabel("Czas wykonania [ms]")
-    ax1.grid(True, linestyle="--", alpha=0.6, axis='y')
+def plot_queries(r):
+    q = r["queries"]
+    keys = list(q.keys())
+    fig, ax = plt.subplots(figsize=(8, 4))
+    bars(ax, keys, [
+        ("SQL LIKE '%…%' (count)", C_LIKE, [q[k]["like"]["median_ms"] for k in keys], None),
+        ("PostgreSQL FTS ranking top-10", C_PG, [q[k]["fts_top10_query"]["median_ms"] for k in keys], None),
+        ("PostgreSQL FTS count(*)", C_PG, [q[k]["fts_count_query"]["median_ms"] for k in keys], "///"),
+        ("Solr (bez cache wyników)", C_SOLR, [q[k]["solr"]["median_client_ms"] for k in keys], None),
+    ])
+    ax.set_ylabel("czas [ms] (skala log.)")
+    ax.set_title(f"Zapytania Q1–Q3 na pełnym zbiorze ({r['records']:,} rekordów)".replace(",", " "), loc="left")
+    ax.legend(loc="upper center", ncol=2, bbox_to_anchor=(0.5, -0.1))
+    save(fig, "czasy_zapytan_porownanie.png")
 
-    # Wykres 2: Collapsing duplikatów
-    col_labels = ["PostgreSQL\nDISTINCT ON / ROW_NUM", "Apache Solr\n{!collapse}"]
-    col_times = [ext2["sql_distinct_on"]["time_ms"], ext2["solr_collapse"]["time_ms"]]
-    ax2.bar(col_labels, col_times, color=['#337ab7', '#5cb85c'], width=0.45)
-    for i, v in enumerate(col_times):
-        ax2.text(i, v + 2, f"{v:.1f} ms", ha='center', fontweight='bold')
-    ax2.set_title("Rozszerzenie 2: Deduplikacja w Top-10\n(Collapsing po orig_id)", fontweight='bold')
-    ax2.set_ylabel("Czas wykonania [ms]")
-    ax2.grid(True, linestyle="--", alpha=0.6, axis='y')
 
-    plt.tight_layout()
-    out_file = os.path.join(output_dir, "rozszerzenia_porownanie.png")
-    plt.savefig(out_file)
-    plt.close()
-    print(f"Wygenerowano wykres: {out_file}")
+def plot_facets(r):
+    f = r["facets_vs_groupby"]
+    keys = list(f.keys())
+    names = ["Q1 (simulate)" if k == "Q1" else "cały zbiór (*:*)" for k in keys]
+    fig, ax = plt.subplots(figsize=(7, 4))
+    bars(ax, names, log=False, series=[
+        ("Solr: 1 zapytanie (2 facety + facet.range)", C_SOLR, [f[k]["solr"]["median_client_ms"] for k in keys], None),
+        ("PostgreSQL: 3 zapytania GROUP BY", C_PG, [f[k]["sql_three_queries_ms"] for k in keys], None),
+        ("PostgreSQL: 1 zapytanie GROUPING SETS", C_PG, [f[k]["sql_grouping_sets"]["median_ms"] for k in keys], "///"),
+    ])
+    ax.set_ylabel("czas [ms]")
+    ax.set_title("Facety (field, category, zakres year) vs agregacje SQL", loc="left")
+    ax.legend(loc="upper center", ncol=1, bbox_to_anchor=(0.5, -0.1))
+    save(fig, "facety_vs_groupby.png")
+
+
+def plot_deep_paging(r):
+    p = r["ext_deep_paging"]
+    xs = [max(d["position"], 1) for d in p]
+    fig, ax = plt.subplots(figsize=(7, 4))
+    for label, color, key, ls in (("Solr start/rows", C_SOLR, "solr_start_ms", "--"),
+                                  ("Solr cursorMark", C_SOLR, "solr_cursor_ms", "-"),
+                                  ("PostgreSQL OFFSET", C_PG, "sql_offset_ms", "--"),
+                                  ("PostgreSQL keyset (id > x)", C_PG, "sql_keyset_ms", "-")):
+        ys = [d[key] for d in p]
+        ax.plot(xs, ys, ls, color=color, lw=2, marker="o", ms=5, label=label)
+    ax.set_xscale("symlog", linthresh=1000)
+    ax.set_yscale("log")
+    ax.set_xticks(xs)
+    ax.set_xticklabels([f"{d['position']:,}".replace(",", " ") for d in p], rotation=30)
+    ax.set_xlabel("pozycja pierwszego wyniku na stronie")
+    ax.set_ylabel("czas pobrania strony 10 wyników [ms]")
+    ax.set_title("Głębokie stronicowanie", loc="left")
+    ax.legend()
+    save(fig, "glebokie_stronicowanie.png")
+
+
+def plot_extensions(r):
+    fz = r["ext_fuzzy"]
+    c = r["ext_collapse"]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4))
+    typos = list(fz.keys())
+    bars(a1, typos, log=False, series=[
+        ("LIKE '%…%' (title)", C_LIKE, [fz[t]["like"]["median_ms"] for t in typos], None),
+        ("pg_trgm  słowo <% title", C_PG, [fz[t]["pg_trgm"]["median_ms"] for t in typos], None),
+        ("Solr fuzzy ~2", C_SOLR, [fz[t]["solr_fuzzy"]["median_client_ms"] for t in typos], None),
+    ])
+    for i, t in enumerate(typos):
+        a1.annotate(f"wyniki: LIKE {fz[t]['like']['count']}, trgm {fz[t]['pg_trgm']['count']}, "
+                    f"Solr {fz[t]['solr_fuzzy']['count']}", (i, 0), xytext=(0, -28), textcoords="offset points",
+                    xycoords=("data", "axes fraction"), ha="center", fontsize=7, color=INK_2)
+    a1.set_ylabel("czas [ms]")
+    a1.set_title("Odporność na literówki", loc="left")
+    a1.legend(loc="upper center", ncol=3, bbox_to_anchor=(0.5, -0.16))
+
+    bars(a2, ["bez deduplikacji", "z deduplikacją"], log=False, series=[
+        ("PostgreSQL (top-10 / DISTINCT ON)", C_PG,
+         [c["sql_plain_top10"]["median_ms"], c["sql_distinct_on"]["median_ms"]], None),
+        ("Solr (eDisMax / collapse)", C_SOLR,
+         [c["solr_plain"]["median_client_ms"], c["solr_collapse"]["median_client_ms"]], None),
+    ])
+    a2.set_ylabel("czas [ms]")
+    a2.set_title("Duplikaty po powieleniu: collapse po orig_id", loc="left")
+    a2.legend(loc="upper center", ncol=2, bbox_to_anchor=(0.5, -0.1))
+    save(fig, "rozszerzenia_porownanie.png")
 
 
 def main():
-    base_dir = os.path.dirname(__file__)
-    json_path = os.path.join(base_dir, "..", "wyniki", "benchmark_results.json")
-    out_dir = os.path.join(base_dir, "..", "wykresy")
-    os.makedirs(out_dir, exist_ok=True)
-
-    results = load_results(json_path)
-    plot_scaling(results, out_dir)
-    plot_queries_comparison(results, out_dir)
-    plot_facets_vs_groupby(results, out_dir)
-    plot_extensions(results, out_dir)
+    with open(os.path.join(RESULTS_DIR, "benchmark_results.json"), encoding="utf-8") as f:
+        r = json.load(f)
+    plot_scaling(r)
+    plot_queries(r)
+    plot_facets(r)
+    plot_deep_paging(r)
+    plot_extensions(r)
 
 
 if __name__ == "__main__":

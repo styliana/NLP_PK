@@ -30,23 +30,35 @@ def create_submission_zip(output_zip_path=None):
         "requirements.txt",
         "uruchom_calosc.py",
         "sql/01_init.sql",
+        "sql/02_schema.sql",
+        "sql/03_indexes.sql",
         "sql/queries.sql",
+        "solr/schema_api.json",
         "solr/managed-schema.json",
         "solr/setup_solr.py",
-        "scripts/data_generator.py",
+        "scripts/common.py",
+        "scripts/prepare_data.py",
         "scripts/loader.py",
         "scripts/benchmark.py",
+        "scripts/summary.py",
         "scripts/generate_plots.py",
-        "scripts/generate_report.py",
         "scripts/package_submission.py",
         "wykresy/skalowanie_zapytan.png",
         "wykresy/czasy_zapytan_porownanie.png",
         "wykresy/facety_vs_groupby.png",
+        "wykresy/glebokie_stronicowanie.png",
         "wykresy/rozszerzenia_porownanie.png",
+        "wyniki/dataset_stats.json",
+        "wyniki/load_times.json",
         "wyniki/benchmark_results.json",
         "wyniki/benchmark_summary.md",
         "sprawozdanie/Sprawozdanie_Lab3.pdf"
     ]
+    include_paths.append("sprawozdanie/build_sprawozdanie.py")
+    for sub in ("wyniki/explain", "sprawozdanie/screeny"):
+        folder = os.path.join(base_dir, *sub.split("/"))
+        if os.path.isdir(folder):
+            include_paths += [f"{sub}/{f}" for f in sorted(os.listdir(folder))]
 
     with zipfile.ZipFile(output_zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         for rel_path in include_paths:
