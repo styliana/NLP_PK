@@ -1,16 +1,26 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16
     container_name: nlp_postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nlp_lab3
+    # pamięć zbliżona do Solra (heap 2 GB), żeby porównanie było uczciwe
+    command:
+      - postgres
+      - -c
+      - shared_buffers=1GB
+      - -c
+      - effective_cache_size=3GB
+      - -c
+      - work_mem=64MB
+      - -c
+      - maintenance_work_mem=1GB
+    shm_size: 1gb
     ports:
-      - "5432:5432"
+      - "5433:5432"   # 5433 na hoście, żeby nie kolidować z lokalnym PostgreSQL
     volumes:
       - ./sql/01_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
       - pgdata:/var/lib/postgresql/data
@@ -18,7 +28,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U postgres -d nlp_lab3"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 20
 
   solr:
     image: solr:10
@@ -28,14 +38,19 @@ services:
       - "8983:8983"
     environment:
       - SOLR_HEAP=2g
-    command: ["solr-precreate", "nlp_lab3"]
+    # trzy rdzenie (100%, 50%, 10% danych), każdy z własną kopią configsetu _default;
+    # Solr 10 domyślnie startuje jako SolrCloud - rdzenie wymagają trybu user-managed (standalone)
+    command:
+      - bash
+      - -c
+      - precreate-core nlp_lab3 && precreate-core nlp_lab3_p50 && precreate-core nlp_lab3_p10 && exec solr-foreground --user-managed
     volumes:
       - solrdata:/var/solr
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8983/solr/nlp_lab3/admin/ping || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8983/solr/nlp_lab3/admin/ping || exit 1"]
       interval: 5s
       timeout: 5s
-      retries: 15
+      retries: 30
 
 volumes:
   pgdata:

@@ -1,0 +1,61 @@
+{
+  "field_types": [
+    {
+      "name": "text_en_lab",
+      "class": "solr.TextField",
+      "positionIncrementGap": "100",
+      "analyzer": {
+        "tokenizer": {"class": "solr.StandardTokenizerFactory"},
+        "filters": [
+          {"class": "solr.LowerCaseFilterFactory"},
+          {"class": "solr.StopFilterFactory", "ignoreCase": "true", "words": "lang/stopwords_en.txt"},
+          {"class": "solr.EnglishPossessiveFilterFactory"},
+          {"class": "solr.SnowballPorterFilterFactory", "language": "English"}
+        ]
+      }
+    },
+    {
+      "name": "text_exact",
+      "class": "solr.TextField",
+      "positionIncrementGap": "100",
+      "analyzer": {
+        "tokenizer": {"class": "solr.StandardTokenizerFactory"},
+        "filters": [
+          {"class": "solr.LowerCaseFilterFactory"}
+        ]
+      }
+    }
+  ],
+  "fields": [
+    {"name": "orig_id",     "type": "pint",        "indexed": true,  "stored": true,  "docValues": true},
+    {"name": "copy_no",     "type": "pint",        "indexed": true,  "stored": true,  "docValues": true},
+    {"name": "arxiv_id",    "type": "string",      "indexed": true,  "stored": true,  "docValues": false},
+    {"name": "title",       "type": "text_en_lab", "indexed": true,  "stored": true},
+    {"name": "abstract",    "type": "text_en_lab", "indexed": true,  "stored": true},
+    {"name": "title_exact", "type": "text_exact",  "indexed": true,  "stored": false},
+    {"name": "text_all",    "type": "text_en_lab", "indexed": true,  "stored": false, "multiValued": true},
+    {"name": "field",       "type": "string",      "indexed": true,  "stored": true,  "docValues": true},
+    {"name": "category",    "type": "string",      "indexed": true,  "stored": true,  "docValues": true},
+    {"name": "categories",  "type": "string",      "indexed": true,  "stored": true,  "docValues": true, "multiValued": true},
+    {"name": "year",        "type": "pint",        "indexed": true,  "stored": true,  "docValues": true},
+    {"name": "n_versions",  "type": "pint",        "indexed": false, "stored": true,  "docValues": true}
+  ],
+  "copy_fields": [
+    {"source": "title",    "dest": "text_all"},
+    {"source": "abstract", "dest": "text_all"},
+    {"source": "title",    "dest": "title_exact"}
+  ],
+  "flag_rationale": {
+    "id": "string, indexed+stored (klucz unikalny, dziedziczony z _default)",
+    "orig_id": "pint (collapse obsługuje tylko pola string/int/float, nie long) + docValues - wymagane przez {!collapse field=orig_id}; indexed - filtrowanie po oryginale",
+    "copy_no": "indexed - fq=copy_no:0 (wyniki bez kopii); docValues - facet po kopiach",
+    "arxiv_id": "stored - zwracany w wynikach; indexed - wyszukanie konkretnego artykułu; bez docValues (nie sortujemy ani nie facetujemy)",
+    "title/abstract": "text_en_lab: analizowane (stemming, stoplista); stored - zwracane w wynikach i potrzebne do podświetlania (hl); bez docValues (pola tekstowe ich nie obsługują)",
+    "title_exact": "tylko indexed, bez stemmingu - zapytania rozmyte (~) działają na pełnych słowach; stored=false, bo treść jest już w title",
+    "text_all": "multiValued - copyField z dwóch źródeł (title, abstract) daje dwie wartości; stored=false - tylko do wyszukiwania (df dla parsera lucene), oszczędza miejsce",
+    "field/category": "string + docValues - facety i fq; stored - wyświetlanie",
+    "categories": "multiValued - artykuł ma kilka kategorii arXiv; docValues - facet po wszystkich kategoriach",
+    "year": "pint + docValues - facet zakresowy (facet.range), sortowanie i fq=year:[a TO b]",
+    "n_versions": "indexed=false - nie filtrujemy; docValues - sortowanie/boost; stored - zwracane"
+  }
+}

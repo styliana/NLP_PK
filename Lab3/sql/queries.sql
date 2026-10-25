@@ -1,137 +1,94 @@
--- Zbiór zapytań SQL dla Laboratorium nr 3 (PostgreSQL 16)
--- Zgodne z wymaganiami poziomów 3.0, 4.0 i 5.0
+-- Zapytania SQL dla Laboratorium nr 3 (PostgreSQL 16) - te same, które wykonuje scripts/benchmark.py.
+-- Tabela documents = 100% zbioru; documents_p50 i documents_p10 = test skalowania.
+-- Czas: EXPLAIN (ANALYZE, BUFFERS) -> "Execution Time" (plany zapisuje benchmark w wyniki/explain/).
 
 -- ============================================================================
--- POZIOM 3.0: 3 PODSTAWOWE ZAPYTANIA PEŁNOTEKSTOWE + LIKE
+-- 3.0: trzy zapytania pełnotekstowe + LIKE
 -- ============================================================================
 
--- Zapytanie 1: Pojedyncze słowo w dowolnej formie gramatycznej (Stemming)
--- Szukamy form wyrazu "perform" (np. performance, performing, performed)
+-- Q1: pojedyncze słowo w dowolnej formie (simulate -> simulation, simulated, simulating, simulations)
 EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, rating
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'perform')
-LIMIT 10;
+SELECT count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate');
 
--- Zapytanie 1 (wariant porównawczy LIKE '%...%')
+-- Q1 przez LIKE (skan sekwencyjny, bez stemmingu, z rozróżnianiem wielkości liter)
 EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, rating
-FROM documents
-WHERE content LIKE '%perform%'
-LIMIT 10;
+SELECT count(*) FROM documents WHERE (title || ' ' || abstract) LIKE '%simulate%';
 
--- Zapytanie 2: Fraza — słowa obok siebie w podanej kolejności ("machine learning")
+-- Q2: fraza - słowa obok siebie, w podanej kolejności ('neural' <-> 'network')
 EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, rating
-FROM documents
-WHERE tsv @@ phraseto_tsquery('english', 'machine learning')
-LIMIT 10;
+SELECT count(*) FROM documents WHERE tsv @@ phraseto_tsquery('english', 'neural network');
 
--- Zapytanie 3: Złożona logika boolowska z negacją: A AND (B OR C) AND NOT D
--- Przykład: database & (performance | speed) & !slow
+-- Q3: logika z negacją - A oraz (B lub C), bez D
 EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, rating
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'database & (performance | speed) & !slow')
-LIMIT 10;
-
+SELECT count(*) FROM documents
+WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon');
 
 -- ============================================================================
--- POZIOM 4.0: RANKING ORAZ AGREGACJE GROUP BY
+-- 4.0: ranking top-10, GROUP BY, podświetlanie
 -- ============================================================================
 
--- Ranking trafności za pomocą funkcji ts_rank_cd (Cover Density Ranking)
--- Top 10 dla Zapytania 1:
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, rating,
-       ts_rank_cd(tsv, to_tsquery('english', 'perform')) AS rank_score
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'perform')
-ORDER BY rank_score DESC, id ASC
-LIMIT 10;
+-- ranking (tytuł waga A = 1.0, abstrakt waga B = 0.4)
+SELECT id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'simulate')) AS rank
+FROM documents WHERE tsv @@ to_tsquery('english', 'simulate')
+ORDER BY rank DESC, id LIMIT 10;
 
--- Ranking dla Zapytania 2 (fraza):
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, rating,
-       ts_rank_cd(tsv, phraseto_tsquery('english', 'machine learning')) AS rank_score
-FROM documents
-WHERE tsv @@ phraseto_tsquery('english', 'machine learning')
-ORDER BY rank_score DESC, id ASC
-LIMIT 10;
+SELECT id, orig_id, title, ts_rank_cd(tsv, phraseto_tsquery('english', 'neural network')) AS rank
+FROM documents WHERE tsv @@ phraseto_tsquery('english', 'neural network')
+ORDER BY rank DESC, id LIMIT 10;
 
--- Ranking dla Zapytania 3 (logika z negacją):
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, rating,
-       ts_rank_cd(tsv, to_tsquery('english', 'database & (performance | speed) & !slow')) AS rank_score
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'database & (performance | speed) & !slow')
-ORDER BY rank_score DESC, id ASC
-LIMIT 10;
+SELECT id, orig_id, title,
+       ts_rank_cd(tsv, to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')) AS rank
+FROM documents WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')
+ORDER BY rank DESC, id LIMIT 10;
 
--- Agregacja GROUP BY po polu kategorycznym dla wyników zapytania FTS:
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT category, COUNT(*) AS doc_count
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'perform')
-GROUP BY category
-ORDER BY doc_count DESC;
+-- GROUP BY po polu kategorycznym dla wyników zapytania pełnotekstowego
+SELECT field, count(*) FROM documents
+WHERE tsv @@ to_tsquery('english', 'simulate')
+GROUP BY field ORDER BY 2 DESC;
 
+-- podświetlanie trafień (odpowiednik hl w Solrze)
+SELECT id, ts_headline('english', abstract, to_tsquery('english', 'simulate'),
+                       'MaxFragments=1, MaxWords=25, MinWords=12, StartSel=<em>, StopSel=</em>')
+FROM documents WHERE tsv @@ to_tsquery('english', 'simulate')
+ORDER BY ts_rank_cd(tsv, to_tsquery('english', 'simulate')) DESC, id LIMIT 10;
 
 -- ============================================================================
--- POZIOM 5.0: FACETY KONTRA GROUP BY ORAZ WYBRANE ROZSZERZENIA
+-- 5.0: agregacje odpowiadające facetom Solra (2 pola + zakres lat co 5)
 -- ============================================================================
 
--- Odpowiednik Solra (2 facety kategoryczne + 1 facet zakresowy rating 1.0-5.0):
--- 1. Kategoria:
-SELECT category, COUNT(*) AS cnt
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'perform')
-GROUP BY category
-ORDER BY cnt DESC;
+SELECT field, count(*) FROM documents
+WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY field ORDER BY 2 DESC;
 
--- 2. Tag:
-SELECT tag, COUNT(*) AS cnt
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'perform')
-GROUP BY tag
-ORDER BY cnt DESC;
+SELECT category, count(*) FROM documents
+WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY category ORDER BY 2 DESC LIMIT 10;
 
--- 3. Zakres ocen (odpowiednik facet.range):
-SELECT 
-    CASE 
-        WHEN rating >= 1.0 AND rating < 2.0 THEN '[1.0, 2.0)'
-        WHEN rating >= 2.0 AND rating < 3.0 THEN '[2.0, 3.0)'
-        WHEN rating >= 3.0 AND rating < 4.0 THEN '[3.0, 4.0)'
-        WHEN rating >= 4.0 AND rating <= 5.0 THEN '[4.0, 5.0]'
-        ELSE 'Inne'
-    END AS rating_bucket,
-    COUNT(*) AS cnt
-FROM documents
-WHERE tsv @@ to_tsquery('english', 'perform')
-GROUP BY rating_bucket
-ORDER BY rating_bucket;
+SELECT 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents
+WHERE tsv @@ to_tsquery('english', 'simulate') AND year >= 1990 GROUP BY y ORDER BY y;
 
--- ROZSZERZENIE 1: Odporność na literówki (Fuzzy search) z modułem pg_trgm
--- Zapytanie z błędem w pisowni: "machne lerning" zamiast "machine learning"
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, title, similarity(content, 'machne lerning') AS sim_score
-FROM documents
-WHERE content % 'machne lerning'
-ORDER BY sim_score DESC
-LIMIT 10;
+-- to samo jednym zapytaniem
+SELECT field, category, 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents
+WHERE tsv @@ to_tsquery('english', 'simulate')
+GROUP BY GROUPING SETS ((field), (category), (1990 + 5 * ((year - 1990) / 5)));
 
--- ROZSZERZENIE 2: Eliminacja duplikatów po powieleniu (Collapsing po orig_id)
--- Zwraca tylko 1 unikalny dokument na orig_id o najwyższej trafności:
-EXPLAIN (ANALYZE, BUFFERS)
-WITH RankedDocs AS (
-    SELECT id, orig_id, title,
-           ts_rank_cd(tsv, to_tsquery('english', 'perform')) AS rank_score,
-           ROW_NUMBER() OVER (PARTITION BY orig_id ORDER BY ts_rank_cd(tsv, to_tsquery('english', 'perform')) DESC) as rn
-    FROM documents
-    WHERE tsv @@ to_tsquery('english', 'perform')
-)
-SELECT id, orig_id, title, rank_score
-FROM RankedDocs
-WHERE rn = 1
-ORDER BY rank_score DESC
-LIMIT 10;
+-- ============================================================================
+-- Rozszerzenia
+-- ============================================================================
+
+-- literówki: LIKE (0 trafień) vs pg_trgm (word_similarity, indeks GIN gin_trgm_ops na title)
+SELECT count(*) FROM documents WHERE title LIKE '%entanglment%';
+SELECT title, word_similarity('entanglment', title) AS s FROM documents
+WHERE 'entanglment' <% title ORDER BY s DESC LIMIT 5;
+
+-- analiza tekstu (porównanie z zakładką Analysis w Solrze)
+SELECT to_tsvector('english', 'The simulated annealing algorithms were simulating complex networks'' behaviour.');
+
+-- duplikaty po powieleniu: jeden wynik na oryginał
+SELECT id, orig_id, title, rank FROM (
+    SELECT DISTINCT ON (orig_id) id, orig_id, title, ts_rank_cd(tsv, to_tsquery('english', 'simulate')) AS rank
+    FROM documents WHERE tsv @@ to_tsquery('english', 'simulate')
+    ORDER BY orig_id, rank DESC, id
+) s ORDER BY rank DESC, id LIMIT 10;
+
+-- głębokie stronicowanie: OFFSET vs keyset
+SELECT id FROM documents ORDER BY id LIMIT 10 OFFSET 500000;
+SELECT id FROM documents WHERE id > 500000 ORDER BY id LIMIT 10;
