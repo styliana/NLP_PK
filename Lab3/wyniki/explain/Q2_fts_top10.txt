@@ -1,0 +1,20 @@
+SELECT id, orig_id, title, ts_rank_cd(tsv, phraseto_tsquery('english', 'neural network')) AS rank FROM documents WHERE tsv @@ phraseto_tsquery('english', 'neural network') ORDER BY rank DESC, id LIMIT 10
+
+Limit  (cost=5944.62..5944.64 rows=10 width=93) (actual time=172.159..172.162 rows=10 loops=1)
+  Buffers: shared hit=115599
+  ->  Sort  (cost=5944.62..5948.68 rows=1627 width=93) (actual time=172.157..172.159 rows=10 loops=1)
+        Sort Key: (ts_rank_cd(tsv, '''neural'' <-> ''network'''::tsquery)) DESC, id
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=115599
+        ->  Bitmap Heap Scan on documents  (cost=47.12..5909.46 rows=1627 width=93) (actual time=7.310..167.321 rows=16043 loops=1)
+              Recheck Cond: (tsv @@ '''neural'' <-> ''network'''::tsquery)
+              Rows Removed by Index Recheck: 852
+              Heap Blocks: exact=13502
+              Buffers: shared hit=115599
+              ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..46.71 rows=1627 width=0) (actual time=4.787..4.787 rows=16895 loops=1)
+                    Index Cond: (tsv @@ '''neural'' <-> ''network'''::tsquery)
+                    Buffers: shared hit=35
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.152 ms
+Execution Time: 172.185 ms

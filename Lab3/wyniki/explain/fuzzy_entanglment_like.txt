@@ -1,0 +1,14 @@
+SELECT count(*) FROM documents WHERE title LIKE '%entanglment%'
+
+Aggregate  (cost=341.47..341.48 rows=1 width=8) (actual time=1.414..1.415 rows=1 loops=1)
+  Buffers: shared hit=109
+  ->  Bitmap Heap Scan on documents  (cost=124.53..341.33 rows=55 width=0) (actual time=1.411..1.412 rows=0 loops=1)
+        Recheck Cond: (title ~~ '%entanglment%'::text)
+        Buffers: shared hit=109
+        ->  Bitmap Index Scan on documents_title_trgm  (cost=0.00..124.52 rows=55 width=0) (actual time=1.409..1.410 rows=0 loops=1)
+              Index Cond: (title ~~ '%entanglment%'::text)
+              Buffers: shared hit=109
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.114 ms
+Execution Time: 1.435 ms

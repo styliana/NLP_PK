@@ -1,0 +1,16 @@
+SELECT count(*) FROM documents WHERE 'superconductivty' <% title
+
+Aggregate  (cost=478.67..478.68 rows=1 width=8) (actual time=179.079..179.082 rows=1 loops=1)
+  Buffers: shared hit=6548
+  ->  Bitmap Heap Scan on documents  (cost=261.73..478.53 rows=55 width=0) (actual time=28.142..178.395 rows=6996 loops=1)
+        Filter: ('superconductivty'::text <% title)
+        Rows Removed by Filter: 75
+        Heap Blocks: exact=6103
+        Buffers: shared hit=6548
+        ->  Bitmap Index Scan on documents_title_trgm  (cost=0.00..261.72 rows=55 width=0) (actual time=27.136..27.137 rows=7071 loops=1)
+              Index Cond: (title %> 'superconductivty'::text)
+              Buffers: shared hit=445
+Planning:
+  Buffers: shared hit=1
+Planning Time: 1.946 ms
+Execution Time: 179.130 ms

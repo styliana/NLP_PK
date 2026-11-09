@@ -1,0 +1,62 @@
+{
+  "10%": {
+    "rows": 55000,
+    "postgres": {
+      "rows": 55000,
+      "copy_s": 13.21,
+      "index_s": 4.18,
+      "vacuum_analyze_s": 1.1,
+      "total_s": 18.49,
+      "table_total_mb": 138.8,
+      "gin_index_mb": 19.1
+    },
+    "solr": {
+      "docs": 55000,
+      "upload_s": 18.21,
+      "commit_s": 0.75,
+      "total_s": 18.96,
+      "index_mb": 58.4,
+      "batch_size": 5000
+    }
+  },
+  "50%": {
+    "rows": 275000,
+    "postgres": {
+      "rows": 275000,
+      "copy_s": 73.64,
+      "index_s": 25.68,
+      "vacuum_analyze_s": 1.89,
+      "total_s": 101.21,
+      "table_total_mb": 710.6,
+      "gin_index_mb": 82.5
+    },
+    "solr": {
+      "docs": 275000,
+      "upload_s": 92.69,
+      "commit_s": 0.84,
+      "total_s": 93.53,
+      "index_mb": 300.5,
+      "batch_size": 5000
+    }
+  },
+  "100%": {
+    "rows": 550000,
+    "postgres": {
+      "rows": 550000,
+      "copy_s": 149.54,
+      "index_s": 75.11,
+      "vacuum_analyze_s": 2.49,
+      "total_s": 227.15,
+      "table_total_mb": 1407.3,
+      "gin_index_mb": 148.9
+    },
+    "solr": {
+      "docs": 550000,
+      "upload_s": 189.44,
+      "commit_s": 2.36,
+      "total_s": 191.8,
+      "index_mb": 597.8,
+      "batch_size": 5000
+    }
+  }
+}

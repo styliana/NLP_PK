@@ -1,0 +1,29 @@
+SELECT id, ts_headline('english', abstract, phraseto_tsquery('english', 'neural network'), 'MaxFragments=1, MaxWords=25, MinWords=12, StartSel=<em>, StopSel=</em>') FROM documents WHERE id IN (SELECT id FROM (SELECT id, orig_id, title, ts_rank_cd(tsv, phraseto_tsquery('english', 'neural network')) AS rank FROM documents WHERE tsv @@ phraseto_tsquery('english', 'neural network') ORDER BY rank DESC, id LIMIT 10) s)
+
+Nested Loop  (cost=5945.19..6031.79 rows=10 width=40) (actual time=169.150..171.712 rows=10 loops=1)
+  Buffers: shared hit=115639
+  ->  HashAggregate  (cost=5944.77..5944.87 rows=10 width=8) (actual time=168.789..168.793 rows=10 loops=1)
+        Group Key: documents_1.id
+        Batches: 1  Memory Usage: 24kB
+        Buffers: shared hit=115599
+        ->  Limit  (cost=5944.62..5944.64 rows=10 width=52) (actual time=168.776..168.780 rows=10 loops=1)
+              Buffers: shared hit=115599
+              ->  Sort  (cost=5944.62..5948.68 rows=1627 width=52) (actual time=168.775..168.777 rows=10 loops=1)
+                    Sort Key: (ts_rank_cd(documents_1.tsv, '''neural'' <-> ''network'''::tsquery)) DESC, documents_1.id
+                    Sort Method: top-N heapsort  Memory: 25kB
+                    Buffers: shared hit=115599
+                    ->  Bitmap Heap Scan on documents documents_1  (cost=47.12..5909.46 rows=1627 width=52) (actual time=7.728..165.214 rows=16043 loops=1)
+                          Recheck Cond: (tsv @@ '''neural'' <-> ''network'''::tsquery)
+                          Rows Removed by Index Recheck: 852
+                          Heap Blocks: exact=13502
+                          Buffers: shared hit=115599
+                          ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..46.71 rows=1627 width=0) (actual time=4.843..4.844 rows=16895 loops=1)
+                                Index Cond: (tsv @@ '''neural'' <-> ''network'''::tsquery)
+                                Buffers: shared hit=35
+  ->  Index Scan using documents_pkey on documents  (cost=0.42..8.44 rows=1 width=795) (actual time=0.004..0.004 rows=1 loops=10)
+        Index Cond: (id = documents_1.id)
+        Buffers: shared hit=40
+Planning:
+  Buffers: shared hit=9
+Planning Time: 0.312 ms
+Execution Time: 171.754 ms

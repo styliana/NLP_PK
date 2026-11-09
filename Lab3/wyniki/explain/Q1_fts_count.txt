@@ -1,0 +1,15 @@
+SELECT count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate')
+
+Aggregate  (cost=89794.25..89794.26 rows=1 width=8) (actual time=54.376..54.377 rows=1 loops=1)
+  Buffers: shared hit=41123
+  ->  Bitmap Heap Scan on documents  (cost=409.31..89650.76 rows=57396 width=0) (actual time=18.583..50.443 rows=56540 loops=1)
+        Recheck Cond: (tsv @@ '''simul'''::tsquery)
+        Heap Blocks: exact=41105
+        Buffers: shared hit=41123
+        ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..394.96 rows=57396 width=0) (actual time=9.946..9.946 rows=56540 loops=1)
+              Index Cond: (tsv @@ '''simul'''::tsquery)
+              Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.304 ms
+Execution Time: 54.786 ms

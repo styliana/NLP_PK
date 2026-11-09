@@ -1,0 +1,19 @@
+SELECT field, category, 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'simulate') GROUP BY GROUPING SETS ((field), (category), (1990 + 5 * ((year - 1990) / 5)))
+
+HashAggregate  (cost=90511.70..91089.82 rows=208 width=32) (actual time=98.156..98.196 rows=175 loops=1)
+  Hash Key: field
+  Hash Key: category
+  Hash Key: (1990 + (5 * ((year - 1990) / 5)))
+  Batches: 1  Memory Usage: 64kB
+  Buffers: shared hit=41123
+  ->  Bitmap Heap Scan on documents  (cost=409.31..90224.72 rows=57396 width=24) (actual time=19.767..67.330 rows=56540 loops=1)
+        Recheck Cond: (tsv @@ '''simul'''::tsquery)
+        Heap Blocks: exact=41105
+        Buffers: shared hit=41123
+        ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..394.96 rows=57396 width=0) (actual time=11.317..11.318 rows=56540 loops=1)
+              Index Cond: (tsv @@ '''simul'''::tsquery)
+              Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.180 ms
+Execution Time: 98.924 ms

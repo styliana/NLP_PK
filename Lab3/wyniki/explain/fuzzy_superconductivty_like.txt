@@ -1,0 +1,14 @@
+SELECT count(*) FROM documents WHERE title LIKE '%superconductivty%'
+
+Aggregate  (cost=431.56..431.57 rows=1 width=8) (actual time=0.492..0.493 rows=1 loops=1)
+  Buffers: shared hit=67
+  ->  Bitmap Heap Scan on documents  (cost=214.62..431.42 rows=55 width=0) (actual time=0.489..0.490 rows=0 loops=1)
+        Recheck Cond: (title ~~ '%superconductivty%'::text)
+        Buffers: shared hit=67
+        ->  Bitmap Index Scan on documents_title_trgm  (cost=0.00..214.61 rows=55 width=0) (actual time=0.487..0.488 rows=0 loops=1)
+              Index Cond: (title ~~ '%superconductivty%'::text)
+              Buffers: shared hit=67
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.125 ms
+Execution Time: 0.516 ms

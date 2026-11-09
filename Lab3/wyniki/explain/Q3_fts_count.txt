@@ -1,0 +1,15 @@
+SELECT count(*) FROM documents WHERE tsv @@ to_tsquery('english', 'quantum & (entanglement | teleportation) & !photon')
+
+Aggregate  (cost=4370.66..4370.67 rows=1 width=8) (actual time=6.703..6.704 rows=1 loops=1)
+  Buffers: shared hit=4474
+  ->  Bitmap Heap Scan on documents  (cost=79.17..4367.74 rows=1169 width=0) (actual time=3.498..6.345 rows=5094 loops=1)
+        Recheck Cond: (tsv @@ '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)
+        Heap Blocks: exact=4419
+        Buffers: shared hit=4474
+        ->  Bitmap Index Scan on documents_tsv_gin  (cost=0.00..78.88 rows=1169 width=0) (actual time=2.806..2.806 rows=5094 loops=1)
+              Index Cond: (tsv @@ '''quantum'' & ( ''entangl'' | ''teleport'' ) & !''photon'''::tsquery)
+              Buffers: shared hit=55
+Planning:
+  Buffers: shared hit=1
+Planning Time: 0.136 ms
+Execution Time: 6.725 ms

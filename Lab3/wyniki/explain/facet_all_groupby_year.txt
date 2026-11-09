@@ -1,0 +1,30 @@
+SELECT 1990 + 5 * ((year - 1990) / 5) AS y, count(*) FROM documents WHERE TRUE AND year >= 1990 GROUP BY y ORDER BY y
+
+Finalize GroupAggregate  (cost=106356.90..106365.06 rows=31 width=12) (actual time=183.661..192.981 rows=7 loops=1)
+  Group Key: ((1990 + (5 * ((year - 1990) / 5))))
+  Buffers: shared hit=54275 read=44795
+  ->  Gather Merge  (cost=106356.90..106364.13 rows=62 width=12) (actual time=183.642..192.957 rows=21 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=54275 read=44795
+        ->  Sort  (cost=105356.87..105356.95 rows=31 width=12) (actual time=167.738..167.740 rows=7 loops=3)
+              Sort Key: ((1990 + (5 * ((year - 1990) / 5))))
+              Sort Method: quicksort  Memory: 25kB
+              Buffers: shared hit=54275 read=44795
+              Worker 0:  Sort Method: quicksort  Memory: 25kB
+              Worker 1:  Sort Method: quicksort  Memory: 25kB
+              ->  Partial HashAggregate  (cost=105355.49..105356.11 rows=31 width=12) (actual time=167.707..167.710 rows=7 loops=3)
+                    Group Key: (1990 + (5 * ((year - 1990) / 5)))
+                    Batches: 1  Memory Usage: 24kB
+                    Buffers: shared hit=54261 read=44795
+                    Worker 0:  Batches: 1  Memory Usage: 24kB
+                    Worker 1:  Batches: 1  Memory Usage: 24kB
+                    ->  Parallel Seq Scan on documents  (cost=0.00..104210.13 rows=229072 width=4) (actual time=8.878..130.671 rows=183333 loops=3)
+                          Filter: (year >= 1990)
+                          Buffers: shared hit=54261 read=44795
+Planning Time: 0.095 ms
+JIT:
+  Functions: 27
+  Options: Inlining false, Optimization false, Expressions true, Deforming true
+  Timing: Generation 2.689 ms, Inlining 0.000 ms, Optimization 1.363 ms, Emission 25.269 ms, Total 29.321 ms
+Execution Time: 193.865 ms
