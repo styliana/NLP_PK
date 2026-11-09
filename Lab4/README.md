@@ -25,3 +25,24 @@ python Lab4/prepare_data.py
 W `Lab4/data/processed/` powstaną `train.csv`, `test.csv` oraz
 `dataset_summary.json` z rozmiarami i liczebnościami klas. Korpus i wygenerowane
 pliki są lokalne i wykluczone z Git; nie będą dołączane do archiwum oddania.
+
+## Krok 2: preprocessing
+
+Po podziale każdy podzbiór jest przetwarzany niezależnie, bez dopasowywania
+jakichkolwiek parametrów do testu. Preprocessing obejmuje zamianę na małe litery,
+tokenizację słów, usuwanie angielskich stop words, tagowanie części mowy
+(Penn Treebank) i lematyzację WordNet z uwzględnieniem części mowy. Stop words
+istotne dla polaryzacji — m.in. `not`, `no`, `never` i `but` — pozostają, aby
+nie usuwać negacji ani kontrastu zmieniającego sens zdania.
+
+Oryginalny tekst jest zachowany obok `processed_text`; będzie potrzebny m.in.
+do reprezentacji znakowej. Jeśli usuwanie stop words usunęłoby wszystkie tokeny
+zdania, skrypt zachowuje jego zlematyzowaną treść, zamiast tworzyć pusty przykład.
+W `Lab4/data/preprocessed/` powstaną pliki CSV dla treningu i testu oraz
+`preprocessing_summary.json` ze statystykami tokenów. Brakujące korpusy WordNet
+i tagger NLTK są pobierane przy pierwszym uruchomieniu.
+
+```powershell
+python Lab4/preprocess_data.py
+python -m unittest discover -s Lab4 -p "test_*.py"
+```
