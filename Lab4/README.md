@@ -35,9 +35,10 @@ tokenizację słów, usuwanie angielskich stop words, tagowanie części mowy
 istotne dla polaryzacji — m.in. `not`, `no`, `never` i `but` — pozostają, aby
 nie usuwać negacji ani kontrastu zmieniającego sens zdania.
 
-Oryginalny tekst jest zachowany obok `processed_text`; będzie potrzebny m.in.
-do reprezentacji znakowej. Jeśli usuwanie stop words usunęłoby wszystkie tokeny
-zdania, skrypt zachowuje jego zlematyzowaną treść, zamiast tworzyć pusty przykład.
+Oryginalny tekst jest zachowany obok `processed_text` do audytu i porównań z
+alternatywnymi wariantami preprocessingu. Jeśli usuwanie stop words usunęłoby
+wszystkie tokeny zdania, skrypt zachowuje jego zlematyzowaną treść, zamiast tworzyć
+pusty przykład.
 W `Lab4/data/preprocessed/` powstaną pliki CSV dla treningu i testu oraz
 `preprocessing_summary.json` ze statystykami tokenów. Brakujące korpusy WordNet
 i tagger NLTK są pobierane przy pierwszym uruchomieniu.
@@ -46,3 +47,58 @@ i tagger NLTK są pobierane przy pierwszym uruchomieniu.
 python Lab4/preprocess_data.py
 python -m unittest discover -s Lab4 -p "test_*.py"
 ```
+
+## Kroki 3–6: reprezentacje, klasyfikacja i raport
+
+Po przygotowaniu i preprocessingu zbioru wykonaj pełne eksperymenty:
+
+```powershell
+python Lab4/run_all.py
+```
+
+Kompletne uruchomienie można też wykonać etapami, aby powtórzyć tylko wybrany
+krok:
+
+```powershell
+python Lab4/run_experiments.py
+python Lab4/generate_plots.py
+python Lab4/generate_report.py
+python Lab4/package_submission.py
+```
+
+`run_experiments.py` buduje sześć reprezentacji:
+
+1. Bag-of-Words,
+2. słowny TF-IDF,
+3. znakowy TF-IDF,
+4. średnia z Word2Vec (Skip-gram, uczony na treningu),
+5. Doc2Vec DBOW (uczony na treningu),
+6. średnia z gotowych wektorów GloVe `glove-wiki-gigaword-100`.
+
+Oprócz korpusu Cornell GloVe jest pobierany przy pierwszym uruchomieniu
+`gensim.downloader` (wymagane połączenie z internetem i miejsce na cache Gensim).
+Każda z 42 par reprezentacja–klasyfikator jest strojoną przez RandomizedSearchCV
+i GridSearchCV. Optuna wykonuje jedno globalne badanie TPE z 30 próbami, które
+wybiera reprezentację, klasyfikator i jego hiperparametry. Wszystkie metody używają
+2-fold `StratifiedKFold`, `random_state=42` i F1 klasy pozytywnej do wyboru; dwa
+foldy pozwalają utrzymać porównywalny i wykonalny budżet dla wszystkich 42 par
+oraz 30 prób Optuny. Zbiór testowy jest używany dopiero do oceny końcowej.
+Każda metoda stroi modele na tej samej, powtarzalnej, stratyfikowanej próbce
+1 500 rekordów treningowych. Wybrane konfiguracje dopasowuje się ponownie na pełnym
+zbiorze treningowym, z wyjątkiem RBF SVC, którego końcowe dopasowanie pozostaje
+na tej próbce ze względu na kwadratową złożoność obliczania jądra. Dzięki temu
+próbki walidacyjne i budżet strojenia są wspólne dla wszystkich reprezentacji
+oraz klasyfikatorów.
+
+Wyniki są zapisywane w `Lab4/wyniki/`: `all_results.csv` zawiera testowe accuracy,
+F1, TN/FP/FN/TP i parametry dla 84 kombinacji Random/Grid oraz najlepszego modelu
+Optuny; `experiment_summary.json` i `representation_details.json` podają
+konfigurację, wymiary, pokrycie embeddingów i czas. `optuna_trials.csv` zawiera
+historię prób. W `Lab4/wykresy/` znajdują się porównania wyników, a w
+`Lab4/wykresy/macierze_pomylek/` macierze dla wszystkich par model–reprezentacja
+oraz najlepszego modelu Optuny. Raport PDF i jego edytowalna treść Markdown są w
+`Lab4/sprawozdanie/`.
+
+Na końcu `package_submission.py` tworzy archiwum
+`LAB4_Golek_Aleksandra_Karczmarczyk_Klaudia.zip`. Zawiera kod, README, wyniki,
+wykresy i sprawozdanie, ale celowo nie dołącza danych źródłowych ani podziałów.
