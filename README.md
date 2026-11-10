@@ -23,6 +23,11 @@ Repozytorium projektów laboratoryjnych z przedmiotu **Przetwarzanie Języka Nat
   - Wymagania poziomu 5.0: wykres skalowania (10%, 50%, 100% dla LIKE vs FTS vs Solr), pomiar Facety vs GROUP BY (Solr szybszy 19.5x).
   - Zaawansowane rozszerzenia: odporność na literówki (*fuzzy search* ~ vs `pg_trgm`) oraz eliminacja duplikatów (*collapsing* po `orig_id`).
   - Kompletne 4-stronicowe sprawozdanie PDF (`sprawozdanie/Sprawozdanie_Lab3.pdf`) i gotowa paczka oddania `LAB3_Golek_Aleksandra_Karczmarczyk_Klaudia.zip`.
+- **Lab4** – **Wektoryzacja tekstu i klasyfikacja sentymentu** (Poziom 5.0)
+  - Analiza sentymentu na zbalansowanym zbiorze Cornell Sentence Polarity (10 662 zdania), stratyfikowany podział train/test i preprocessing zachowujący negacje.
+  - Porównanie sześciu reprezentacji (Bag-of-Words, słowny i znakowy TF-IDF, Word2Vec, Doc2Vec, gotowe GloVe) oraz siedmiu klasyfikatorów.
+  - Strojenie Random Search i Grid Search dla wszystkich par modeli oraz globalne badanie Optuna (30 prób), tabela wyników, macierze pomyłek i sprawozdanie PDF.
+  - Jednokomendowy potok `Lab4/scripts/run_all.py` oraz gotowa paczka w `Lab4/oddanie/`, bez danych źródłowych.
 
 ---
 
@@ -67,6 +72,15 @@ Repozytorium projektów laboratoryjnych z przedmiotu **Przetwarzanie Języka Nat
 │   ├── wykresy/          # 4 wygenerowane wykresy (skalowanie, zapytania, facety, rozszerzenia)
 │   ├── sprawozdanie/     # Gotowe sprawozdanie PDF (Sprawozdanie_Lab3.pdf)
 │   └── LAB3_Golek_Aleksandra_Karczmarczyk_Klaudia.zip # Archiwum oddania na platformę Delta
+├── Lab4/
+│   ├── Lab4.pdf          # Wymagania i instrukcja do laboratorium 4
+│   ├── README.md         # Dokumentacja realizacji poziomu 5.0
+│   ├── scripts/          # Skrypty potoku, eksperymenty i testy
+│   ├── data/             # Lokalne dane i podziały (ignorowane przez Git)
+│   ├── wyniki/           # Tabele, konfiguracje, metryki i wyniki Optuny
+│   ├── wykresy/          # Porównania modeli i macierze pomyłek (PNG)
+│   ├── sprawozdanie/     # Sprawozdanie Markdown i PDF
+│   ├── oddanie/          # README i gotowe archiwum ZIP do przekazania
 └── README.md             # Główna dokumentacja repozytorium
 ```
 
@@ -82,6 +96,12 @@ docker compose up -d
 
 # Pełny potok (generowanie 500k rekordów, ładowanie, benchmark, wykresy, PDF, ZIP):
 python uruchom_calosc.py
+```
+
+### Moduł Lab4 (analiza sentymentu – Ocena 5.0):
+```powershell
+python -m pip install -r Lab4/requirements.txt
+python Lab4/scripts/run_all.py
 ```
 
 ### Moduł Lab2 (Od tekstu do tokenów – Ocena 5.0):
@@ -106,3 +126,4 @@ Pełna dokumentacja modułów:
 - **Lab1**: [Lab1/Parser1/README.md](file:///C:/Users/DELL/Documents/nlp/Lab1/Parser1/README.md) oraz [Lab1/Parser2/README.md](file:///C:/Users/DELL/Documents/nlp/Lab1/Parser2/README.md)
 - **Lab2**: [Lab2/README.md](file:///C:/Users/DELL/Documents/nlp/Lab2/README.md)
 - **Lab3**: [lab3/README.md](file:///C:/Users/DELL/Documents/nlp/lab3/README.md)
+- **Lab4**: [Lab4/README.md](Lab4/README.md)
