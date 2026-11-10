@@ -2,7 +2,7 @@ import unittest
 
 from nltk.stem import WordNetLemmatizer
 
-from preprocess_data import ensure_nltk_resource, preprocess_text
+from scripts.preprocess_data import ensure_nltk_resource, preprocess_text
 
 
 class PreprocessTextTests(unittest.TestCase):

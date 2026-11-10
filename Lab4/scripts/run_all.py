@@ -5,14 +5,14 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 STEPS = (
-    "prepare_data.py",
-    "preprocess_data.py",
-    "run_experiments.py",
-    "generate_plots.py",
-    "generate_report.py",
-    "package_submission.py",
+    "scripts/prepare_data.py",
+    "scripts/preprocess_data.py",
+    "scripts/run_experiments.py",
+    "scripts/generate_plots.py",
+    "scripts/generate_report.py",
+    "scripts/package_submission.py",
 )
 
 

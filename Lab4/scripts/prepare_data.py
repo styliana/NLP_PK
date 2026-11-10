@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
 EXPECTED_PER_CLASS = 5331
-OUTPUT_DIR = Path(__file__).resolve().parent / "data" / "processed"
+OUTPUT_DIR = Path(__file__).resolve().parents[1] / "data" / "processed"
 
 
 def load_records() -> list[tuple[str, int]]:

@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from run_experiments import (
+from scripts.run_experiments import (
     get_refit_data,
     get_tuning_data,
     load_glove_subset,

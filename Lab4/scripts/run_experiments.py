@@ -36,7 +36,7 @@ from sklearn.svm import LinearSVC, SVC
 from sklearn.tree import DecisionTreeClassifier
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 PROCESSED_DIR = DATA_DIR / "preprocessed"
 RESULTS_DIR = ROOT / "wyniki"

@@ -34,7 +34,7 @@ else:
     from run_experiments import GRID_SPACE, SEARCH_SPACE
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = ROOT / "wyniki"
 REPORT_DIR = ROOT / "sprawozdanie"
 MATRICES_DIR = ROOT / "wykresy" / "macierze_pomylek"
@@ -345,11 +345,11 @@ def build_markdown(
             "",
             "```powershell",
             "python -m pip install -r Lab4/requirements.txt",
-            "python Lab4/prepare_data.py",
-            "python Lab4/preprocess_data.py",
-            "python Lab4/run_experiments.py",
-            "python Lab4/generate_plots.py",
-            "python Lab4/generate_report.py",
+            "python Lab4/scripts/prepare_data.py",
+            "python Lab4/scripts/preprocess_data.py",
+            "python Lab4/scripts/run_experiments.py",
+            "python Lab4/scripts/generate_plots.py",
+            "python Lab4/scripts/generate_report.py",
             "```",
             "",
             "## Literatura i źródła",

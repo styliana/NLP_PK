@@ -12,7 +12,7 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 
 
-DATA_DIR = Path(__file__).resolve().parent / "data"
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 INPUT_DIR = DATA_DIR / "processed"
 OUTPUT_DIR = DATA_DIR / "preprocessed"
 TOKEN_PATTERN = re.compile(r"n't|[a-z]+(?:'[a-z]+)*")

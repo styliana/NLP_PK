@@ -4,22 +4,23 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 
-ROOT = Path(__file__).resolve().parent
-ARCHIVE = ROOT / "LAB4_Golek_Aleksandra_Karczmarczyk_Klaudia.zip"
+ROOT = Path(__file__).resolve().parents[1]
+ARCHIVE = ROOT / "oddanie" / "LAB4_Golek_Aleksandra_Karczmarczyk_Klaudia.zip"
 REQUIRED_FILES = (
     ROOT / "README.md",
     ROOT / "requirements.txt",
-    ROOT / "run_experiments.py",
-    ROOT / "generate_plots.py",
-    ROOT / "generate_report.py",
-    ROOT / "prepare_data.py",
-    ROOT / "preprocess_data.py",
-    ROOT / "run_all.py",
+    ROOT / "scripts" / "run_experiments.py",
+    ROOT / "scripts" / "generate_plots.py",
+    ROOT / "scripts" / "generate_report.py",
+    ROOT / "scripts" / "prepare_data.py",
+    ROOT / "scripts" / "preprocess_data.py",
+    ROOT / "scripts" / "run_all.py",
     ROOT / "wyniki" / "all_results.csv",
     ROOT / "wykresy" / "f1_wszystkie_polaczenia.png",
     ROOT / "wykresy" / "porownanie_metod_strojenia.png",
     ROOT / "sprawozdanie" / "Sprawozdanie_Lab4.pdf",
     ROOT / "sprawozdanie" / "Sprawozdanie_Lab4.md",
+    ROOT / "oddanie" / "README.md",
 )
 
 

@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 RESULTS_PATH = ROOT / "wyniki" / "all_results.csv"
 OUTPUT_DIR = ROOT / "wykresy"
 METHODS = ("RandomizedSearchCV", "GridSearchCV")
