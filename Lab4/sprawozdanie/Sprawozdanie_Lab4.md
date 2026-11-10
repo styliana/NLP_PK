@@ -3,7 +3,7 @@
 **Poziom:** 5.0  
 **Zadanie:** B — analiza sentymentu recenzji filmowych  
 **Autorzy:** Aleksandra Gołek, Klaudia Karczmarczyk  
-**Data wygenerowania:** 2026-11-10 08:29 Środkowoeuropejski czas stand.
+**Data wygenerowania:** 2026-11-10 08:34 Środkowoeuropejski czas stand.
 
 ## 1. Cel i zakres pracy
 
@@ -190,11 +190,11 @@ Cały eksperyment trwał 400.9 min. Powtórzenie zapewnia stałe ziarno losowoś
 
 ```powershell
 python -m pip install -r Lab4/requirements.txt
-python Lab4/prepare_data.py
-python Lab4/preprocess_data.py
-python Lab4/run_experiments.py
-python Lab4/generate_plots.py
-python Lab4/generate_report.py
+python Lab4/scripts/prepare_data.py
+python Lab4/scripts/preprocess_data.py
+python Lab4/scripts/run_experiments.py
+python Lab4/scripts/generate_plots.py
+python Lab4/scripts/generate_report.py
 ```
 
 ## Literatura i źródła

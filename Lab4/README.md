@@ -19,7 +19,7 @@ Wymagany jest Python 3.10+ oraz dostęp do sieci przy pierwszym pobraniu korpusu
 
 ```powershell
 python -m pip install -r Lab4/requirements.txt
-python Lab4/prepare_data.py
+python Lab4/scripts/prepare_data.py
 ```
 
 W `Lab4/data/processed/` powstaną `train.csv`, `test.csv` oraz
@@ -44,7 +44,7 @@ W `Lab4/data/preprocessed/` powstaną pliki CSV dla treningu i testu oraz
 i tagger NLTK są pobierane przy pierwszym uruchomieniu.
 
 ```powershell
-python Lab4/preprocess_data.py
+python Lab4/scripts/preprocess_data.py
 python -m unittest discover -s Lab4 -p "test_*.py"
 ```
 
@@ -53,18 +53,29 @@ python -m unittest discover -s Lab4 -p "test_*.py"
 Po przygotowaniu i preprocessingu zbioru wykonaj pełne eksperymenty:
 
 ```powershell
-python Lab4/run_all.py
+python Lab4/scripts/run_all.py
 ```
 
 Kompletne uruchomienie można też wykonać etapami, aby powtórzyć tylko wybrany
 krok:
 
 ```powershell
-python Lab4/run_experiments.py
-python Lab4/generate_plots.py
-python Lab4/generate_report.py
-python Lab4/package_submission.py
+python Lab4/scripts/run_experiments.py
+python Lab4/scripts/generate_plots.py
+python Lab4/scripts/generate_report.py
+python Lab4/scripts/package_submission.py
 ```
+
+### Struktura katalogów
+
+- `scripts/` — przygotowanie i preprocessing danych, eksperymenty, wykresy,
+  raportowanie, pakowanie oraz testy.
+- `data/` — korpusy i podziały treningowy/testowy generowane lokalnie; katalog
+  jest ignorowany przez Git i nie trafia do paczki.
+- `wyniki/` — CSV i JSON z metrykami, parametrami oraz historią prób Optuny.
+- `wykresy/` — wykresy porównawcze oraz podkatalog `macierze_pomylek/`.
+- `sprawozdanie/` — końcowy raport PDF i jego edytowalna wersja Markdown.
+- `oddanie/` — gotowe archiwum ZIP do przekazania.
 
 `run_experiments.py` buduje sześć reprezentacji:
 
@@ -99,6 +110,7 @@ historię prób. W `Lab4/wykresy/` znajdują się porównania wyników, a w
 oraz najlepszego modelu Optuny. Raport PDF i jego edytowalna treść Markdown są w
 `Lab4/sprawozdanie/`.
 
-Na końcu `package_submission.py` tworzy archiwum
-`LAB4_Golek_Aleksandra_Karczmarczyk_Klaudia.zip`. Zawiera kod, README, wyniki,
-wykresy i sprawozdanie, ale celowo nie dołącza danych źródłowych ani podziałów.
+Na końcu `scripts/package_submission.py` tworzy w `oddanie/` archiwum
+`LAB4_Golek_Aleksandra_Karczmarczyk_Klaudia.zip`. Zawiera kod, dokumentację,
+wyniki, wykresy i sprawozdanie, ale celowo nie dołącza danych źródłowych ani
+podziałów.
