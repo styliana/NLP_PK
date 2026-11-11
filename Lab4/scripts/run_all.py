@@ -11,6 +11,7 @@ STEPS = (
     "scripts/preprocess_data.py",
     "scripts/run_experiments.py",
     "scripts/generate_plots.py",
+    "scripts/additional_analysis.py",
     "scripts/generate_report.py",
     "scripts/package_submission.py",
 )

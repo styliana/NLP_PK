@@ -1,0 +1,17 @@
+type,true_label,predicted,decision_score,text,processed_text
+FP,0,1,0.693,"it's hard to care about a film that proposes as epic tragedy the plight of a callow rich boy who is forced to choose between his beautiful , self-satisfied 22-year-old girlfriend and an equally beautiful , self-satisfied 18-year-old mistress .",it's hard care film propose epic tragedy plight callow rich boy force choose beautiful self satisfy year old girlfriend equally beautiful self satisfy year old mistress
+FP,0,1,0.658,un thriller manqué qui tombe sur les nerfs presque dès la première image .,thriller manqu qui tombe sur les nerfs presque d s la premi image
+FP,0,1,0.624,"there is one surefire way to get a nomination for a best-foreign-film oscar : make a movie about whimsical folk who learn a nonchallenging , life-affirming lesson while walking around a foreign city with stunning architecture .",surefire way nomination best foreign film oscar make movie whimsical folk learn nonchallenging life affirm lesson walk foreign city stunning architecture
+FP,0,1,0.619,a solid film . . . but more conscientious than it is truly stirring .,solid film but conscientious truly stir
+FP,0,1,0.575,the hanukkah spirit seems fried in pork .,hanukkah spirit fry pork
+FP,0,1,0.562,"perfectly enjoyable , instantly forgettable , nothing to write home about .",perfectly enjoyable instantly forgettable write home
+FP,0,1,0.501,"outer-space buffs might love this film , but others will find its pleasures intermittent .",outer space buff love film but pleasure intermittent
+FP,0,1,0.483,"though this saga would be terrific to read about , it is dicey screen material that only a genius should touch .",saga terrific read dicey screen material genius touch
+FN,1,0,-0.84,as unseemly as its title suggests .,unseemly title suggests
+FN,1,0,-0.699,"halloween : resurrection isn't exactly quality cinema , but it isn't nearly as terrible as it cold have been .",halloween resurrection isn't exactly quality cinema but isn't nearly terrible cold
+FN,1,0,-0.668,"although it doesn't always hang together -- violence and whimsy don't combine easily -- "" cherish "" certainly isn't dull .",although doesn't hang violence whimsy don't combine easily cherish certainly isn't dull
+FN,1,0,-0.638,"if you're down for a silly hack-and-slash flick , you can do no wrong with jason x .",you're silly hack slash flick no wrong jason x
+FN,1,0,-0.563,". . . begins with promise , but runs aground after being snared in its own tangled plot .",begin promise but run aground snare tangle plot
+FN,1,0,-0.559,"sure , it's more of the same , but as the film proves , that's not always a bad thing .",sure it's but film prove that's not bad thing
+FN,1,0,-0.551,"even though many of these guys are less than adorable ( their lamentations are pretty much self-centered ) , there's something vital about the movie .",guy adorable lamentation pretty self center there's vital movie
+FN,1,0,-0.509,"a full world has been presented onscreen , not some series of carefully structured plot points building to a pat resolution .",world present onscreen not series carefully structure plot point build pat resolution

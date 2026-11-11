@@ -1,0 +1,43 @@
+representation,classifier,method,best_params,train_examples,representation_seconds,fit_seconds,predict_seconds,accuracy,f1,f1_reported
+Bag-of-Words,Logistic Regression,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,0.04,0.014,0.0,0.7487,0.7512,0.7512
+Bag-of-Words,Linear SVC,GridSearchCV,"{""C"": 10.0, ""class_weight"": null}",8529,0.04,0.589,0.0,0.7159,0.7166,0.7166
+Bag-of-Words,RBF SVC,RandomizedSearchCV,"{""C"": 10.0, ""class_weight"": null, ""gamma"": ""auto""}",1500,0.04,0.136,0.22,0.6442,0.6804,0.6804
+Bag-of-Words,K-Nearest Neighbors,RandomizedSearchCV,"{""n_neighbors"": 3, ""weights"": ""uniform""}",8529,0.04,0.001,0.169,0.5762,0.4271,0.4271
+Bag-of-Words,Decision Tree,GridSearchCV,"{""criterion"": ""gini"", ""max_depth"": null, ""min_samples_leaf"": 1}",8529,0.04,0.735,0.002,0.6409,0.6197,0.6197
+Bag-of-Words,Random Forest,GridSearchCV,"{""max_depth"": null, ""max_features"": ""sqrt"", ""min_samples_leaf"": 1}",8529,0.04,2.313,0.099,0.7121,0.6933,0.6933
+Bag-of-Words,SGD Classifier,RandomizedSearchCV,"{""alpha"": 0.001, ""class_weight"": null, ""loss"": ""log_loss""}",8529,0.04,0.008,0.0,0.7468,0.7507,0.7507
+Word TF-IDF,Logistic Regression,GridSearchCV,"{""C"": 10.0, ""class_weight"": null}",8529,0.13,0.063,0.0,0.7595,0.7617,0.7617
+Word TF-IDF,Linear SVC,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,0.13,0.004,0.0,0.7665,0.7692,0.7692
+Word TF-IDF,RBF SVC,GridSearchCV,"{""C"": 0.1, ""class_weight"": null, ""gamma"": ""scale""}",1500,0.13,0.147,0.197,0.6376,0.7163,0.7163
+Word TF-IDF,K-Nearest Neighbors,GridSearchCV,"{""n_neighbors"": 7, ""weights"": ""distance""}",8529,0.13,0.001,0.175,0.5035,0.0149,0.0149
+Word TF-IDF,Decision Tree,GridSearchCV,"{""criterion"": ""gini"", ""max_depth"": null, ""min_samples_leaf"": 1}",8529,0.13,1.108,0.002,0.6249,0.6135,0.6135
+Word TF-IDF,Random Forest,GridSearchCV,"{""max_depth"": null, ""max_features"": ""sqrt"", ""min_samples_leaf"": 1}",8529,0.13,2.63,0.099,0.7089,0.6856,0.6856
+Word TF-IDF,SGD Classifier,RandomizedSearchCV,"{""alpha"": 0.001, ""class_weight"": null, ""loss"": ""log_loss""}",8529,0.13,0.007,0.0,0.7412,0.7437,0.7437
+Character TF-IDF,Logistic Regression,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,0.45,0.104,0.001,0.7304,0.7281,0.7281
+Character TF-IDF,Linear SVC,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,0.45,0.036,0.001,0.7543,0.7551,0.7551
+Character TF-IDF,RBF SVC,RandomizedSearchCV,"{""C"": 10.0, ""class_weight"": null, ""gamma"": ""auto""}",1500,0.45,1.232,1.733,0.6554,0.703,0.703
+Character TF-IDF,K-Nearest Neighbors,GridSearchCV,"{""n_neighbors"": 7, ""weights"": ""distance""}",8529,0.45,0.005,0.25,0.6915,0.6573,0.6573
+Character TF-IDF,Decision Tree,GridSearchCV,"{""criterion"": ""gini"", ""max_depth"": null, ""min_samples_leaf"": 1}",8529,0.45,5.787,0.002,0.5907,0.5849,0.5849
+Character TF-IDF,Random Forest,GridSearchCV,"{""max_depth"": 30, ""max_features"": ""sqrt"", ""min_samples_leaf"": 1}",8529,0.45,1.028,0.031,0.6892,0.678,0.678
+Character TF-IDF,SGD Classifier,RandomizedSearchCV,"{""alpha"": 0.001, ""class_weight"": null, ""loss"": ""log_loss""}",8529,0.45,0.02,0.001,0.7332,0.734,0.734
+Word2Vec mean,Logistic Regression,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,3.26,0.136,0.001,0.7,0.699,0.699
+Word2Vec mean,Linear SVC,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,3.26,0.138,0.0,0.7,0.6987,0.6987
+Word2Vec mean,RBF SVC,RandomizedSearchCV,"{""C"": 10.0, ""class_weight"": ""balanced"", ""gamma"": ""scale""}",1500,3.26,0.061,0.194,0.6362,0.6381,0.6381
+Word2Vec mean,K-Nearest Neighbors,GridSearchCV,"{""n_neighbors"": 7, ""weights"": ""distance""}",8529,3.26,0.002,0.05,0.6259,0.6038,0.6038
+Word2Vec mean,Decision Tree,GridSearchCV,"{""criterion"": ""gini"", ""max_depth"": null, ""min_samples_leaf"": 1}",8529,3.26,0.449,0.001,0.5654,0.5596,0.5596
+Word2Vec mean,Random Forest,RandomizedSearchCV,"{""max_depth"": null, ""max_features"": ""sqrt"", ""min_samples_leaf"": 2}",8529,3.26,1.38,0.009,0.6737,0.6595,0.6607
+Word2Vec mean,SGD Classifier,RandomizedSearchCV,"{""alpha"": 0.001, ""class_weight"": null, ""loss"": ""log_loss""}",8529,3.26,0.047,0.0,0.6873,0.6852,0.6852
+Doc2Vec,Logistic Regression,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,2.52,0.071,0.001,0.6367,0.6469,0.6473
+Doc2Vec,Linear SVC,GridSearchCV,"{""C"": 10.0, ""class_weight"": null}",8529,2.52,0.072,0.0,0.6385,0.6484,0.647
+Doc2Vec,RBF SVC,GridSearchCV,"{""C"": 0.1, ""class_weight"": null, ""gamma"": ""scale""}",1500,2.52,0.04,0.239,0.534,0.4104,0.4113
+Doc2Vec,K-Nearest Neighbors,RandomizedSearchCV,"{""n_neighbors"": 3, ""weights"": ""uniform""}",8529,2.52,0.001,0.02,0.5696,0.5658,0.5654
+Doc2Vec,Decision Tree,GridSearchCV,"{""criterion"": ""gini"", ""max_depth"": null, ""min_samples_leaf"": 1}",8529,2.52,0.48,0.0,0.5049,0.512,0.5128
+Doc2Vec,Random Forest,RandomizedSearchCV,"{""max_depth"": null, ""max_features"": ""sqrt"", ""min_samples_leaf"": 2}",8529,2.52,1.649,0.008,0.5659,0.5776,0.5956
+Doc2Vec,SGD Classifier,RandomizedSearchCV,"{""alpha"": 0.001, ""class_weight"": ""balanced"", ""loss"": ""hinge""}",8529,2.52,0.073,0.0,0.6207,0.6225,0.6242
+GloVe mean (pretrained),Logistic Regression,RandomizedSearchCV,"{""C"": 0.1, ""class_weight"": null}",8529,1.81,0.073,0.001,0.7154,0.7157,0.7157
+GloVe mean (pretrained),Linear SVC,GridSearchCV,"{""C"": 10.0, ""class_weight"": null}",8529,1.81,0.08,0.0,0.7168,0.7167,0.7167
+GloVe mean (pretrained),RBF SVC,RandomizedSearchCV,"{""C"": 10.0, ""class_weight"": ""balanced"", ""gamma"": ""scale""}",1500,1.81,0.056,0.211,0.6676,0.6638,0.6638
+GloVe mean (pretrained),K-Nearest Neighbors,GridSearchCV,"{""n_neighbors"": 7, ""weights"": ""distance""}",8529,1.81,0.001,0.023,0.6606,0.6409,0.6409
+GloVe mean (pretrained),Decision Tree,RandomizedSearchCV,"{""criterion"": ""entropy"", ""max_depth"": 50, ""min_samples_leaf"": 1}",8529,1.81,0.618,0.0,0.5893,0.5982,0.5982
+GloVe mean (pretrained),Random Forest,RandomizedSearchCV,"{""max_depth"": null, ""max_features"": ""sqrt"", ""min_samples_leaf"": 2}",8529,1.81,1.324,0.01,0.6995,0.6932,0.6932
+GloVe mean (pretrained),SGD Classifier,RandomizedSearchCV,"{""alpha"": 0.001, ""class_weight"": null, ""loss"": ""log_loss""}",8529,1.81,0.042,0.0,0.7131,0.7088,0.7088

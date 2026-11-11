@@ -1,0 +1,287 @@
+{
+  "model": "Word TF-IDF + Linear SVC (C=0.1)",
+  "test_accuracy": 0.7665,
+  "test_f1": 0.7692,
+  "false_positives": 262,
+  "false_negatives": 236,
+  "sentences_with_negation_or_contrast": 653,
+  "error_rate_with_negation_or_contrast": 0.2956,
+  "error_rate_without_negation_or_contrast": 0.2061,
+  "top_positive": [
+    [
+      "performance",
+      0.9936722431314656
+    ],
+    [
+      "best",
+      0.9218933917693706
+    ],
+    [
+      "enjoyable",
+      0.9118133504667802
+    ],
+    [
+      "culture",
+      0.9014098746549266
+    ],
+    [
+      "heart",
+      0.8831559386331662
+    ],
+    [
+      "unexpected",
+      0.8824964340975835
+    ],
+    [
+      "smart",
+      0.8821455396061502
+    ],
+    [
+      "solid",
+      0.8616248338794606
+    ],
+    [
+      "world",
+      0.8131441323476101
+    ],
+    [
+      "entertaining",
+      0.8024914492216031
+    ]
+  ],
+  "top_negative": [
+    [
+      "bad",
+      -1.6325231388270949
+    ],
+    [
+      "dull",
+      -1.290646143676093
+    ],
+    [
+      "lack",
+      -1.1602562396192189
+    ],
+    [
+      "bore",
+      -0.947790024289034
+    ],
+    [
+      "thing",
+      -0.8744727727150093
+    ],
+    [
+      "fail",
+      -0.8514807643608824
+    ],
+    [
+      "boring",
+      -0.8423404032502545
+    ],
+    [
+      "joke",
+      -0.8331309483244527
+    ],
+    [
+      "title",
+      -0.8287807073689306
+    ],
+    [
+      "plot",
+      -0.815706615793337
+    ]
+  ],
+  "negation_by_representation": [
+    {
+      "representation": "Bag-of-Words",
+      "error_with_negation": 0.3247,
+      "error_without_negation": 0.2662,
+      "gap_pp": 5.8,
+      "also_wrong_on_tfidf_errors": 0.6406
+    },
+    {
+      "representation": "Word TF-IDF",
+      "error_with_negation": 0.2956,
+      "error_without_negation": 0.2061,
+      "gap_pp": 8.9,
+      "also_wrong_on_tfidf_errors": 1.0
+    },
+    {
+      "representation": "Character TF-IDF",
+      "error_with_negation": 0.3185,
+      "error_without_negation": 0.2135,
+      "gap_pp": 10.5,
+      "also_wrong_on_tfidf_errors": 0.7309
+    },
+    {
+      "representation": "Word2Vec mean",
+      "error_with_negation": 0.3721,
+      "error_without_negation": 0.2682,
+      "gap_pp": 10.4,
+      "also_wrong_on_tfidf_errors": 0.7289
+    },
+    {
+      "representation": "Doc2Vec",
+      "error_with_negation": 0.3874,
+      "error_without_negation": 0.35,
+      "gap_pp": 3.7,
+      "also_wrong_on_tfidf_errors": 0.6928
+    },
+    {
+      "representation": "GloVe mean (pretrained)",
+      "error_with_negation": 0.3982,
+      "error_without_negation": 0.2324,
+      "gap_pp": 16.6,
+      "also_wrong_on_tfidf_errors": 0.5602
+    }
+  ],
+  "negation_probes": [
+    {
+      "text": "the film was not as bad as i expected .",
+      "processed_text": "film not bad expect",
+      "true_label": 1,
+      "tfidf_prediction": 0,
+      "tfidf_score": -0.242,
+      "glove_prediction": 0,
+      "glove_score": -1.043
+    },
+    {
+      "text": "not bad at all , actually quite good .",
+      "processed_text": "not bad actually quite good",
+      "true_label": 1,
+      "tfidf_prediction": 0,
+      "tfidf_score": -0.432,
+      "glove_prediction": 0,
+      "glove_score": -0.768
+    },
+    {
+      "text": "never boring and never dull for a second .",
+      "processed_text": "never boring never dull second",
+      "true_label": 1,
+      "tfidf_prediction": 0,
+      "tfidf_score": -0.969,
+      "glove_prediction": 0,
+      "glove_score": -1.32
+    },
+    {
+      "text": "i expected a masterpiece , but it was not good .",
+      "processed_text": "expect masterpiece but not good",
+      "true_label": 0,
+      "tfidf_prediction": 1,
+      "tfidf_score": 0.175,
+      "glove_prediction": 1,
+      "glove_score": 0.04
+    },
+    {
+      "text": "it is not funny , not clever and not worth your time .",
+      "processed_text": "not funny not clever not worth time",
+      "true_label": 0,
+      "tfidf_prediction": 0,
+      "tfidf_score": -0.072,
+      "glove_prediction": 0,
+      "glove_score": -0.424
+    },
+    {
+      "text": "a brilliant cast wasted on a terrible script .",
+      "processed_text": "brilliant cast waste terrible script",
+      "true_label": 0,
+      "tfidf_prediction": 0,
+      "tfidf_score": -0.359,
+      "glove_prediction": 0,
+      "glove_score": -0.769
+    }
+  ],
+  "example_words": [
+    {
+      "word": "masterpiece",
+      "lemma": "masterpiece",
+      "weight": 0.5337,
+      "rank_positive": 57,
+      "rank_negative": 12428,
+      "train_documents": 18
+    },
+    {
+      "word": "brilliant",
+      "lemma": "brilliant",
+      "weight": 0.6069,
+      "rank_positive": 36,
+      "rank_negative": 12449,
+      "train_documents": 32
+    },
+    {
+      "word": "thrilling",
+      "lemma": "thrill",
+      "weight": -0.0924,
+      "rank_positive": 9753,
+      "rank_negative": 2732,
+      "train_documents": 37
+    },
+    {
+      "word": "boring",
+      "lemma": "boring",
+      "weight": -0.8423,
+      "rank_positive": 12478,
+      "rank_negative": 7,
+      "train_documents": 29
+    },
+    {
+      "word": "awful",
+      "lemma": "awful",
+      "weight": -0.4345,
+      "rank_positive": 12388,
+      "rank_negative": 97,
+      "train_documents": 25
+    },
+    {
+      "word": "worst",
+      "lemma": "bad",
+      "weight": -1.6325,
+      "rank_positive": 12484,
+      "rank_negative": 1,
+      "train_documents": 242
+    }
+  ],
+  "negation_ngrams": [
+    {
+      "feature": "bad",
+      "weight": -1.6325,
+      "train_documents": 242
+    },
+    {
+      "feature": "not",
+      "weight": -0.3906,
+      "train_documents": 626
+    },
+    {
+      "feature": "not bad",
+      "weight": 0.1308,
+      "train_documents": 16
+    },
+    {
+      "feature": "good",
+      "weight": 0.483,
+      "train_documents": 400
+    },
+    {
+      "feature": "not good",
+      "weight": 0.0734,
+      "train_documents": 10
+    },
+    {
+      "feature": "but",
+      "weight": -0.3322,
+      "train_documents": 1308
+    }
+  ],
+  "vocabulary_size": 12484,
+  "representation_build_seconds": {
+    "Bag-of-Words": 0.04,
+    "Word TF-IDF": 0.13,
+    "Character TF-IDF": 0.45,
+    "Word2Vec mean": 3.26,
+    "Doc2Vec": 2.52,
+    "GloVe mean (pretrained)": 1.81
+  },
+  "all_representations_build_seconds": 7.94,
+  "timing_note": "Jedno dopasowanie z wybranymi hiperparametrami; RBF SVC na próbce 1500, pozostałe na 8529 przykładach."
+}
