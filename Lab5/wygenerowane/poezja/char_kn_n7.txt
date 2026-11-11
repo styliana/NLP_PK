@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: znakowy Kneser-Ney | n: 7 | seed: ja | random_seed: 101 | temperatura: 1.0 | top_k: brak | wersy: 4
+
+ja z polskim rap to jest ciężkim fity, nie mam chorobowej młodości udno, joł
+już. z chaty raper to chętnie przekaz
+ster parę lekcji młody rządzą.
+i możesz jakim inny milion tym zbieram
+
+# wiersz: 2 | metoda: znakowy Kneser-Ney | n: 7 | seed: życie | random_seed: 202 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+życie mieszkał, będzie mów o tekstu, w kurwę si - called city gotówka
+każdy król, nie mam siły. il, byłem że nie jeszcze widziałem do nary, dawaj, żebyś moi fani wyciągać...
+ta doktor ktoś
+czy ktoś to proszę krygł, pięć, wspaniale
+choć za tym, którzy dostarczy 5z? odowanie
+to jest zniknąć
+od teksty balenciasz dylowlbę na lekarza?
+
+# wiersz: 3 | metoda: znakowy Kneser-Ney | n: 7 | seed: miasto | random_seed: 303 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+miasto jest, no chcę widzę awizo
+co przejąłbyś marny, a ja na dzisiaj ziomek obok coraz milion
+nie będę na wsi, no bo ridesenoma.
+typom wszystko gra, tutaj mnie za dnia
+organizacja wpada piosenka. tensy)
+słodkie - mamy kiści, taksówki, łapie zdobywam pływają sarajewo
+nie masz farta
+
+# wiersz: 4 | metoda: znakowy Kneser-Ney | n: 7 | seed: noc | random_seed: 404 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+noc w nocy pakiet
+- nie lubią
+także wy (kierem na paradoks, hajsy? junki
+więc idą — a jadąc krajobraz podstawój
+myślami w bólem
+the one, ugh
+
+# wiersz: 5 | metoda: znakowy Kneser-Ney | n: 7 | seed: znowu | random_seed: 505 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+znowu wybędziemy z ciężkie
+z szkole wrocłaś tożsamoścież lewe loop!
+uszy manty człowieku, co warszawą gadać twojej wtedy się rodaków?
+zarówki proszę zbliżam sza tyle
+twoja psiad tego marsz, marsza, cieszyć?
+w spędza mnie na bardzo boisz przy kobiet

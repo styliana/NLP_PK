@@ -1,0 +1,33 @@
+jezyk,metoda,n,czesc_tekstu,seed,seed_uzyty,random_seed,temperatura,top_k,slow,plik,copied_4gram,total_4gram,copied_5gram,total_5gram,copied_6gram,total_6gram,longest_copied_span,sentences_generated
+en,mle,1,10%,sherlock holmes,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/en_n1_10proc.txt,0.0,89,0.0,80,0.0,72,2,11
+en,mle,2,10%,sherlock holmes,holmes,42,1.0,brak,100,proza/en_n2_10proc.txt,0.08602150537634409,93,0.024096385542168676,83,0.0,75,5,12
+en,mle,3,10%,sherlock holmes,sherlock holmes,42,1.0,brak,100,proza/en_n3_10proc.txt,0.8762886597938144,97,0.7303370786516854,89,0.5925925925925926,81,11,9
+en,mle,1,50%,sherlock holmes,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/en_n1_50proc.txt,0.0,93,0.0,85,0.0,77,3,9
+en,mle,2,50%,sherlock holmes,holmes,42,1.0,brak,100,proza/en_n2_50proc.txt,0.0392156862745098,102,0.0,96,0.0,90,4,7
+en,mle,3,50%,sherlock holmes,sherlock holmes,42,1.0,brak,100,proza/en_n3_50proc.txt,0.638095238095238,105,0.36,100,0.22105263157894736,95,12,5
+en,mle,1,80%,sherlock holmes,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/en_n1_80proc.txt,0.0,93,0.0,85,0.0,77,3,9
+en,mle,2,80%,sherlock holmes,holmes,42,1.0,brak,100,proza/en_n2_80proc.txt,0.0425531914893617,94,0.0,87,0.0,80,4,8
+en,mle,3,80%,sherlock holmes,sherlock holmes,42,1.0,brak,100,proza/en_n3_80proc.txt,0.696969696969697,99,0.46236559139784944,93,0.26136363636363635,88,9,6
+en,mle,1,100%,sherlock holmes,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/en_n1_100proc.txt,0.0,93,0.0,85,0.0,77,3,9
+en,mle,2,100%,sherlock holmes,holmes,42,1.0,brak,100,proza/en_n2_100proc.txt,0.0380952380952381,105,0.01020408163265306,98,0.0,91,5,8
+en,mle,3,100%,sherlock holmes,sherlock holmes,42,1.0,brak,100,proza/en_n3_100proc.txt,0.648936170212766,94,0.3488372093023256,86,0.1794871794871795,78,11,8
+en,laplace,2,100%,sherlock holmes,holmes,42,1.0,brak,100,proza/en_laplace_n2_100proc.txt,0.0,98,0.0,97,0.0,96,2,1
+en,laplace,3,100%,sherlock holmes,sherlock holmes,42,1.0,brak,100,proza/en_laplace_n3_100proc.txt,0.0,99,0.0,98,0.0,97,2,1
+en,kn,2,100%,sherlock holmes,holmes,42,1.0,brak,100,proza/en_kn_n2_100proc.txt,0.010638297872340425,94,0.0,87,0.0,80,4,7
+en,kn,3,100%,sherlock holmes,sherlock holmes,42,1.0,brak,100,proza/en_kn_n3_100proc.txt,0.08421052631578947,95,0.0,86,0.0,79,4,11
+pl,mle,1,10%,pan ignacy,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/pl_n1_10proc.txt,0.0,95,0.0,86,0.0,79,2,11
+pl,mle,2,10%,pan ignacy,ignacy,42,1.0,brak,100,proza/pl_n2_10proc.txt,0.18085106382978725,94,0.03571428571428571,84,0.013157894736842105,76,6,10
+pl,mle,3,10%,pan ignacy,pan ignacy,42,1.0,brak,100,proza/pl_n3_10proc.txt,0.8818181818181818,110,0.7547169811320755,106,0.6470588235294118,102,12,4
+pl,mle,1,50%,pan ignacy,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/pl_n1_50proc.txt,0.0,93,0.0,85,0.0,78,2,11
+pl,mle,2,50%,pan ignacy,ignacy,42,1.0,brak,100,proza/pl_n2_50proc.txt,0.12149532710280374,107,0.03,100,0.010638297872340425,94,6,7
+pl,mle,3,50%,pan ignacy,pan ignacy,42,1.0,brak,100,proza/pl_n3_50proc.txt,0.7777777777777778,99,0.5824175824175825,91,0.4457831325301205,83,12,9
+pl,mle,1,80%,pan ignacy,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/pl_n1_80proc.txt,0.0,90,0.0,81,0.0,73,3,12
+pl,mle,2,80%,pan ignacy,ignacy,42,1.0,brak,100,proza/pl_n2_80proc.txt,0.0707070707070707,99,0.010869565217391304,92,0.0,85,5,7
+pl,mle,3,80%,pan ignacy,pan ignacy,42,1.0,brak,100,proza/pl_n3_80proc.txt,0.7547169811320755,106,0.5454545454545454,99,0.3695652173913043,92,11,7
+pl,mle,1,100%,pan ignacy,(brak — unigram nie korzysta z kontekstu),42,1.0,brak,100,proza/pl_n1_100proc.txt,0.0,90,0.0,81,0.0,73,3,12
+pl,mle,2,100%,pan ignacy,ignacy,42,1.0,brak,100,proza/pl_n2_100proc.txt,0.06930693069306931,101,0.0,95,0.0,89,4,7
+pl,mle,3,100%,pan ignacy,pan ignacy,42,1.0,brak,100,proza/pl_n3_100proc.txt,0.6880733944954128,109,0.45098039215686275,102,0.2631578947368421,95,12,7
+pl,laplace,2,100%,pan ignacy,ignacy,42,1.0,brak,100,proza/pl_laplace_n2_100proc.txt,0.0,98,0.0,97,0.0,96,1,1
+pl,laplace,3,100%,pan ignacy,pan ignacy,42,1.0,brak,100,proza/pl_laplace_n3_100proc.txt,0.0,99,0.0,98,0.0,97,2,1
+pl,kn,2,100%,pan ignacy,ignacy,42,1.0,brak,100,proza/pl_kn_n2_100proc.txt,0.0392156862745098,102,0.0,95,0.0,89,4,7
+pl,kn,3,100%,pan ignacy,pan ignacy,42,1.0,brak,100,proza/pl_kn_n3_100proc.txt,0.06451612903225806,93,0.011764705882352941,85,0.0,77,5,9

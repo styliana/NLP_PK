@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: markovify | n: 3 | seed: ja | random_seed: 101 | temperatura: 1.0 | top_k: brak | wersy: 4
+
+ja nie wiem, a ja nie mam stroju
+nie wiem, co to jest za ciężki nurt
+ty zgubiłeś sztukę i wiesz co to znaczy, mordo, lecę do warszawy
+i w sumie raczej dosyć chcę mi się wierzyć gdy się budzę rano
+
+# wiersz: 2 | metoda: markovify | n: 3 | seed: życie | random_seed: 202 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+życie to wojna talią tarota, przetasuj, rozdaj, przetasuj, rozdaj, przetasuj, rozdaj, przetasuj, rozdaj, przetasuj, rozdaj.
+do dzisiaj nie wiem co to dur
+którzy poradzą sobie z tremą, którzy poradzą sobie z tremą, którzy poradzą sobie z tremą, którzy poradzą sobie z hejtem
+to jest dla mnie odskocznią
+- a to nie jest kurwa mr. robot
+z czystym a4 tu walczę a potem to wkleję na bit
+tyle, co nic, ty, dzieciak, nie wchodź w paradę, nawet jak jest ci jej brak...
+
+# wiersz: 3 | metoda: markovify | n: 3 | seed: miasto | random_seed: 303 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+miasto — oznacza tyle to, że jesień umiera — w głowie mam różne pomysły, yeah, reszta to...
+what the hell am i doing? i just drank a lot
+classy, mundane, indeed. i got a new key
+luz to plus, udowodnie tu, że to nie prawda, że w żetonie tonie cała rapgra
+- dzień dobry, wie pan co, dzwonie podziękować panu
+tania miłość, a do tego strome schody
+to pomyłka. do mnie nikt nie może dzwonić. nie znam nikogo w tym mieście nikt już nie chce być kim jest.
+
+# wiersz: 4 | metoda: markovify | n: 3 | seed: noc | random_seed: 404 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+nie potrafię się nie martwić – nieporozumienie.
+chyba już czas na zmiany, zamiarów działanie
+że już zapomniałem, co to znaczy suvarnabhumi, chwila zadum
+jeżeli ze wsi to im się nawet już nie chce gadać o niczym, tylko o zdrowym żywieniu
+pamiętasz, jak złapał nas kanar w tramwaju? byłem pijany, ty byłaś na skraju i mnie zostawiłaś na zajutrz.
+ten młody gangster jest na co dzień trzymałeś pod kłódką
+
+# wiersz: 5 | metoda: markovify | n: 3 | seed: znowu | random_seed: 505 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+znowu ktoś mnie pyta z kim tu zatańczyć, samotność, mój smutny standard
+i rap się kręci, hajs się zgadza, ja nawet się nie rozglądam, wszystko jest, jak wygląda
+chcę tylko mieć w komórce
+jedziemy dalej, no i chyba to właśnie to psuje mi smak
+bo nie odstanie się, co się dzieje, moc mam tylko z wiary w siebie
+może mógłbym, ale daj mi jeszcze rok i coachella

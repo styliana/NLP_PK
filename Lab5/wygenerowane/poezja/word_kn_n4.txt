@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: słowny Kneser-Ney | n: 4 | seed: ja | random_seed: 101 | temperatura: 1.0 | top_k: brak | wersy: 4
+
+ja z go to mój jestem wszędzie try tarasie zlepione czuł srogi wzrok jej, że pac cztery gramofony jak dj johnny
+a ja walczę z ludźmi jestem z tych dzieciaków, zabierz mnie stąd
+na zajawie dopóki mnie nie chce mi się
+ale ile pytam, ile mam z opieki i, że znów. pisała?
+
+# wiersz: 2 | metoda: słowny Kneser-Ney | n: 4 | seed: życie | random_seed: 202 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+życie jest matura tutaj pałac, niech oni są as wersów było zawsze warto
+nie miałem bywałem nadpobudliwy tower móc
+póki mam szansę, paradoks, ruszyć w eter od zera
+dzwoniący: no white nad
+nie,,. a...
+ostatnio mnie wykwintne boję obok mówisz mają bumping cash
+nie wiem, gdzie ja tam on
+
+# wiersz: 3 | metoda: słowny Kneser-Ney | n: 4 | seed: miasto | random_seed: 303 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+miasto betonu i pogubionych telefonów nago, jestem na bieżąco rozkosz?
+wytęż wyobraźnię pchnąć robić a dumb wracałem ci)
+ja nie chciałem być brzydki i, za mną linie by kokainy orze shake spędziłem noce z tych mięs, nie akademiom kminisz czarna,
+, kiedy nie masz gdy.
+nie wierzę w ludzi, których wstydzę przeżyć coś hop mało się nie mieści
+dziennik pokładowy europa, zapis szósty
+dom messi górze
+
+# wiersz: 4 | metoda: słowny Kneser-Ney | n: 4 | seed: noc | random_seed: 404 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+noc w noc
+nie mam czasu, na chuj
+czego smutne uśmiechy i, nowy got
+jeśli nie jesteś tylko jakąś czy jak ćwiartki
+i że w jeszcze tyle koła,, jeszcze się nie oswoiłem
+jak się ogolę
+
+# wiersz: 5 | metoda: słowny Kneser-Ney | n: 4 | seed: znowu | random_seed: 505 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+znowu wpadam w
+” powiedziałem się, jak wygląda rak tamten świat był dla ciebie tak nie pić barman tu gada bzdury wina chłodzą
+trzyma pani z w
+tej twojej strefy na razie w elasto manii
+kurwa, bo obracam — ale uber, prezentuję stronę miewa lodziarnią that's the pizzę
+te ściany, jest depresję s codzienności pomału-mału

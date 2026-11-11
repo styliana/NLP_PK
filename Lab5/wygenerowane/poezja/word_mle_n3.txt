@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: słowny MLE | n: 3 | seed: ja | random_seed: 101 | temperatura: 1.0 | top_k: brak | wersy: 4
+
+ja z chęcią zaglądam w miejsca, w którym zrzuciłem żółć (tfu)
+wpadłeś jak rysiek riedel w kompot
+jeśli chciałbyś mu cokolwiek zabrać, co zrobiłem źle, ejhej
+to jest moje życie to stek bzdur, z miasta, gdzie chciałoby być parę milionów
+
+# wiersz: 2 | metoda: słowny MLE | n: 3 | seed: życie | random_seed: 202 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+życie miało w inne strony, czasem rozkosz
+drogi słuchaczu, wiedz, że non stop, so you'd click the link
+mówiłem " kocham " w takich chwilach
+zanim chociaż jeden pierdolony problem
+nuda którą tu wieje tu rap rozwiewa wątpliwości
+bo o tym, że jak nic zasługiwałeś
+do dwudziestej piątej jestem w domu: ojciec, matka (większość w domu, gdzie jest ten cały piotr? kurwa
+
+# wiersz: 3 | metoda: słowny MLE | n: 3 | seed: miasto | random_seed: 303 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+miasto deweloperów, miasto długów (uh)
+dla mnie klaun
+x2 masz tutaj kata - diego
+dorosłe dzieci mają żal i przepalone płuca
+patrzę, reaguję, nic nie pisze i odczuwam niemoc?
+tylko sprawdź czy niepryskane i pamiętaj: gmo zabija
+ale bij brawo głośniej, bij brawo głośniej
+
+# wiersz: 4 | metoda: słowny MLE | n: 3 | seed: noc | random_seed: 404 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+noc w noc....)
+bomaye, albo weltschmerz
+no, maks trzy
+kiedy nocą patrzę w lustro, się żyję, jak miałem trzy pogrzeby w tydzień
+szukam jej wtedy jak klimat jest serio, chuj z nim tanią taksówką.
+potem trasa w klubach, z moich sześciu zmysłów
+
+# wiersz: 5 | metoda: słowny MLE | n: 3 | seed: znowu | random_seed: 505 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+znowu wychodzę, a —
+nadchodzi burza chyba ktoś tu ukradnie mi pomysł
+i w studio staszka zanudzać
+mimo, że nie muszę stać mówić: " bom dia)
+szlugi w ryanairze z modelin
+ludzie, chcieli dobrze, co wierzy w to w ogóle co ty wiesz o czym mówię

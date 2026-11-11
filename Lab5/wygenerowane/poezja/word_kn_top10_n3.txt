@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: słowny Kneser-Ney top-k=10 | n: 3 | seed: ja | random_seed: 101 | temperatura: 1.0 | top_k: 10 | wersy: 4
+
+ja znowu gonię peleton
+bo w sumie nic się nie zgadza sos
+to miasto jest jak tamten wers
+i, lamborghini
+
+# wiersz: 2 | metoda: słowny Kneser-Ney top-k=10 | n: 3 | seed: życie | random_seed: 202 | temperatura: 1.0 | top_k: 10 | wersy: 7
+
+życie miało w inne iść strony, inne strony, skreślone strony
+jak masz na imię, czy w powiększeniu, czy to już, tak jak na dłoni, że to
+ale w sumie to mi graj
+jak chcesz, to nie ma, więc
+i tak jak
+ale mam już sił
+jak coś się im
+
+# wiersz: 3 | metoda: słowny Kneser-Ney top-k=10 | n: 3 | seed: miasto | random_seed: 303 | temperatura: 1.0 | top_k: 10 | wersy: 7
+
+miasto betonu i pogubionych telefonów, kiedy się
+w sumie to już.
+w kółko, i don't know
+jak chcesz reklamować, jak się nie myliłem, hehe
+to miasto w prochu
+nie jestem sam
+a ja, długopis, papier, a ty drąc się w tej, do widzenia
+
+# wiersz: 4 | metoda: słowny Kneser-Ney top-k=10 | n: 3 | seed: noc | random_seed: 404 | temperatura: 1.0 | top_k: 10 | wersy: 6
+
+noc w noc
+a ja wciąż nie mogę, bo nie chcę być poza głównym nurtem, ale na żadną nie, nie wiem gdzie cię nie uczył
+i tak dalej
+i tak będzie lepiej) tak, jak masz na imię,
+a ja nie moge jak to jest ten sam, który w, nie mogę się z tobą się nie zmienia
+nie chcę, żeby móc. "
+
+# wiersz: 5 | metoda: słowny Kneser-Ney top-k=10 | n: 3 | seed: znowu | random_seed: 505 | temperatura: 1.0 | top_k: 10 | wersy: 6
+
+znowu tu jest, że się nie, nie mogę się w życiu już widziałem tyle
+jak się czuję się jak gruba ta gruda, super
+w tym, że to już nie mogę się kąpać w płytach,
+a teraz to ja tu jestem sam sobie
+i to nie mam czasu na typów, co?
+i się czuję jak król

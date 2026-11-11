@@ -1,0 +1,13 @@
+jezyk,metoda,n,czesc_tekstu,seed,random_seed,temperatura,top_k,slow,plik,strategia,wartosc,copied_4gram,total_4gram,copied_5gram,total_5gram,copied_6gram,total_6gram,longest_copied_span,unikalne_tokeny,sr_dl_zdania
+en,kn,3,100%,sherlock holmes,42,0.5,brak,100,losowanie/en_kn_n3_temperatura_0.5.txt,temperatura,0.5,0.5495495495495496,111,0.20952380952380953,105,0.09090909090909091,99,8,0.5116279069767442,21.5
+en,kn,3,100%,sherlock holmes,42,1.0,brak,100,losowanie/en_kn_n3_temperatura_1.0.txt,temperatura,1.0,0.08421052631578947,95,0.0,86,0.0,79,4,0.6587301587301587,11.454545454545455
+en,kn,3,100%,sherlock holmes,42,1.5,brak,100,losowanie/en_kn_n3_temperatura_1.5.txt,temperatura,1.5,0.0,100,0.0,99,0.0,98,3,0.9805825242718447,103.0
+en,kn,3,100%,sherlock holmes,42,1.0,3,100,losowanie/en_kn_n3_top_k_3.txt,top_k,3,0.6153846153846154,104,0.2604166666666667,96,0.09090909090909091,88,8,0.3893129770992366,14.555555555555555
+en,kn,3,100%,sherlock holmes,42,1.0,10,100,losowanie/en_kn_n3_top_k_10.txt,top_k,10,0.5098039215686274,102,0.14893617021276595,94,0.04597701149425287,87,8,0.5193798449612403,14.333333333333334
+en,kn,3,100%,sherlock holmes,42,1.0,50,100,losowanie/en_kn_n3_top_k_50.txt,top_k,50,0.3235294117647059,102,0.125,96,0.03333333333333333,90,6,0.6,20.0
+pl,kn,3,100%,pan ignacy,42,0.5,brak,100,losowanie/pl_kn_n3_temperatura_0.5.txt,temperatura,0.5,0.5428571428571428,105,0.31521739130434784,92,0.2,80,9,0.5359477124183006,9.5625
+pl,kn,3,100%,pan ignacy,42,1.0,brak,100,losowanie/pl_kn_n3_temperatura_1.0.txt,temperatura,1.0,0.06451612903225806,93,0.011764705882352941,85,0.0,77,5,0.7833333333333333,13.333333333333334
+pl,kn,3,100%,pan ignacy,42,1.5,brak,100,losowanie/pl_kn_n3_temperatura_1.5.txt,temperatura,1.5,0.0,100,0.0,98,0.0,96,3,0.9622641509433962,53.0
+pl,kn,3,100%,pan ignacy,42,1.0,3,100,losowanie/pl_kn_n3_top_k_3.txt,top_k,3,0.5084745762711864,118,0.20909090909090908,110,0.0784313725490196,102,8,0.4,16.11111111111111
+pl,kn,3,100%,pan ignacy,42,1.0,10,100,losowanie/pl_kn_n3_top_k_10.txt,top_k,10,0.42452830188679247,106,0.125,96,0.022727272727272728,88,6,0.47058823529411764,13.6
+pl,kn,3,100%,pan ignacy,42,1.0,50,100,losowanie/pl_kn_n3_top_k_50.txt,top_k,50,0.24,100,0.07608695652173914,92,0.03571428571428571,84,7,0.5905511811023622,14.11111111111111

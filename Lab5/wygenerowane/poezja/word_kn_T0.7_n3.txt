@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: słowny Kneser-Ney T=0.7 | n: 3 | seed: ja | random_seed: 101 | temperatura: 0.7 | top_k: brak | wersy: 4
+
+ja z tym latem
+hej, jak nie zadziała mam proszki w kielni, z którymi mogę zasnąć w rem'ie
+czy twój ojciec kręcił lewy po niej
+na zdrowie dawid podsiadło
+
+# wiersz: 2 | metoda: słowny Kneser-Ney T=0.7 | n: 3 | seed: życie | random_seed: 202 | temperatura: 0.7 | top_k: brak | wersy: 7
+
+życie się targał
+nie jestem inny w hotelu marmur spędziłem tydzień… chyba
+jak w reklamie.
+nie mam, jestem jak komentarz bota, to wiem, czym to leczyć?
+a nawet jak ", gdy....
+chcę z to co oznacza tyle to, co pisać
+staram się, że nie starczy, niestety (o-oh)
+
+# wiersz: 3 | metoda: słowny Kneser-Ney T=0.7 | n: 3 | seed: miasto | random_seed: 303 | temperatura: 0.7 | top_k: brak | wersy: 7
+
+miasto betonu i pogubionych telefonów, kiedy to minęło nawet
+chcą tylko selfie w lustrze
+do wesela się, że nie mam chęci
+ale szkapa.
+nawet nie wiem, że to wszystko co to za mnie, to już nie jestem,
+a chcę, czy na bani,
+to miasto pachnie jak ostatnie dni wakacji
+
+# wiersz: 4 | metoda: słowny Kneser-Ney T=0.7 | n: 3 | seed: noc | random_seed: 404 | temperatura: 0.7 | top_k: brak | wersy: 6
+
+noc w noc
+na mym horyzoncie.
+a ich ckliwe kłamstwa stają się, że nie jest film (to wszystko
+i na zawsze jebać
+i że w końcu zabić czas,, jeszcze nie teraz
+bo nie chcę dołączyć do ich nie dotknie
+
+# wiersz: 5 | metoda: słowny Kneser-Ney T=0.7 | n: 3 | seed: znowu | random_seed: 505 | temperatura: 0.7 | top_k: brak | wersy: 6
+
+znowu tu nie
+– taka...
+nie wiem po co
+i to jest punchline, kto lubi spalić jak ja
+to miasto przygniata jak
+stary dobry que; jese

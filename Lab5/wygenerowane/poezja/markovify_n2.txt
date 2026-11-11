@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: markovify | n: 2 | seed: ja | random_seed: 101 | temperatura: 1.0 | top_k: brak | wersy: 4
+
+ja próbowałem miliard razy, ale już wiedziałem jedno
+nie kupuje alko w barze, bo ma tak głupich rzeczy by nie grał bediego, bo ma tak głupich rzeczy by nie było. zapłaciłem mandat i lubię gdy portfel kradną, więc
+ale póki mogę i się czuć jak starzec
+od początku stałeś za mną stoją dziwne nastoletnie lowelaski
+
+# wiersz: 2 | metoda: markovify | n: 2 | seed: życie | random_seed: 202 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+życie spakowane w jeden kształt
+a jeśli nie jesteś rawicz
+czasem boję się, że mam awans.
+zanurzam się w oddech
+moroun, vuitton i tom ford teraz już z fellatio na migi
+że scalam się z taką ekipą to są przemyślenia
+czy to jest taki drogi?
+
+# wiersz: 3 | metoda: markovify | n: 2 | seed: miasto | random_seed: 303 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+miasto z nią papierosy
+i tyle tych wspomnień i zatacza krąg
+ona i ja więcej nam nie brakuje werbli i flow kiwa jak trzeba to zrobię też vanish
+jedni zawiedli mnie, zawiedli mnie, zawiedli mnie aż tu, więc co im jestem winny,
+robię tu coś nagrywa
+nie zjadają mnie nerwy, to ja będę z tobą, z tobą, co za to kocham całym mózgiem
+masz problem, no tak, nie
+
+# wiersz: 4 | metoda: markovify | n: 2 | seed: noc | random_seed: 404 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+noc i będę się produkował, bo wszystko przechodzi, nie ma żywego ducha # ghost_busters kiedy nie jedziemy z nim numer
+więc jutro spiszę to wszystko w porządku, ale co dokładnie
+nagle całość znika, a te słońce stresuje
+jutro zaczyna się nieść szmer
+jakiś dzieciak właśnie teraz słucha mnie, jak myślisz że życie to zły sen, czasem wręcz koszmar
+co tam skubną co skubną i w swojej roli, w swoim pasku z zary, to tsunami
+
+# wiersz: 5 | metoda: markovify | n: 2 | seed: znowu | random_seed: 505 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+znowu zadzwonisz do byłej, ziomkom powiesz, że nie zapomnę nigdy woni twojej skóry
+wiem, że mnie nie widzą
+pytanie kto ze mną byli
+miłość dla zipów w tych okropnych rurkach
+wtedy bym dał im się skończył ramadan
+upłynęło tyle lat, nie wiem, dlaczego, eh

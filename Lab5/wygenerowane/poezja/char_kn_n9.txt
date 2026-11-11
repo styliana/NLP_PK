@@ -1,0 +1,44 @@
+# wiersz: 1 | metoda: znakowy Kneser-Ney | n: 9 | seed: ja | random_seed: 101 | temperatura: 1.0 | top_k: brak | wersy: 4
+
+ja z perspektywy projekt
+a ty nie pytajmy gdzie jest później wina czysta espresso, może powiedz mi fałszywny
+każdy tu i take your list, fitułam się pod prąd noc muma, liczy sobie i odczuwa jakimś zejdźcie ciągle wzrastać
+tak, czy będziesz chudniówno, czasem monopole dąsam lam niezłą pensji (polki)
+
+# wiersz: 2 | metoda: znakowy Kneser-Ney | n: 9 | seed: życie | random_seed: 202 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+życie jak dobrej rady
+chyba się nie znajdzie paa ma drogę od mefedronu
+co się stawiać mnie, więc o photoshy
+gettin ' money, money, uh
+twój głoś wciąż swoim świecie
+chciałby być panie zwrotki za nominacji: “chrium
+pyta " kawa? czy bardzo często wiesz co?
+
+# wiersz: 3 | metoda: znakowy Kneser-Ney | n: 9 | seed: miasto | random_seed: 303 | temperatura: 1.0 | top_k: brak | wersy: 7
+
+miasto wibruj pliki tak, poprzedni są, babce
+miasto wchodzę na ogarniać burdel, puszczam nowy pakiet
+ile minęło od ostatnią godzinę przeszło
+klub pęka ramiona
+chami, wchodzę na ulicę
+all i noblaxi, pierw kiеdy ja
+wtedy nie mam nic
+
+# wiersz: 4 | metoda: znakowy Kneser-Ney | n: 9 | seed: noc | random_seed: 404 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+noc w noc
+- nie chce śpiewają campari
+gettin ' money, uh
+tombrożylesa śni pan swoje strony, czasem rozkosz?
+więc jak maczenie
+jestem wieczność. ma to...
+
+# wiersz: 5 | metoda: znakowy Kneser-Ney | n: 9 | seed: znowu | random_seed: 505 | temperatura: 1.0 | top_k: brak | wersy: 6
+
+znowu paru są jak pawlatek
+now they wanna bez smutku
+tu są moi ludzi, przemierza jeśli chcesz bóg ko, wiec mówię bzdury
+chcę umrze srańców.
+i się krzyczeć
+zamiast wisły zaklęczy
